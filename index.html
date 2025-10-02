@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lecteur GPX - Carte OpenStreetMap</title>
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <style>
+    /* Mise en page de base : carte en plein écran */
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f4;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    /* Bouton d'import en overlay */
+    .import-container {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .import-button {
+      background-color: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease, box-shadow 0.2s ease;
+      color: #333;
+    }
+
+    .import-button:hover,
+    .import-button:focus {
+      background-color: rgba(255, 255, 255, 1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      outline: none;
+    }
+
+    .message {
+      padding: 0.5rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      max-width: 220px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      color: #333;
+      display: none;
+    }
+
+    .message.visible {
+      display: block;
+    }
+
+    /* Effet visuel lors du drag & drop */
+    .dragover {
+      outline: 3px dashed rgba(33, 150, 243, 0.8);
+      outline-offset: -10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="map">
+    <div class="import-container">
+      <button id="import-button" class="import-button" type="button">Importer GPX</button>
+      <div id="message" class="message" role="status" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <input id="file-input" type="file" accept=".gpx" hidden />
+
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-o9N1j7kGIC3fVMVE4KkL7VwPp3p1gy7Fip2V9tzA4r0="
+    crossorigin=""
+  ></script>
+  <!-- togeojson (conversion GPX -> GeoJSON) -->
+  <script src="https://cdn.jsdelivr.net/npm/@tmcw/togeojson@4.8.0/dist/togeojson.umd.js"></script>
+  <script>
+    // Initialisation de la carte Leaflet centrée sur Paris
+    const map = L.map('map').setView([48.8566, 2.3522], 12);
+
+    // Couche de tuiles OpenStreetMap avec attribution obligatoire
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    const fileInput = document.getElementById('file-input');
+    const importButton = document.getElementById('import-button');
+    const messageBox = document.getElementById('message');
+    const mapContainer = document.getElementById('map');
+
+    let gpxLayerGroup = null;
+
+    /**
+     * Affiche un message utilisateur discret.
+     * @param {string} text
+     * @param {boolean} isError
+     */
+    function showMessage(text, isError = false) {
+      messageBox.textContent = text;
+      messageBox.classList.toggle('visible', Boolean(text));
+      messageBox.style.borderColor = isError ? 'rgba(244, 67, 54, 0.6)' : 'rgba(0, 0, 0, 0.1)';
+      messageBox.style.color = isError ? '#c62828' : '#333';
+    }
+
+    /**
+     * Efface les couches GPX précédemment ajoutées.
+     */
+    function clearPreviousLayers() {
+      if (gpxLayerGroup) {
+        map.removeLayer(gpxLayerGroup);
+        gpxLayerGroup = null;
+      }
+    }
+
+    /**
+     * Affiche le contenu GeoJSON sur la carte.
+     * @param {GeoJSON.FeatureCollection} geojsonData
+     */
+    function displayGeoJSON(geojsonData) {
+      clearPreviousLayers();
+
+      gpxLayerGroup = L.geoJSON(geojsonData, {
+        style: function (feature) {
+          const type = feature.geometry && feature.geometry.type;
+          if (type === 'LineString' || type === 'MultiLineString') {
+            return {
+              color: '#ff5722',
+              weight: 3,
+              opacity: 0.9
+            };
+          }
+          return undefined;
+        },
+        pointToLayer: function (feature, latlng) {
+          return L.circleMarker(latlng, {
+            radius: 5,
+            color: '#1976d2',
+            fillColor: '#ffffff',
+            fillOpacity: 1,
+            weight: 2
+          });
+        }
+      }).addTo(map);
+
+      const bounds = gpxLayerGroup.getBounds();
+      if (bounds.isValid()) {
+        map.fitBounds(bounds.pad(0.1));
+      }
+    }
+
+    /**
+     * Traite le fichier GPX sélectionné.
+     * @param {File} file
+     */
+    function handleFile(file) {
+      if (!file) {
+        return;
+      }
+
+      if (!file.name.toLowerCase().endsWith('.gpx')) {
+        showMessage('Veuillez sélectionner un fichier .gpx.', true);
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = function (event) {
+        try {
+          const parser = new DOMParser();
+          const xml = parser.parseFromString(event.target.result, 'application/xml');
+          const parseError = xml.querySelector('parsererror');
+          if (parseError) {
+            throw new Error('Fichier GPX invalide.');
+          }
+
+          const geojson = toGeoJSON.gpx(xml);
+
+          if (!geojson || !geojson.features || geojson.features.length === 0) {
+            throw new Error('La trace GPX est vide ou invalide.');
+          }
+
+          displayGeoJSON(geojson);
+          showMessage(`Trace "${file.name}" chargée avec succès.`);
+        } catch (error) {
+          console.error(error);
+          showMessage(error.message || 'Impossible de lire ce fichier GPX.', true);
+          clearPreviousLayers();
+        }
+      };
+
+      reader.onerror = function () {
+        showMessage('Erreur de lecture du fichier.', true);
+      };
+
+      reader.readAsText(file);
+    }
+
+    // Gestion du clic sur le bouton pour ouvrir le sélecteur de fichier
+    importButton.addEventListener('click', () => fileInput.click());
+
+    // Gestion du changement de fichier via le sélecteur
+    fileInput.addEventListener('change', (event) => {
+      const selectedFile = event.target.files && event.target.files[0];
+      handleFile(selectedFile);
+      // Réinitialise l'input pour permettre de recharger le même fichier si besoin
+      fileInput.value = '';
+    });
+
+    // Gestion du drag & drop directement sur la carte
+    ['dragenter', 'dragover'].forEach((eventName) => {
+      mapContainer.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        mapContainer.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach((eventName) => {
+      mapContainer.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (eventName === 'drop') {
+          const droppedFiles = event.dataTransfer && event.dataTransfer.files;
+          if (droppedFiles && droppedFiles.length > 0) {
+            handleFile(droppedFiles[0]);
+          }
+        }
+        mapContainer.classList.remove('dragover');
+      });
+    });
+
+    // Empêche le navigateur d'ouvrir le fichier en dehors de la zone prévue
+    document.addEventListener('dragover', (event) => {
+      event.preventDefault();
+    });
+    document.addEventListener('drop', (event) => {
+      event.preventDefault();
+    });
+  </script>
+</body>
+</html>
