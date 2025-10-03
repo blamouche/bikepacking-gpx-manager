@@ -97,9 +97,66 @@
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin=""
   ></script>
-  <!-- togeojson (conversion GPX -> GeoJSON) -->
-  <script src="https://cdn.jsdelivr.net/npm/@tmcw/togeojson@4.8.0/dist/togeojson.umd.js"></script>
   <script>
+    /**
+     * Charge dynamiquement la bibliothèque toGeoJSON depuis un CDN.
+     * Retourne une promesse résolue avec l'objet de conversion.
+     * @returns {Promise<{ gpx: Function }>}
+     */
+    function resolveToGeoJSON() {
+      const candidates = [window.toGeoJSON, window.togeojson];
+      for (const candidate of candidates) {
+        if (candidate && typeof candidate.gpx === 'function') {
+          return candidate;
+        }
+        if (candidate && candidate.default && typeof candidate.default.gpx === 'function') {
+          return candidate.default;
+        }
+      }
+      return null;
+    }
+
+    function ensureToGeoJSON() {
+      const existing = resolveToGeoJSON();
+      if (existing) {
+        return Promise.resolve(existing);
+      }
+
+      if (!ensureToGeoJSON.promise) {
+        ensureToGeoJSON.promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/npm/@tmcw/togeojson@4.8.0/dist/togeojson.umd.js';
+          script.crossOrigin = 'anonymous';
+          script.defer = true;
+          script.onload = () => {
+            const converter = resolveToGeoJSON();
+            if (converter) {
+              resolve(converter);
+            } else {
+              reject(new Error('toGeoJSON introuvable après chargement.'));
+            }
+          };
+          script.onerror = () => {
+            script.remove();
+            reject(new Error('Échec du chargement de toGeoJSON.'));
+          };
+          script.dataset.loader = 'togeojson';
+          document.head.appendChild(script);
+        }).catch((error) => {
+          ensureToGeoJSON.promise = null;
+          throw error;
+        });
+      }
+
+      return ensureToGeoJSON.promise;
+    }
+
+    ensureToGeoJSON.promise = null;
+    // Précharge la bibliothèque de conversion pour limiter le temps d'attente lors du premier import
+    ensureToGeoJSON().catch((error) => {
+      console.warn('Préchargement toGeoJSON échoué:', error);
+    });
+
     // Initialisation de la carte Leaflet centrée sur Paris
     const map = L.map('map').setView([48.8566, 2.3522], 12);
 
@@ -178,7 +235,7 @@
      * Traite le fichier GPX sélectionné.
      * @param {File} file
      */
-    function handleFile(file) {
+    async function handleFile(file) {
       if (!file) {
         return;
       }
@@ -188,15 +245,12 @@
         return;
       }
 
-      if (typeof toGeoJSON === 'undefined' || typeof toGeoJSON.gpx !== 'function') {
-        showMessage('Bibliothèque de conversion indisponible.', true);
-        return;
-      }
-
       const reader = new FileReader();
 
-      reader.onload = function (event) {
+      reader.onload = async function (event) {
         try {
+          showMessage('Chargement de la trace GPX…');
+          const converter = await ensureToGeoJSON();
           const parser = new DOMParser();
           const xml = parser.parseFromString(event.target.result, 'application/xml');
           const parseError = xml.querySelector('parsererror');
@@ -204,7 +258,7 @@
             throw new Error('Fichier GPX invalide.');
           }
 
-          const geojson = toGeoJSON.gpx(xml);
+          const geojson = converter.gpx(xml);
 
           if (!geojson || !geojson.features || geojson.features.length === 0) {
             throw new Error('La trace GPX est vide ou invalide.');
@@ -214,7 +268,11 @@
           showMessage(`Trace "${file.name}" chargée avec succès.`);
         } catch (error) {
           console.error(error);
-          showMessage(error.message || 'Impossible de lire ce fichier GPX.', true);
+          if (error && /toGeoJSON/i.test(error.message || '')) {
+            showMessage('Impossible de charger la bibliothèque de conversion.', true);
+          } else {
+            showMessage(error.message || 'Impossible de lire ce fichier GPX.', true);
+          }
           clearPreviousLayers();
         }
       };
