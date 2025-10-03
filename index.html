@@ -20,12 +20,14 @@
       margin: 0;
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f4f4f4;
+      overflow: hidden;
     }
 
     #map {
-      width: 100%;
-      height: 100%;
-      position: relative;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
     }
 
     /* Bouton d'import en overlay */
@@ -186,6 +188,11 @@
         return;
       }
 
+      if (typeof toGeoJSON === 'undefined' || typeof toGeoJSON.gpx !== 'function') {
+        showMessage('Bibliothèque de conversion indisponible.', true);
+        return;
+      }
+
       const reader = new FileReader();
 
       reader.onload = function (event) {
@@ -259,6 +266,11 @@
     });
     document.addEventListener('drop', (event) => {
       event.preventDefault();
+    });
+
+    // S'assure que la carte s'ajuste lors des changements de taille de fenêtre
+    window.addEventListener('resize', () => {
+      map.invalidateSize();
     });
   </script>
 </body>
