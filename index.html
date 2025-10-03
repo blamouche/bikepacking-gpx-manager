@@ -99,83 +99,164 @@
   ></script>
   <script>
     /**
-     * Charge dynamiquement la bibliothèque toGeoJSON depuis un CDN.
-     * Retourne une promesse résolue avec l'objet de conversion.
-     * @returns {Promise<{ gpx: Function }>}
+     * Convertit un élément XML GPX en GeoJSON Feature.
+     * @param {Element} element
+     * @param {string} featureType
+     * @returns {GeoJSON.Feature|null}
      */
-    function resolveToGeoJSON() {
-      const candidates = [window.toGeoJSON, window.togeojson];
-      for (const candidate of candidates) {
-        if (candidate && typeof candidate.gpx === 'function') {
-          return candidate;
-        }
-        if (candidate && candidate.default && typeof candidate.default.gpx === 'function') {
-          return candidate.default;
+    function convertPoint(element, featureType) {
+      if (!element) {
+        return null;
+      }
+
+      const lat = parseFloat(element.getAttribute('lat'));
+      const lon = parseFloat(element.getAttribute('lon'));
+
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+        return null;
+      }
+
+      const properties = { kind: featureType };
+
+      const name = element.querySelector('name');
+      if (name && name.textContent.trim()) {
+        properties.name = name.textContent.trim();
+      }
+
+      const desc = element.querySelector('desc');
+      if (desc && desc.textContent.trim()) {
+        properties.description = desc.textContent.trim();
+      }
+
+      const ele = element.querySelector('ele');
+      if (ele && ele.textContent.trim()) {
+        const elevation = parseFloat(ele.textContent.trim());
+        if (Number.isFinite(elevation)) {
+          properties.ele = elevation;
         }
       }
-      return null;
+
+      const time = element.querySelector('time');
+      if (time && time.textContent.trim()) {
+        properties.time = time.textContent.trim();
+      }
+
+      return {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [lon, lat]
+        },
+        properties
+      };
     }
 
-    function ensureToGeoJSON() {
-      const existing = resolveToGeoJSON();
-      if (existing) {
-        return Promise.resolve(existing);
+    /**
+     * Convertit une liste de points GPX en coordonnées GeoJSON.
+     * @param {NodeListOf<Element>} points
+     * @returns {number[][]}
+     */
+    function extractCoordinates(points) {
+      const coordinates = [];
+      points.forEach((point) => {
+        const lat = parseFloat(point.getAttribute('lat'));
+        const lon = parseFloat(point.getAttribute('lon'));
+        if (Number.isFinite(lat) && Number.isFinite(lon)) {
+          coordinates.push([lon, lat]);
+        }
+      });
+      return coordinates;
+    }
+
+    /**
+     * Convertit un élément GPX en GeoJSON pour les routes ou pistes.
+     * @param {Element} element
+     * @param {string} featureType
+     * @returns {GeoJSON.Feature|null}
+     */
+    function convertLinearFeature(element, featureType) {
+      if (!element) {
+        return null;
       }
 
-      if (!ensureToGeoJSON.promise) {
-        const sources = [
-          'https://cdn.jsdelivr.net/npm/@tmcw/togeojson@4.8.0/dist/togeojson.umd.js',
-          'https://unpkg.com/@tmcw/togeojson@4.8.0/dist/togeojson.umd.js',
-          'https://cdnjs.cloudflare.com/ajax/libs/togeojson/4.8.0/togeojson.umd.min.js'
-        ];
+      const properties = { kind: featureType };
+      const name = element.querySelector('name');
+      if (name && name.textContent.trim()) {
+        properties.name = name.textContent.trim();
+      }
 
-        const loadFromSource = (index) => {
-          return new Promise((resolve, reject) => {
-            if (index >= sources.length) {
-              reject(new Error('Impossible de charger toGeoJSON depuis les CDN configurés.'));
-              return;
-            }
+      const desc = element.querySelector('desc');
+      if (desc && desc.textContent.trim()) {
+        properties.description = desc.textContent.trim();
+      }
 
-            const src = sources[index];
-            const script = document.createElement('script');
-            script.src = src;
-            script.crossOrigin = 'anonymous';
-            script.defer = true;
-            script.dataset.loader = 'togeojson';
+      const segments = [];
 
-            script.onload = () => {
-              const converter = resolveToGeoJSON();
-              if (converter) {
-                resolve(converter);
-              } else {
-                script.remove();
-                loadFromSource(index + 1).then(resolve).catch(reject);
-              }
-            };
-
-            script.onerror = () => {
-              script.remove();
-              loadFromSource(index + 1).then(resolve).catch(reject);
-            };
-
-            document.head.appendChild(script);
-          });
-        };
-
-        ensureToGeoJSON.promise = loadFromSource(0).catch((error) => {
-          ensureToGeoJSON.promise = null;
-          throw error;
+      if (featureType === 'track') {
+        const trksegs = element.querySelectorAll('trkseg');
+        trksegs.forEach((segment) => {
+          const coords = extractCoordinates(segment.querySelectorAll('trkpt'));
+          if (coords.length > 1) {
+            segments.push(coords);
+          }
         });
+      } else if (featureType === 'route') {
+        const coords = extractCoordinates(element.querySelectorAll('rtept'));
+        if (coords.length > 1) {
+          segments.push(coords);
+        }
       }
 
-      return ensureToGeoJSON.promise;
+      if (segments.length === 0) {
+        return null;
+      }
+
+      const geometry =
+        segments.length === 1
+          ? { type: 'LineString', coordinates: segments[0] }
+          : { type: 'MultiLineString', coordinates: segments };
+
+      return {
+        type: 'Feature',
+        geometry,
+        properties
+      };
     }
 
-    ensureToGeoJSON.promise = null;
-    // Précharge la bibliothèque de conversion pour limiter le temps d'attente lors du premier import
-    ensureToGeoJSON().catch((error) => {
-      console.warn('Préchargement toGeoJSON échoué:', error);
-    });
+    /**
+     * Réalise une conversion minimale GPX -> GeoJSON pour les traces, routes et waypoints.
+     * @param {XMLDocument} xml
+     * @returns {GeoJSON.FeatureCollection}
+     */
+    function convertGpxToGeoJSON(xml) {
+      const features = [];
+
+      xml.querySelectorAll('wpt').forEach((wpt) => {
+        const feature = convertPoint(wpt, 'waypoint');
+        if (feature) {
+          features.push(feature);
+        }
+      });
+
+      xml.querySelectorAll('rte').forEach((route) => {
+        const feature = convertLinearFeature(route, 'route');
+        if (feature) {
+          features.push(feature);
+        }
+      });
+
+      xml.querySelectorAll('trk').forEach((track) => {
+        const feature = convertLinearFeature(track, 'track');
+        if (feature) {
+          features.push(feature);
+        }
+      });
+
+      return {
+        type: 'FeatureCollection',
+        features
+      };
+    }
 
     // Initialisation de la carte Leaflet centrée sur Paris
     const map = L.map('map').setView([48.8566, 2.3522], 12);
@@ -270,7 +351,6 @@
       reader.onload = async function (event) {
         try {
           showMessage('Chargement de la trace GPX…');
-          const converter = await ensureToGeoJSON();
           const parser = new DOMParser();
           const xml = parser.parseFromString(event.target.result, 'application/xml');
           const parseError = xml.querySelector('parsererror');
@@ -278,7 +358,7 @@
             throw new Error('Fichier GPX invalide.');
           }
 
-          const geojson = converter.gpx(xml);
+          const geojson = convertGpxToGeoJSON(xml);
 
           if (!geojson || !geojson.features || geojson.features.length === 0) {
             throw new Error('La trace GPX est vide ou invalide.');
@@ -288,14 +368,7 @@
           showMessage(`Trace "${file.name}" chargée avec succès.`);
         } catch (error) {
           console.error(error);
-          if (error && /toGeoJSON/i.test(error.message || '')) {
-            showMessage(
-              'Impossible de charger la bibliothèque de conversion. Vérifiez votre connexion internet et réessayez.',
-              true
-            );
-          } else {
-            showMessage(error.message || 'Impossible de lire ce fichier GPX.', true);
-          }
+          showMessage(error.message || 'Impossible de lire ce fichier GPX.', true);
           clearPreviousLayers();
         }
       };
