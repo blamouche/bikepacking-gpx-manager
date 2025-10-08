@@ -939,7 +939,6 @@
     .poi-refresh-button {
       position: absolute;
       z-index: 900;
-      right: 1rem;
       top: 1rem;
       display: none;
       align-items: center;
@@ -954,12 +953,14 @@
       box-shadow: var(--shadow-md);
       cursor: pointer;
       transition: background 0.2s ease, transform 0.1s ease;
-    }
+    
+      left: 50%;
+      transform: translateX(-50%);}
 
     .poi-refresh-button:hover,
     .poi-refresh-button:focus {
       background: rgba(21, 101, 192, 0.95);
-      transform: translateY(-1px);
+      transform: translateX(-50%) translateY(-1px);
       outline: none;
     }
 
