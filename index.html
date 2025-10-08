@@ -104,20 +104,118 @@
       margin-bottom: 0;
     }
 
-    /* Calques OSM */
-    .layer-toggle {
+    /* Calques POI */
+    .layer-section {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
+      gap: 1rem;
     }
 
-    .toggle-label {
+    .layer-global-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .layer-global-actions .btn {
+      flex: 1;
+    }
+
+    .layer-presets {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .layer-presets label {
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+    }
+
+    .preset-select {
+      flex: 1;
+      padding: 0.45rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid var(--color-border);
+      font-size: 0.95rem;
+      background: #fff;
+    }
+
+    .layer-group {
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      background: #fff;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .layer-group-header {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      background: var(--color-background-alt);
+      border: none;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s ease;
+    }
+
+    .layer-group-header:hover {
+      background: rgba(0, 0, 0, 0.03);
+    }
+
+    .layer-group-icon {
+      font-size: 1.1rem;
+    }
+
+    .layer-group-label {
+      flex: 1;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--color-text-primary);
+      text-align: left;
+    }
+
+    .layer-group-count {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+    }
+
+    .layer-group-chevron {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      transition: transform 0.3s ease;
+    }
+
+    .layer-group.expanded .layer-group-chevron {
+      transform: rotate(180deg);
+    }
+
+    .layer-group-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+      padding: 0 0.75rem;
+    }
+
+    .layer-group.expanded .layer-group-content {
+      max-height: 1000px;
+      padding: 0.75rem;
+    }
+
+    .layer-toggle {
       display: flex;
       align-items: center;
       gap: 0.75rem;
       cursor: pointer;
       user-select: none;
+      padding: 0.4rem 0.25rem;
+    }
+
+    .layer-toggle + .layer-toggle {
+      border-top: 1px dashed rgba(0, 0, 0, 0.05);
     }
 
     .toggle-input {
@@ -182,20 +280,20 @@
       font-weight: 600;
     }
 
-    .toggle-help {
-      margin: 0;
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-      padding-left: 3.5rem;
+    .layer-indicators {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
 
     .layer-loading,
     .layer-error,
-    .layer-info {
-      padding: 0.5rem 0.75rem;
+    .layer-info,
+    .layer-total {
+      padding: 0.6rem 0.75rem;
       border-radius: 6px;
       font-size: 0.9rem;
-      margin-top: 0.5rem;
+      display: none;
     }
 
     .layer-loading {
@@ -216,6 +314,20 @@
       background: #fff8e1;
       color: #f57f17;
       border: 1px solid rgba(245, 127, 23, 0.2);
+    }
+
+    .layer-total {
+      background: var(--color-background-alt);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+
+    .layer-count-value {
+      color: var(--color-primary);
+      font-weight: 700;
+      font-size: 1rem;
     }
 
     .layer-loading .loading-spinner {
@@ -753,6 +865,20 @@
     }
 
     @media (max-width: 767px) {
+      .layer-global-actions {
+        flex-direction: column;
+      }
+
+      .layer-presets {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.35rem;
+      }
+
+      .layer-presets label {
+        font-size: 0.85rem;
+      }
+
       .elevation-profile {
         height: 150px;
       }
@@ -808,6 +934,39 @@
       position: relative;
       flex: 1;
       min-height: 0;
+    }
+
+    .poi-refresh-button {
+      position: absolute;
+      z-index: 900;
+      right: 1rem;
+      top: 1rem;
+      display: none;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.6rem 0.85rem;
+      background: rgba(25, 118, 210, 0.95);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-md);
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    .poi-refresh-button:hover,
+    .poi-refresh-button:focus {
+      background: rgba(21, 101, 192, 0.95);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .poi-refresh-button span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     #map {
@@ -967,36 +1126,7 @@
           </dl>
         </section>
 
-        <section class="panel-section" id="layers-section">
-          <h3 class="section-title">Calques et affichage</h3>
-          <div class="layer-toggle">
-            <label class="toggle-label" for="show-cemeteries">
-              <input
-                type="checkbox"
-                id="show-cemeteries"
-                class="toggle-input"
-                aria-describedby="cemeteries-description"
-              />
-              <span class="toggle-switch"></span>
-              <span class="toggle-text">
-                <span class="toggle-icon" aria-hidden="true">🪦</span>
-                Cimetières OSM
-              </span>
-              <span class="toggle-count" id="cemeteries-count" style="display: none;">(0)</span>
-            </label>
-            <p id="cemeteries-description" class="toggle-help">
-              Affiche les cimetières sur la zone visible
-            </p>
-          </div>
-          <div class="layer-loading" id="cemeteries-loading" style="display: none;">
-            <span class="loading-spinner" aria-hidden="true">⏳</span>
-            Chargement des POI...
-          </div>
-          <div class="layer-error" id="cemeteries-error" style="display: none;" role="alert"></div>
-          <div class="layer-info" id="cemeteries-zoom-info" style="display: none;">
-            <small>ℹ️ Zoomez davantage pour voir les cimetières (zoom ≥ 12)</small>
-          </div>
-        </section>
+        <div id="layers-section-placeholder"></div>
 
         <section class="panel-section panel-messages">
           <div id="message" class="message hidden" role="status" aria-live="polite"></div>
@@ -1007,6 +1137,10 @@
     <main class="map-container">
       <div class="map-main">
         <div id="map"></div>
+        <button class="poi-refresh-button" id="poi-refresh-button" type="button" aria-label="Recharger les points d'intérêt">
+          <span aria-hidden="true">🔄</span>
+          Recharger les POI
+        </button>
         <button class="btn-menu" id="menu-toggle" aria-label="Ouvrir le panneau" aria-expanded="false">☰</button>
       </div>
       <div class="elevation-profile" id="elevation-profile" aria-hidden="true">
@@ -1233,51 +1367,828 @@
       };
     }
 
-    function initPOIManager() {
-      if (!cemeteriesToggle) {
-        return;
+    const OVERPASS_ENDPOINTS = [
+      'https://overpass-api.de/api/interpreter',
+      'https://overpass.kumi.systems/api/interpreter',
+      'https://overpass.openstreetmap.fr/api/interpreter'
+    ];
+
+    const POI_GROUPS = {
+      bike_services: { id: 'bike_services', label: 'Services vélo', icon: '🚴', defaultExpanded: true, order: 1 },
+      resources: { id: 'resources', label: 'Ressources', icon: '💧', defaultExpanded: true, order: 2 },
+      accommodation_outdoor: { id: 'accommodation_outdoor', label: 'Hébergement outdoor', icon: '🏕️', defaultExpanded: true, order: 3 },
+      accommodation: { id: 'accommodation', label: 'Hébergement', icon: '🏨', defaultExpanded: false, order: 4 },
+      sanitary: { id: 'sanitary', label: 'Sanitaires', icon: '🚻', defaultExpanded: true, order: 5 },
+      food_shop: { id: 'food_shop', label: 'Alimentation', icon: '🛒', defaultExpanded: true, order: 6 },
+      food_service: { id: 'food_service', label: 'Restauration', icon: '🍴', defaultExpanded: false, order: 7 },
+      health: { id: 'health', label: 'Santé', icon: '💊', defaultExpanded: true, order: 8 },
+      heritage: { id: 'heritage', label: 'Patrimoine', icon: '🪦', defaultExpanded: false, order: 9 }
+    };
+
+    const POI_CATEGORIES = {
+      bicycle_repair: {
+        id: 'bicycle_repair',
+        label: 'Stations réparation',
+        icon: '🔧',
+        color: '#FF6B00',
+        group: 'bike_services',
+        tags: { amenity: 'bicycle_repair_station' },
+        priority: 'high',
+        minZoom: 12
+      },
+      bicycle_shop: {
+        id: 'bicycle_shop',
+        label: 'Magasins vélo',
+        icon: '🚲',
+        color: '#FF8C00',
+        group: 'bike_services',
+        tags: { shop: 'bicycle' },
+        priority: 'high',
+        minZoom: 12
+      },
+      drinking_water: {
+        id: 'drinking_water',
+        label: 'Eau potable',
+        icon: '💧',
+        color: '#2196F3',
+        group: 'resources',
+        tags: { amenity: 'drinking_water' },
+        priority: 'high',
+        minZoom: 11
+      },
+      camp_site: {
+        id: 'camp_site',
+        label: 'Camping',
+        icon: '🏕️',
+        color: '#4CAF50',
+        group: 'accommodation_outdoor',
+        tags: { tourism: 'camp_site' },
+        excludeTags: { backcountry: 'yes' },
+        priority: 'high',
+        minZoom: 11
+      },
+      camp_site_backcountry: {
+        id: 'camp_site_backcountry',
+        label: 'Bivouac autorisé',
+        icon: '⛺',
+        color: '#66BB6A',
+        group: 'accommodation_outdoor',
+        tags: { tourism: 'camp_site', backcountry: 'yes' },
+        priority: 'high',
+        minZoom: 11
+      },
+      wilderness_hut: {
+        id: 'wilderness_hut',
+        label: 'Refuge',
+        icon: '🛖',
+        color: '#8D6E63',
+        group: 'accommodation_outdoor',
+        tags: { tourism: 'wilderness_hut' },
+        priority: 'high',
+        minZoom: 11
+      },
+      alpine_hut: {
+        id: 'alpine_hut',
+        label: 'Refuge alpin',
+        icon: '🏔️',
+        color: '#795548',
+        group: 'accommodation_outdoor',
+        tags: { tourism: 'alpine_hut' },
+        priority: 'high',
+        minZoom: 11
+      },
+      hotel: {
+        id: 'hotel',
+        label: 'Hôtel',
+        icon: '🏨',
+        color: '#9C27B0',
+        group: 'accommodation',
+        tags: { tourism: 'hotel' },
+        priority: 'medium',
+        minZoom: 12
+      },
+      hostel: {
+        id: 'hostel',
+        label: 'Auberge de jeunesse',
+        icon: '🏠',
+        color: '#AB47BC',
+        group: 'accommodation',
+        tags: { tourism: 'hostel' },
+        priority: 'medium',
+        minZoom: 12
+      },
+      guest_house: {
+        id: 'guest_house',
+        label: "Chambre d'hôtes",
+        icon: '🏡',
+        color: '#BA68C8',
+        group: 'accommodation',
+        tags: { tourism: 'guest_house' },
+        priority: 'medium',
+        minZoom: 13
+      },
+      toilets: {
+        id: 'toilets',
+        label: 'Toilettes',
+        icon: '🚻',
+        color: '#607D8B',
+        group: 'sanitary',
+        tags: { amenity: 'toilets' },
+        priority: 'high',
+        minZoom: 12
+      },
+      shower: {
+        id: 'shower',
+        label: 'Douches',
+        icon: '🚿',
+        color: '#78909C',
+        group: 'sanitary',
+        tags: { amenity: 'shower' },
+        priority: 'medium',
+        minZoom: 13
+      },
+      supermarket: {
+        id: 'supermarket',
+        label: 'Supermarché',
+        icon: '🛒',
+        color: '#FF5252',
+        group: 'food_shop',
+        tags: { shop: 'supermarket' },
+        priority: 'high',
+        minZoom: 12
+      },
+      convenience: {
+        id: 'convenience',
+        label: 'Épicerie',
+        icon: '🏪',
+        color: '#FF7043',
+        group: 'food_shop',
+        tags: { shop: 'convenience' },
+        priority: 'high',
+        minZoom: 12
+      },
+      restaurant: {
+        id: 'restaurant',
+        label: 'Restaurant',
+        icon: '🍴',
+        color: '#FFC107',
+        group: 'food_service',
+        tags: { amenity: 'restaurant' },
+        priority: 'medium',
+        minZoom: 13
+      },
+      cafe: {
+        id: 'cafe',
+        label: 'Café',
+        icon: '☕',
+        color: '#FFD54F',
+        group: 'food_service',
+        tags: { amenity: 'cafe' },
+        priority: 'medium',
+        minZoom: 13
+      },
+      fast_food: {
+        id: 'fast_food',
+        label: 'Fast-food',
+        icon: '🍔',
+        color: '#FFEB3B',
+        group: 'food_service',
+        tags: { amenity: 'fast_food' },
+        priority: 'low',
+        minZoom: 13
+      },
+      pharmacy: {
+        id: 'pharmacy',
+        label: 'Pharmacie',
+        icon: '💊',
+        color: '#00C853',
+        group: 'health',
+        tags: { amenity: 'pharmacy' },
+        priority: 'high',
+        minZoom: 12
+      },
+      cemetery: {
+        id: 'cemetery',
+        label: 'Cimetière',
+        icon: '🪦',
+        color: '#6A1B9A',
+        group: 'heritage',
+        tags: { landuse: 'cemetery' },
+        priority: 'low',
+        minZoom: 12
+      },
+      grave_yard: {
+        id: 'grave_yard',
+        label: 'Petit cimetière',
+        icon: '⛪',
+        color: '#757575',
+        group: 'heritage',
+        tags: { amenity: 'grave_yard' },
+        priority: 'low',
+        minZoom: 12
+      },
+      crematorium: {
+        id: 'crematorium',
+        label: 'Crématorium',
+        icon: '🕯️',
+        color: '#424242',
+        group: 'heritage',
+        tags: { amenity: 'crematorium' },
+        priority: 'low',
+        minZoom: 13
       }
-      cemeteriesToggle.checked = false;
-      cemeteriesToggle.addEventListener('change', handleCemeteriesToggle);
-      map.on('moveend', handlePOIViewportChange);
-      map.on('zoomend', handlePOIViewportChange);
+    };
+
+    const LAYER_PRESETS = {
+      bikepacking: {
+        label: 'Bikepacking',
+        icon: '🚴',
+        categories: [
+          'bicycle_repair',
+          'bicycle_shop',
+          'drinking_water',
+          'camp_site',
+          'camp_site_backcountry',
+          'supermarket',
+          'convenience',
+          'pharmacy'
+        ]
+      },
+      hiking: {
+        label: 'Randonnée',
+        icon: '🥾',
+        categories: [
+          'drinking_water',
+          'wilderness_hut',
+          'alpine_hut',
+          'camp_site',
+          'toilets',
+          'pharmacy'
+        ]
+      },
+      touring: {
+        label: 'Voyage à vélo',
+        icon: '🚵',
+        categories: [
+          'bicycle_repair',
+          'drinking_water',
+          'camp_site',
+          'hotel',
+          'hostel',
+          'supermarket',
+          'restaurant',
+          'cafe',
+          'pharmacy'
+        ]
+      },
+      urban: {
+        label: 'Urbain',
+        icon: '🏙️',
+        categories: [
+          'bicycle_shop',
+          'drinking_water',
+          'toilets',
+          'supermarket',
+          'convenience',
+          'restaurant',
+          'cafe',
+          'fast_food',
+          'pharmacy'
+        ]
+      }
+    };
+
+    const POI_SETTINGS = {
+      debounceMs: 2000,
+      minZoomDefault: 11,
+      maxTotalItems: 500,
+      maxItemsPerCategory: 120,
+      cacheTtlMs: 10 * 60 * 1000,
+      maxCacheEntries: 15,
+      areaLimitDegSq: 0.12,
+      maxRetries: 2,
+      requestTimeoutMs: 12000
+    };
+
+    const poiCache = {
+      data: new Map(),
+      set(key, value) {
+        this.data.set(key, { value, timestamp: Date.now() });
+      },
+      get(key) {
+        const entry = this.data.get(key);
+        if (!entry) {
+          return null;
+        }
+        if (Date.now() - entry.timestamp > POI_SETTINGS.cacheTtlMs) {
+          this.data.delete(key);
+          return null;
+        }
+        return entry.value;
+      },
+      prune(maxEntries) {
+        if (this.data.size <= maxEntries) {
+          return;
+        }
+        const sorted = Array.from(this.data.entries()).sort(
+          (a, b) => a[1].timestamp - b[1].timestamp
+        );
+        while (sorted.length > maxEntries) {
+          const [keyToDelete] = sorted.shift();
+          this.data.delete(keyToDelete);
+        }
+      },
+      clear() {
+        this.data.clear();
+      }
+    };
+
+    const poiRequestLimiter = {
+      lastRequest: 0,
+      minInterval: 1500
+    };
+
+    const poiManager = {
+      activeCategories: new Set(),
+      expandedGroups: new Set(),
+      layerGroups: new Map(),
+      counts: new Map(),
+      debounceTimer: null,
+      abortController: null,
+      currentRequestId: 0,
+      loading: false,
+      enabled: false,
+      refreshPending: false,
+      suppressRefreshPrompt: false,
+      stats: {
+        totalLoaded: 0,
+        currentDisplayed: 0,
+        requestCount: 0,
+        errorCount: 0
+      }
+    };
+
+    let layersSectionElement = null;
+    let layersLoadingElement = null;
+    let layersErrorElement = null;
+    let layersInfoElement = null;
+    let layersZoomInfoElement = null;
+    let layersTotalElement = null;
+    let layersTotalCountElement = null;
+    let presetSelectElement = null;
+    let isApplyingPreset = false;
+
+    function getDefaultExpandedGroups() {
+      return new Set(
+        Object.values(POI_GROUPS)
+          .filter((group) => group.defaultExpanded)
+          .map((group) => group.id)
+      );
     }
 
-    function handleCemeteriesToggle(event) {
-      const isEnabled = Boolean(event?.target?.checked);
-      if (isEnabled) {
-        enableCemeteryLayer();
+    function getDefaultActiveCategories() {
+      return new Set(['cemetery', 'grave_yard']);
+    }
+
+    function loadLayerPreferences() {
+      try {
+        const raw = localStorage.getItem('gpx_layer_preferences');
+        if (!raw) {
+          return null;
+        }
+        const parsed = JSON.parse(raw);
+        const active = new Set(
+          Array.isArray(parsed.activeCategories)
+            ? parsed.activeCategories.filter((id) => POI_CATEGORIES[id])
+            : []
+        );
+        const expanded = new Set(
+          Array.isArray(parsed.expandedGroups)
+            ? parsed.expandedGroups.filter((id) => POI_GROUPS[id])
+            : []
+        );
+        return { active, expanded };
+      } catch (error) {
+        console.warn('Impossible de charger les préférences:', error);
+        return null;
+      }
+    }
+
+    function saveLayerPreferences() {
+      const data = {
+        activeCategories: Array.from(poiManager.activeCategories),
+        expandedGroups: Array.from(poiManager.expandedGroups)
+      };
+      try {
+        localStorage.setItem('gpx_layer_preferences', JSON.stringify(data));
+      } catch (error) {
+        console.warn('Impossible de sauvegarder les préférences:', error);
+      }
+    }
+
+    function generateLayersHTML() {
+      const groups = Object.values(POI_GROUPS).sort((a, b) => a.order - b.order);
+      let html = `
+        <section class="panel-section layer-section" id="layers-section">
+          <h3 class="section-title">Calques et affichage</h3>
+          <div class="layer-global-actions">
+            <button type="button" class="btn btn-secondary btn-small" id="layers-enable-all">Activer tout</button>
+            <button type="button" class="btn btn-secondary btn-small" id="layers-disable-all">Désactiver tout</button>
+          </div>
+          <div class="layer-presets">
+            <label for="preset-select">Profil :</label>
+            <select id="preset-select" class="preset-select">
+              <option value="">Personnalisé</option>`;
+      Object.entries(LAYER_PRESETS).forEach(([presetId, preset]) => {
+        html += `
+              <option value="${presetId}">${preset.icon} ${preset.label}</option>`;
+      });
+      html += `
+            </select>
+          </div>`;
+      groups.forEach((group) => {
+        const categories = Object.values(POI_CATEGORIES).filter((category) => category.group === group.id);
+        if (categories.length === 0) {
+          return;
+        }
+        const isExpanded = poiManager.expandedGroups.has(group.id);
+        html += `
+          <div class="layer-group ${isExpanded ? 'expanded' : ''}" data-group="${group.id}">
+            <button class="layer-group-header" type="button" data-group="${group.id}" aria-expanded="${isExpanded ? 'true' : 'false'}">
+              <span class="layer-group-icon">${group.icon}</span>
+              <span class="layer-group-label">${group.label}</span>
+              <span class="layer-group-count">(${categories.length})</span>
+              <span class="layer-group-chevron">▼</span>
+            </button>
+            <div class="layer-group-content">`;
+        categories.forEach((category) => {
+          const isChecked = poiManager.activeCategories.has(category.id) ? 'checked' : '';
+          html += `
+              <label class="layer-toggle" data-category="${category.id}">
+                <input
+                  type="checkbox"
+                  id="layer-${category.id}"
+                  class="toggle-input layer-checkbox"
+                  data-category="${category.id}"
+                  ${isChecked}
+                />
+                <span class="toggle-switch"></span>
+                <span class="toggle-text">
+                  <span class="toggle-icon" aria-hidden="true">${category.icon}</span>
+                  ${category.label}
+                </span>
+                <span class="toggle-count" id="count-${category.id}" style="display: none;">(0)</span>
+              </label>`;
+        });
+        html += `
+            </div>
+          </div>`;
+      });
+      html += `
+          <div class="layer-indicators">
+            <div class="layer-loading" id="layers-loading" style="display: none;">
+              <span class="loading-spinner" aria-hidden="true">⏳</span>
+              Chargement des POI...
+            </div>
+            <div class="layer-error" id="layers-error" style="display: none;" role="alert"></div>
+            <div class="layer-info" id="layers-info" style="display: none;"></div>
+            <div class="layer-info" id="layers-zoom-info" style="display: none;"></div>
+          </div>
+          <div class="layer-total" id="layers-total" style="display: none;">
+            <strong>Total POI affichés :</strong>
+            <span class="layer-count-value" id="layers-total-count">0</span>
+          </div>
+        </section>`;
+      return html;
+    }
+
+    function attachLayerEventHandlers() {
+      const enableAllButton = document.getElementById('layers-enable-all');
+      const disableAllButton = document.getElementById('layers-disable-all');
+      if (enableAllButton) {
+        enableAllButton.addEventListener('click', () => enableAllCategories());
+      }
+      if (disableAllButton) {
+        disableAllButton.addEventListener('click', () => disableAllCategories());
+      }
+      if (presetSelectElement) {
+        presetSelectElement.addEventListener('change', handlePresetChange);
+      }
+      document.querySelectorAll('.layer-group-header').forEach((header) => {
+        header.addEventListener('click', () => {
+          const groupId = header.getAttribute('data-group');
+          toggleGroupExpanded(groupId);
+        });
+      });
+      document.querySelectorAll('.layer-checkbox').forEach((checkbox) => {
+        checkbox.addEventListener('change', handleCategoryCheckboxChange);
+      });
+    }
+
+    function renderLayersSection() {
+      const placeholder = document.getElementById('layers-section-placeholder');
+      if (!placeholder) {
+        return;
+      }
+      placeholder.innerHTML = generateLayersHTML();
+      layersSectionElement = document.getElementById('layers-section');
+      layersLoadingElement = document.getElementById('layers-loading');
+      layersErrorElement = document.getElementById('layers-error');
+      layersInfoElement = document.getElementById('layers-info');
+      layersZoomInfoElement = document.getElementById('layers-zoom-info');
+      layersTotalElement = document.getElementById('layers-total');
+      layersTotalCountElement = document.getElementById('layers-total-count');
+      presetSelectElement = document.getElementById('preset-select');
+      attachLayerEventHandlers();
+      hideLayersIndicators();
+      updateAllPOICounts();
+      updateTotalPOICount(0);
+      updatePresetSelection();
+    }
+
+    function ensureLayerGroup(categoryId) {
+      if (!poiManager.layerGroups.has(categoryId)) {
+        poiManager.layerGroups.set(categoryId, L.layerGroup());
+      }
+      return poiManager.layerGroups.get(categoryId);
+    }
+
+    function setCategoryCheckboxState(categoryId, isChecked) {
+      const checkbox = document.getElementById(`layer-${categoryId}`);
+      if (checkbox) {
+        checkbox.checked = Boolean(isChecked);
+      }
+    }
+
+    function updateCategoryCountUI(categoryId, count) {
+      const element = document.getElementById(`count-${categoryId}`);
+      if (!element) {
+        return;
+      }
+      if (count > 0) {
+        element.textContent = `(${count})`;
+        element.style.display = 'inline';
       } else {
-        disableCemeteryLayer();
+        element.style.display = 'none';
       }
     }
 
-    function enableCemeteryLayer() {
-      poiManager.enabled = true;
-      hidePOIError();
-      if (!map.hasLayer(poiManager.layerGroup)) {
-        poiManager.layerGroup.addTo(map);
-      }
-      if (map.getZoom() < POI_SETTINGS.minZoom) {
-        showPOIZoomInfo();
-        poiManager.layerGroup.clearLayers();
-        updatePOICount(0);
+    function updateAllPOICounts() {
+      Object.keys(POI_CATEGORIES).forEach((categoryId) => {
+        const count = poiManager.counts.get(categoryId) || 0;
+        updateCategoryCountUI(categoryId, count);
+      });
+    }
+
+    function updateTotalPOICount(total) {
+      if (!layersTotalElement || !layersTotalCountElement) {
         return;
       }
-      hidePOIZoomInfo();
+      if (total > 0) {
+        layersTotalElement.style.display = 'flex';
+        layersTotalCountElement.textContent = String(total);
+      } else {
+        layersTotalElement.style.display = 'none';
+        layersTotalCountElement.textContent = '0';
+      }
+    }
+
+    function hideLayersIndicators() {
+      hideLayersLoading();
+      hideLayersError();
+      hideLayersInfo();
+      hideLayersZoomInfo();
+    }
+
+    function showLayersLoading() {
+      if (layersLoadingElement) {
+        layersLoadingElement.style.display = 'flex';
+      }
+    }
+
+    function hideLayersLoading() {
+      if (layersLoadingElement) {
+        layersLoadingElement.style.display = 'none';
+      }
+    }
+
+    function showLayersError(message) {
+      if (layersErrorElement) {
+        layersErrorElement.textContent = `⚠️ ${message}`;
+        layersErrorElement.style.display = 'block';
+      }
+    }
+
+    function hideLayersError() {
+      if (layersErrorElement) {
+        layersErrorElement.style.display = 'none';
+        layersErrorElement.textContent = '';
+      }
+    }
+
+    function showLayersInfo(message) {
+      if (layersInfoElement) {
+        layersInfoElement.textContent = message;
+        layersInfoElement.style.display = 'block';
+      }
+    }
+
+    function hideLayersInfo() {
+      if (layersInfoElement) {
+        layersInfoElement.style.display = 'none';
+        layersInfoElement.textContent = '';
+      }
+    }
+
+    function showLayersZoomInfo(minZoom) {
+      if (layersZoomInfoElement) {
+        layersZoomInfoElement.textContent = `ℹ️ Zoomez davantage pour voir les POI (zoom ≥ ${minZoom})`;
+        layersZoomInfoElement.style.display = 'block';
+      }
+    }
+
+    function hideLayersZoomInfo() {
+      if (layersZoomInfoElement) {
+        layersZoomInfoElement.style.display = 'none';
+        layersZoomInfoElement.textContent = '';
+      }
+    }
+
+    function showPoiRefreshButton() {
+      if (!poiRefreshButton) {
+        return;
+      }
+      poiRefreshButton.style.display = 'inline-flex';
+      poiRefreshButton.setAttribute('aria-hidden', 'false');
+    }
+
+    function hidePoiRefreshButton() {
+      if (!poiRefreshButton) {
+        return;
+      }
+      poiRefreshButton.style.display = 'none';
+      poiRefreshButton.setAttribute('aria-hidden', 'true');
+    }
+
+    function toggleGroupExpanded(groupId) {
+      if (!groupId || !POI_GROUPS[groupId]) {
+        return;
+      }
+      if (poiManager.expandedGroups.has(groupId)) {
+        poiManager.expandedGroups.delete(groupId);
+      } else {
+        poiManager.expandedGroups.add(groupId);
+      }
+      saveLayerPreferences();
+      const groupElement = document.querySelector(`.layer-group[data-group="${groupId}"]`);
+      if (groupElement) {
+        const header = groupElement.querySelector('.layer-group-header');
+        const expanded = poiManager.expandedGroups.has(groupId);
+        groupElement.classList.toggle('expanded', expanded);
+        if (header) {
+          header.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        }
+      }
+    }
+
+    function handleCategoryCheckboxChange(event) {
+      const checkbox = event.target;
+      const categoryId = checkbox.getAttribute('data-category');
+      setCategoryEnabled(categoryId, checkbox.checked);
+    }
+
+    function handlePresetChange(event) {
+      const presetId = event.target.value;
+      if (!presetId) {
+        updatePresetSelection();
+        return;
+      }
+      applyPreset(presetId);
+    }
+
+    function updatePresetSelection() {
+      if (!presetSelectElement || isApplyingPreset) {
+        return;
+      }
+      const active = Array.from(poiManager.activeCategories).sort();
+      let matched = '';
+      Object.entries(LAYER_PRESETS).some(([presetId, preset]) => {
+        const presetCategories = preset.categories.filter((id) => POI_CATEGORIES[id]).sort();
+        if (
+          presetCategories.length === active.length &&
+          presetCategories.every((value, index) => value === active[index])
+        ) {
+          matched = presetId;
+          return true;
+        }
+        return false;
+      });
+      presetSelectElement.value = matched;
+    }
+
+    function applyPreset(presetId) {
+      const preset = LAYER_PRESETS[presetId];
+      if (!preset) {
+        return;
+      }
+      isApplyingPreset = true;
+      cancelPendingPOILoad();
+      disableAllCategories({ triggerLoad: false, persist: false, skipPresetSync: true });
+      preset.categories.forEach((categoryId) => {
+        if (POI_CATEGORIES[categoryId]) {
+          setCategoryEnabled(categoryId, true, { triggerLoad: false, persist: false, skipPresetSync: true });
+        }
+      });
+      saveLayerPreferences();
+      isApplyingPreset = false;
+      updatePresetSelection();
       loadPOIForCurrentView(true);
     }
 
-    function disableCemeteryLayer() {
-      poiManager.enabled = false;
-      poiManager.layerGroup.clearLayers();
-      updatePOICount(0);
-      hidePOILoadingIndicator();
-      hidePOIZoomInfo();
-      hidePOIError();
-      if (map.hasLayer(poiManager.layerGroup)) {
-        map.removeLayer(poiManager.layerGroup);
+    function enableAllCategories() {
+      cancelPendingPOILoad();
+      Object.keys(POI_CATEGORIES).forEach((categoryId) => {
+        setCategoryEnabled(categoryId, true, { triggerLoad: false, persist: false, skipPresetSync: true });
+      });
+      saveLayerPreferences();
+      updatePresetSelection();
+      loadPOIForCurrentView(true);
+    }
+
+    function disableAllCategories(options = {}) {
+      const { triggerLoad = true, persist = true, skipPresetSync = false } = options;
+      Object.keys(POI_CATEGORIES).forEach((categoryId) => {
+        setCategoryEnabled(categoryId, false, { triggerLoad: false, persist: false, skipPresetSync: true });
+      });
+      if (persist) {
+        saveLayerPreferences();
       }
+      if (!skipPresetSync) {
+        updatePresetSelection();
+      }
+      if (triggerLoad) {
+        clearAllPOILayers();
+        hideLayersIndicators();
+      }
+    }
+
+    function setCategoryEnabled(categoryId, enabled, options = {}) {
+      const { triggerLoad = true, persist = true, skipPresetSync = false } = options;
+      const category = POI_CATEGORIES[categoryId];
+      if (!category) {
+        return;
+      }
+      const isActive = poiManager.activeCategories.has(categoryId);
+      if (enabled === isActive) {
+        setCategoryCheckboxState(categoryId, enabled);
+        return;
+      }
+      if (enabled) {
+        poiManager.activeCategories.add(categoryId);
+        const layerGroup = ensureLayerGroup(categoryId);
+        if (!map.hasLayer(layerGroup)) {
+          layerGroup.addTo(map);
+        }
+        poiManager.counts.set(categoryId, poiManager.counts.get(categoryId) || 0);
+        setCategoryCheckboxState(categoryId, true);
+      } else {
+        poiManager.activeCategories.delete(categoryId);
+        const layerGroup = poiManager.layerGroups.get(categoryId);
+        if (layerGroup) {
+          layerGroup.clearLayers();
+          if (map.hasLayer(layerGroup)) {
+            map.removeLayer(layerGroup);
+          }
+        }
+        poiManager.counts.set(categoryId, 0);
+        setCategoryCheckboxState(categoryId, false);
+      }
+      if (persist) {
+        saveLayerPreferences();
+      }
+      if (!skipPresetSync) {
+        updatePresetSelection();
+      }
+      updateCategoryCountUI(categoryId, poiManager.counts.get(categoryId) || 0);
+      if (triggerLoad) {
+        cancelPendingPOILoad();
+        loadPOIForCurrentView(true);
+      }
+    }
+
+    function clearAllPOILayers() {
+      poiManager.layerGroups.forEach((layerGroup, categoryId) => {
+        layerGroup.clearLayers();
+        if (!poiManager.activeCategories.has(categoryId) && map.hasLayer(layerGroup)) {
+          map.removeLayer(layerGroup);
+        }
+      });
+      poiManager.counts.clear();
+      updateAllPOICounts();
+      updateTotalPOICount(0);
+    }
+
+    function cancelPendingPOILoad() {
       if (poiManager.debounceTimer) {
         clearTimeout(poiManager.debounceTimer);
         poiManager.debounceTimer = null;
@@ -1286,68 +2197,150 @@
         poiManager.abortController.abort();
         poiManager.abortController = null;
       }
+      poiManager.loading = false;
+      hideLayersLoading();
+    }
+
+    function getMinZoomForActiveCategories() {
+      let minZoom = POI_SETTINGS.minZoomDefault;
+      poiManager.activeCategories.forEach((categoryId) => {
+        const category = POI_CATEGORIES[categoryId];
+        if (category && category.minZoom) {
+          minZoom = Math.max(minZoom, category.minZoom);
+        }
+      });
+      return minZoom;
+    }
+
+    function isBoundsTooLarge(bounds) {
+      const north = bounds.getNorth();
+      const south = bounds.getSouth();
+      const east = bounds.getEast();
+      const west = bounds.getWest();
+      const latDiff = Math.abs(north - south);
+      const lngDiff = Math.abs(east - west);
+      return latDiff * lngDiff > POI_SETTINGS.areaLimitDegSq;
     }
 
     function handlePOIViewportChange() {
       if (!poiManager.enabled) {
         return;
       }
+      if (poiManager.suppressRefreshPrompt) {
+        poiManager.suppressRefreshPrompt = false;
+        return;
+      }
       if (poiManager.debounceTimer) {
         clearTimeout(poiManager.debounceTimer);
       }
       poiManager.debounceTimer = setTimeout(() => {
-        loadPOIForCurrentView();
+        if (poiManager.activeCategories.size === 0 || poiManager.loading) {
+          poiManager.refreshPending = false;
+          hidePoiRefreshButton();
+          return;
+        }
+        poiManager.refreshPending = true;
+        showPoiRefreshButton();
       }, POI_SETTINGS.debounceMs);
     }
 
-    async function loadPOIForCurrentView(isImmediate = false) {
+    function buildCacheKey(bounds, activeCategories) {
+      const precision = 3;
+      const boundsKey = [
+        bounds.getSouth().toFixed(precision),
+        bounds.getWest().toFixed(precision),
+        bounds.getNorth().toFixed(precision),
+        bounds.getEast().toFixed(precision)
+      ].join(',');
+      const categoriesKey = Array.from(activeCategories).sort().join(',');
+      return `${boundsKey}|${categoriesKey}`;
+    }
+
+    function buildMultiCategoryOverpassQuery(bounds, activeCategories) {
+      if (!activeCategories || activeCategories.size === 0) {
+        return null;
+      }
+      const south = bounds.getSouth();
+      const west = bounds.getWest();
+      const north = bounds.getNorth();
+      const east = bounds.getEast();
+      const bbox = `${south},${west},${north},${east}`;
+      const queryParts = [];
+      Array.from(activeCategories).forEach((categoryId) => {
+        const category = POI_CATEGORIES[categoryId];
+        if (!category) {
+          return;
+        }
+        const required = Object.entries(category.tags);
+        const excludes = Object.entries(category.excludeTags || {});
+        const filters = required
+          .map(([key, value]) => `["${key}"="${value}"]`)
+          .join('');
+        const excludeFilters = excludes
+          .map(([key, value]) => `["${key}"!="${value}"]`)
+          .join('');
+        ['node', 'way', 'relation'].forEach((type) => {
+          queryParts.push(`${type}${filters}${excludeFilters};`);
+        });
+      });
+      if (queryParts.length === 0) {
+        return null;
+      }
+      return `
+        [out:json][timeout:25][bbox:${bbox}];
+        (
+          ${queryParts.join('\n          ')}
+        );
+        out center;
+      `.trim();
+    }
+
+    async function loadPOIForCurrentView(force = false) {
       if (!poiManager.enabled) {
         return;
       }
-      if (poiManager.loading && !isImmediate) {
+      if (poiManager.loading && !force) {
         return;
       }
-
+      if (poiManager.activeCategories.size === 0) {
+        clearAllPOILayers();
+        hideLayersIndicators();
+        return;
+      }
       const bounds = map.getBounds();
-
-      if (map.getZoom() < POI_SETTINGS.minZoom) {
-        poiManager.layerGroup.clearLayers();
-        updatePOICount(0);
-        showPOIZoomInfo();
-        hidePOILoadingIndicator();
+      const minZoom = getMinZoomForActiveCategories();
+      if (map.getZoom() < minZoom) {
+        clearAllPOILayers();
+        showLayersZoomInfo(minZoom);
+        hideLayersLoading();
         return;
       }
-
       if (isBoundsTooLarge(bounds)) {
-        poiManager.layerGroup.clearLayers();
-        updatePOICount(0);
-        showPOIError('Zone trop grande, veuillez zoomer davantage.');
-        hidePOILoadingIndicator();
+        clearAllPOILayers();
+        showLayersError('Zone trop grande, veuillez zoomer davantage.');
+        hideLayersLoading();
         return;
       }
-
-      hidePOIZoomInfo();
-      hidePOIError();
-
-      const cacheKey = boundsToKey(bounds);
-      const cachedPois = poiCache.get(cacheKey);
-      if (cachedPois) {
-        displayPOIMarkers(cachedPois);
+      hideLayersZoomInfo();
+      hideLayersError();
+      hideLayersInfo();
+      const cacheKey = buildCacheKey(bounds, poiManager.activeCategories);
+      const cached = poiCache.get(cacheKey);
+      if (cached) {
+        displayMultiCategoryPOIs(cached);
         return;
       }
-
       const requestId = ++poiManager.currentRequestId;
       poiManager.loading = true;
-      showPOILoadingIndicator();
-
+      showLayersLoading();
       try {
-        const pois = await fetchPOIsFromOverpass(bounds);
+        const pois = await fetchPOIsFromOverpass(bounds, poiManager.activeCategories);
         if (poiManager.currentRequestId !== requestId) {
           return;
         }
         poiCache.set(cacheKey, pois);
         poiCache.prune(POI_SETTINGS.maxCacheEntries);
-        displayPOIMarkers(pois);
+        displayMultiCategoryPOIs(pois);
         poiManager.stats.totalLoaded += pois.length;
         poiManager.stats.requestCount += 1;
       } catch (error) {
@@ -1358,60 +2351,35 @@
           return;
         }
         poiManager.stats.errorCount += 1;
-        showPOIError(error?.message || 'Impossible de charger les cimetières.');
-        poiManager.layerGroup.clearLayers();
-        updatePOICount(0);
+        clearAllPOILayers();
+        showLayersError(error?.message || 'Impossible de charger les POI.');
       } finally {
         if (poiManager.currentRequestId === requestId) {
           poiManager.loading = false;
-          hidePOILoadingIndicator();
+          hideLayersLoading();
+          poiManager.abortController = null;
         }
       }
-    }
-
-    function boundsToKey(bounds) {
-      const precision = 3;
-      return [
-        bounds.getSouth().toFixed(precision),
-        bounds.getWest().toFixed(precision),
-        bounds.getNorth().toFixed(precision),
-        bounds.getEast().toFixed(precision)
-      ].join(',');
-    }
-
-    function isBoundsTooLarge(bounds) {
-      const north = bounds.getNorth();
-      const south = bounds.getSouth();
-      const east = bounds.getEast();
-      const west = bounds.getWest();
-      const latDiff = Math.abs(north - south);
-      const lngDiff = Math.abs(east - west);
-      const area = latDiff * lngDiff;
-      return area > POI_SETTINGS.areaLimitDegSq;
     }
 
     async function enforceRequestThrottle() {
       const now = Date.now();
       const elapsed = now - poiRequestLimiter.lastRequest;
       if (elapsed < poiRequestLimiter.minInterval) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, poiRequestLimiter.minInterval - elapsed)
-        );
+        await new Promise((resolve) => setTimeout(resolve, poiRequestLimiter.minInterval - elapsed));
       }
       poiRequestLimiter.lastRequest = Date.now();
     }
 
-    async function fetchPOIsFromOverpass(bounds) {
-      const query = buildOverpassQuery(bounds);
+    async function fetchPOIsFromOverpass(bounds, activeCategories) {
+      const query = buildMultiCategoryOverpassQuery(bounds, activeCategories);
+      if (!query) {
+        return [];
+      }
       let lastError = null;
-
+      const activeSnapshot = new Set(activeCategories);
       for (let attempt = 0; attempt <= POI_SETTINGS.maxRetries; attempt++) {
         const endpoint = OVERPASS_ENDPOINTS[attempt % OVERPASS_ENDPOINTS.length];
-        const backoffDelay = attempt > 0 ? 1000 * Math.pow(2, attempt - 1) : 0;
-        if (backoffDelay > 0) {
-          await new Promise((resolve) => setTimeout(resolve, backoffDelay));
-        }
-
         const controller = new AbortController();
         poiManager.abortController = controller;
         let timedOut = false;
@@ -1419,20 +2387,15 @@
           timedOut = true;
           controller.abort();
         }, POI_SETTINGS.requestTimeoutMs);
-
         try {
           await enforceRequestThrottle();
           const response = await fetch(endpoint, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: `data=${encodeURIComponent(query)}`,
             signal: controller.signal
           });
-
           clearTimeout(timeoutId);
-
           if (!response.ok) {
             if (response.status === 429) {
               lastError = new Error('Trop de requêtes. Veuillez patienter quelques instants.');
@@ -1443,15 +2406,12 @@
             }
             continue;
           }
-
           const data = await response.json();
           const elements = Array.isArray(data?.elements) ? data.elements : [];
-          const pois = elements.map(parsePOIElement).filter(Boolean);
-
-          if (pois.length > POI_SETTINGS.maxItems) {
-            return pois.slice(0, POI_SETTINGS.maxItems);
-          }
-          return pois;
+          const parsed = elements
+            .map((element) => parseMultiCategoryPOI(element, activeSnapshot))
+            .filter(Boolean);
+          return parsed;
         } catch (error) {
           clearTimeout(timeoutId);
           if (error.name === 'AbortError') {
@@ -1471,41 +2431,16 @@
           }
         }
       }
-
-      throw lastError || new Error('Impossible de récupérer les cimetières.');
+      throw lastError || new Error('Impossible de récupérer les POI.');
     }
 
-    function buildOverpassQuery(bounds) {
-      const south = bounds.getSouth();
-      const west = bounds.getWest();
-      const north = bounds.getNorth();
-      const east = bounds.getEast();
-      const bbox = `${south},${west},${north},${east}`;
-      return `
-        [out:json][timeout:25][bbox:${bbox}];
-        (
-          node["amenity"="grave_yard"];
-          way["amenity"="grave_yard"];
-          relation["amenity"="grave_yard"];
-          node["landuse"="cemetery"];
-          way["landuse"="cemetery"];
-          relation["landuse"="cemetery"];
-          node["amenity"="crematorium"];
-          way["amenity"="crematorium"];
-          relation["amenity"="crematorium"];
-        );
-        out center;
-      `.trim();
-    }
-
-    function parsePOIElement(element) {
-      if (!element) {
+    function parseMultiCategoryPOI(element, activeCategoryIds) {
+      if (!element || !element.tags) {
         return null;
       }
-      const tags = element.tags || {};
+      const tags = element.tags;
       let lat;
       let lon;
-
       if (element.type === 'node') {
         lat = element.lat;
         lon = element.lon;
@@ -1513,147 +2448,185 @@
         lat = element.center.lat;
         lon = element.center.lon;
       }
-
       if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
         return null;
       }
-
-      const type =
-        tags.amenity === 'grave_yard'
-          ? 'grave_yard'
-          : tags.landuse === 'cemetery'
-          ? 'cemetery'
-          : tags.amenity === 'crematorium'
-          ? 'crematorium'
-          : null;
-
-      if (!type) {
-        return null;
-      }
-
-      let address = '';
-      if (tags['addr:street']) {
-        address = tags['addr:housenumber']
-          ? `${tags['addr:housenumber']} ${tags['addr:street']}`
-          : tags['addr:street'];
+      const orderedCategories = Array.from(activeCategoryIds).sort();
+      for (const categoryId of orderedCategories) {
+        const category = POI_CATEGORIES[categoryId];
+        if (!category) {
+          continue;
+        }
+        const requiredEntries = Object.entries(category.tags);
+        let matches = true;
+        for (const [key, value] of requiredEntries) {
+          if (tags[key] !== value) {
+            matches = false;
+            break;
+          }
+        }
+        if (!matches) {
+          continue;
+        }
+        const excludeEntries = Object.entries(category.excludeTags || {});
+        let excluded = false;
+        for (const [key, value] of excludeEntries) {
+          if (tags[key] === value) {
+            excluded = true;
+            break;
+          }
+        }
+        if (excluded) {
+          continue;
+        }
+        const addressParts = [];
+        if (tags['addr:housenumber'] && tags['addr:street']) {
+          addressParts.push(`${tags['addr:housenumber']} ${tags['addr:street']}`);
+        } else if (tags['addr:street']) {
+          addressParts.push(tags['addr:street']);
+        }
         if (tags['addr:city']) {
-          address += `, ${tags['addr:city']}`;
+          addressParts.push(tags['addr:city']);
         }
+        const metadata = {
+          opening_hours: tags.opening_hours || null,
+          phone: tags.phone || tags.contact_phone || null,
+          website: tags.website || tags.contact_website || null,
+          capacity: tags.capacity || null,
+          fee: tags.fee || null,
+          access: tags.access || null,
+          drinking_water: tags.drinking_water || null,
+          shower: tags.shower || null,
+          toilets: tags.toilets || null,
+          cuisine: tags.cuisine || null
+        };
+        return {
+          id: element.id,
+          osmType: element.type,
+          lat,
+          lon,
+          categoryId,
+          name: tags.name || 'Sans nom',
+          address: addressParts.join(', ') || null,
+          metadata
+        };
       }
-
-      return {
-        id: element.id,
-        osmType: element.type,
-        lat,
-        lon,
-        type,
-        name: tags.name || 'Sans nom',
-        religion: tags.religion || null,
-        address: address || null
-      };
+      return null;
     }
 
-    function displayPOIMarkers(pois) {
-      poiManager.layerGroup.clearLayers();
-      if (!Array.isArray(pois) || pois.length === 0) {
-        poiManager.stats.currentDisplayed = 0;
-        updatePOICount(0);
-        return;
-      }
-
-      pois.forEach((poi) => {
-        const marker = createPOIMarker(poi);
-        if (marker) {
-          marker.poi = poi;
-          poiManager.layerGroup.addLayer(marker);
-        }
-      });
-
-      poiManager.stats.currentDisplayed = pois.length;
-      updatePOICount(pois.length);
-    }
-
-    function createPOIMarker(poi) {
-      if (!poi) {
+    function createMultiCategoryPOIMarker(poi, category) {
+      if (!poi || !category) {
         return null;
       }
-      const style = POI_STYLES[poi.type] || POI_STYLES.cemetery;
-      const iconSize = style.size === 'small' ? [24, 24] : [30, 30];
-      const iconAnchor = [iconSize[0] / 2, iconSize[1] / 2];
       const icon = L.divIcon({
         className: 'poi-marker',
         html: `
-          <div class="poi-marker-inner" style="background-color: ${style.color};">
-            <span class="poi-marker-icon">${style.icon}</span>
+          <div class="poi-marker-inner" style="background-color: ${category.color};">
+            <span class="poi-marker-icon">${category.icon}</span>
           </div>
         `,
-        iconSize,
-        iconAnchor
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
       });
-
       const marker = L.marker([poi.lat, poi.lon], {
         icon,
-        opacity: 0.85,
+        opacity: 0.9,
         title: poi.name
       });
-
-      marker.bindPopup(createPOIPopupContent(poi), {
-        maxWidth: 300,
+      marker.bindPopup(createMultiCategoryPOIPopup(poi, category), {
+        maxWidth: 320,
         className: 'poi-popup-container'
       });
-
       if (poi.name) {
         marker.bindTooltip(poi.name, {
           direction: 'top',
-          offset: [0, -15]
+          offset: [0, -14]
         });
       }
-
       return marker;
     }
 
-    function createPOIPopupContent(poi) {
-      const style = POI_STYLES[poi.type] || POI_STYLES.cemetery;
-      const typeLabel =
-        poi.type === 'grave_yard'
-          ? 'Petit cimetière'
-          : poi.type === 'cemetery'
-          ? 'Cimetière'
-          : poi.type === 'crematorium'
-          ? 'Crématorium'
-          : poi.type;
-
+    function createMultiCategoryPOIPopup(poi, category) {
+      const meta = poi.metadata || {};
       let html = `
         <div class="poi-popup">
           <div class="poi-header">
-            <span class="poi-icon" aria-hidden="true">${style.icon}</span>
+            <span class="poi-icon" aria-hidden="true">${category.icon}</span>
             <strong class="poi-name">${escapeHtml(poi.name)}</strong>
           </div>
           <div class="poi-details">
             <div class="poi-row">
               <span class="poi-label">Type :</span>
-              <span class="poi-value">${typeLabel}</span>
-            </div>
-      `;
-
-      if (poi.religion) {
-        html += `
-            <div class="poi-row">
-              <span class="poi-label">Religion :</span>
-              <span class="poi-value">${escapeHtml(poi.religion)}</span>
-            </div>
-        `;
-      }
-
+              <span class="poi-value">${escapeHtml(category.label)}</span>
+            </div>`;
       if (poi.address) {
         html += `
             <div class="poi-row">
               <span class="poi-label">Adresse :</span>
               <span class="poi-value">${escapeHtml(poi.address)}</span>
-            </div>
-        `;
+            </div>`;
       }
-
+      if (meta.opening_hours) {
+        html += `
+            <div class="poi-row">
+              <span class="poi-label">Horaires :</span>
+              <span class="poi-value">${escapeHtml(meta.opening_hours)}</span>
+            </div>`;
+      }
+      if (meta.phone) {
+        html += `
+            <div class="poi-row">
+              <span class="poi-label">Téléphone :</span>
+              <span class="poi-value"><a href="tel:${escapeHtml(meta.phone)}">${escapeHtml(meta.phone)}</a></span>
+            </div>`;
+      }
+      if (meta.website) {
+        html += `
+            <div class="poi-row">
+              <span class="poi-label">Site web :</span>
+              <span class="poi-value"><a href="${escapeHtml(meta.website)}" target="_blank" rel="noopener">🔗</a></span>
+            </div>`;
+      }
+      if (meta.capacity) {
+        html += `
+            <div class="poi-row">
+              <span class="poi-label">Capacité :</span>
+              <span class="poi-value">${escapeHtml(meta.capacity)}</span>
+            </div>`;
+      }
+      if (meta.fee) {
+        const feeLabel = meta.fee === 'yes' ? 'Payant' : meta.fee === 'no' ? 'Gratuit' : escapeHtml(meta.fee);
+        html += `
+            <div class="poi-row">
+              <span class="poi-label">Tarif :</span>
+              <span class="poi-value">${feeLabel}</span>
+            </div>`;
+      }
+      if (meta.access && meta.access !== 'yes') {
+        html += `
+            <div class="poi-row">
+              <span class="poi-label">Accès :</span>
+              <span class="poi-value">${escapeHtml(meta.access)}</span>
+            </div>`;
+      }
+      if (meta.cuisine) {
+        html += `
+            <div class="poi-row">
+              <span class="poi-label">Cuisine :</span>
+              <span class="poi-value">${escapeHtml(meta.cuisine)}</span>
+            </div>`;
+      }
+      const services = [];
+      if (meta.drinking_water === 'yes') services.push('💧 Eau potable');
+      if (meta.shower === 'yes') services.push('🚿 Douches');
+      if (meta.toilets === 'yes') services.push('🚻 Toilettes');
+      if (services.length > 0) {
+        html += `
+            <div class="poi-row">
+              <span class="poi-label">Services :</span>
+              <span class="poi-value">${services.join(' • ')}</span>
+            </div>`;
+      }
       html += `
           </div>
           <div class="poi-footer">
@@ -1663,67 +2636,107 @@
               </a>
             </small>
           </div>
-        </div>
-      `;
-
+        </div>`;
       return html;
     }
 
-    function showPOILoadingIndicator() {
-      if (cemeteriesLoading) {
-        cemeteriesLoading.style.display = 'flex';
-      }
-    }
-
-    function hidePOILoadingIndicator() {
-      if (cemeteriesLoading) {
-        cemeteriesLoading.style.display = 'none';
-      }
-    }
-
-    function showPOIZoomInfo() {
-      if (cemeteriesZoomInfo) {
-        cemeteriesZoomInfo.style.display = 'block';
-      }
-    }
-
-    function hidePOIZoomInfo() {
-      if (cemeteriesZoomInfo) {
-        cemeteriesZoomInfo.style.display = 'none';
-      }
-    }
-
-    function showPOIError(message) {
-      if (cemeteriesError) {
-        cemeteriesError.textContent = `⚠️ ${message}`;
-        cemeteriesError.style.display = 'block';
-        setTimeout(() => {
-          if (cemeteriesError) {
-            cemeteriesError.style.display = 'none';
-          }
-        }, 5000);
-      }
-    }
-
-    function hidePOIError() {
-      if (cemeteriesError) {
-        cemeteriesError.style.display = 'none';
-      }
-    }
-
-    function updatePOICount(count) {
-      if (!cemeteriesCountLabel) {
+    function displayMultiCategoryPOIs(pois) {
+      poiManager.counts.clear();
+      poiManager.layerGroups.forEach((layerGroup, categoryId) => {
+        if (poiManager.activeCategories.has(categoryId)) {
+          layerGroup.clearLayers();
+        } else if (map.hasLayer(layerGroup)) {
+          map.removeLayer(layerGroup);
+        }
+      });
+      if (!Array.isArray(pois) || pois.length === 0) {
+        updateAllPOICounts();
+        updateTotalPOICount(0);
+        hideLayersInfo();
         return;
       }
-      if (count > 0) {
-        cemeteriesCountLabel.textContent = `(${count})`;
-        cemeteriesCountLabel.style.display = 'inline';
+      let workingPois = pois.slice();
+      let totalLimited = false;
+      if (workingPois.length > POI_SETTINGS.maxTotalItems) {
+        workingPois = workingPois.slice(0, POI_SETTINGS.maxTotalItems);
+        totalLimited = true;
+      }
+      const grouped = new Map();
+      workingPois.forEach((poi) => {
+        if (!poi || !poiManager.activeCategories.has(poi.categoryId)) {
+          return;
+        }
+        if (!grouped.has(poi.categoryId)) {
+          grouped.set(poi.categoryId, []);
+        }
+        grouped.get(poi.categoryId).push(poi);
+      });
+      let categoryLimited = false;
+      let total = 0;
+      poiManager.activeCategories.forEach((categoryId) => {
+        const category = POI_CATEGORIES[categoryId];
+        if (!category) {
+          return;
+        }
+        const items = grouped.get(categoryId) || [];
+        let limitedItems = items;
+        if (items.length > POI_SETTINGS.maxItemsPerCategory) {
+          limitedItems = items.slice(0, POI_SETTINGS.maxItemsPerCategory);
+          categoryLimited = true;
+        }
+        const layerGroup = ensureLayerGroup(categoryId);
+        if (!map.hasLayer(layerGroup)) {
+          layerGroup.addTo(map);
+        }
+        layerGroup.clearLayers();
+        limitedItems.forEach((poi) => {
+          const marker = createMultiCategoryPOIMarker(poi, category);
+          if (marker) {
+            marker.poi = poi;
+            layerGroup.addLayer(marker);
+          }
+        });
+        poiManager.counts.set(categoryId, limitedItems.length);
+        total += limitedItems.length;
+      });
+      updateAllPOICounts();
+      updateTotalPOICount(total);
+      if (total === 0) {
+        hideLayersInfo();
+      } else if (totalLimited) {
+        showLayersInfo(
+          `Trop de points d'intérêt (${pois.length}), limitation à ${POI_SETTINGS.maxTotalItems}. Zoomez pour plus de détails.`
+        );
+      } else if (categoryLimited) {
+        showLayersInfo('Certaines catégories contiennent de nombreux POI. Zoomez pour plus de détails.');
       } else {
-        cemeteriesCountLabel.style.display = 'none';
+        hideLayersInfo();
+      }
+      poiManager.stats.currentDisplayed = total;
+    }
+
+    function initPOIManager() {
+      const prefs = loadLayerPreferences();
+      poiManager.expandedGroups = prefs ? new Set(prefs.expanded) : getDefaultExpandedGroups();
+      poiManager.activeCategories = prefs ? new Set(prefs.active) : getDefaultActiveCategories();
+      renderLayersSection();
+      poiManager.activeCategories.forEach((categoryId) => {
+        const layerGroup = ensureLayerGroup(categoryId);
+        if (!map.hasLayer(layerGroup)) {
+          layerGroup.addTo(map);
+        }
+      });
+      updatePresetSelection();
+      poiManager.enabled = true;
+      map.on('moveend', handlePOIViewportChange);
+      map.on('zoomend', handlePOIViewportChange);
+      if (poiManager.activeCategories.size > 0) {
+        loadPOIForCurrentView(true);
+      } else {
+        hideLayersIndicators();
       }
     }
 
-    // Initialisation de la carte Leaflet centrée sur Paris
     const map = L.map('map').setView([48.8566, 2.3522], 12);
     map.zoomControl.setPosition('topright');
 
@@ -1770,11 +2783,18 @@
     const elevationContent = document.getElementById('elevation-content');
     const elevationCanvas = document.getElementById('elevation-canvas');
     const elevationTooltip = document.getElementById('elevation-tooltip');
-    const cemeteriesToggle = document.getElementById('show-cemeteries');
-    const cemeteriesCountLabel = document.getElementById('cemeteries-count');
-    const cemeteriesLoading = document.getElementById('cemeteries-loading');
-    const cemeteriesError = document.getElementById('cemeteries-error');
-    const cemeteriesZoomInfo = document.getElementById('cemeteries-zoom-info');
+    const poiRefreshButton = document.getElementById('poi-refresh-button');
+
+    // Activer le bouton "Recharger les POI"
+    if (poiRefreshButton) {
+      poiRefreshButton.addEventListener('click', () => {
+        // Réinitialise l'état et recharge les POI pour la vue courante
+        poiManager.refreshPending = false;
+        hidePoiRefreshButton();
+        loadPOIForCurrentView(true);
+      });
+    }
+
 
     let backdropElement = null;
 
@@ -1783,94 +2803,6 @@
 
     let gpxLayerGroup = null;
     let arrowLayerGroup = null;
-
-    const POI_STYLES = {
-      grave_yard: {
-        icon: '⛪',
-        color: '#757575',
-        size: 'small'
-      },
-      cemetery: {
-        icon: '🪦',
-        color: '#6a1b9a',
-        size: 'medium'
-      },
-      crematorium: {
-        icon: '🕯️',
-        color: '#424242',
-        size: 'small'
-      }
-    };
-
-    const OVERPASS_ENDPOINTS = [
-      'https://overpass-api.de/api/interpreter',
-      'https://overpass.kumi.systems/api/interpreter',
-      'https://overpass.openstreetmap.fr/api/interpreter'
-    ];
-
-    const POI_SETTINGS = {
-      minZoom: 12,
-      debounceMs: 2000,
-      maxItems: 200,
-      cacheTtlMs: 10 * 60 * 1000,
-      maxCacheEntries: 10,
-      areaLimitDegSq: 0.1,
-      maxRetries: 2,
-      requestTimeoutMs: 10000
-    };
-
-    const poiCache = {
-      data: new Map(),
-      set(key, value) {
-        this.data.set(key, { value, timestamp: Date.now() });
-      },
-      get(key) {
-        const entry = this.data.get(key);
-        if (!entry) {
-          return null;
-        }
-        if (Date.now() - entry.timestamp > POI_SETTINGS.cacheTtlMs) {
-          this.data.delete(key);
-          return null;
-        }
-        return entry.value;
-      },
-      prune(maxEntries) {
-        if (this.data.size <= maxEntries) {
-          return;
-        }
-        const sorted = Array.from(this.data.entries()).sort(
-          (a, b) => a[1].timestamp - b[1].timestamp
-        );
-        while (sorted.length > maxEntries) {
-          const [keyToDelete] = sorted.shift();
-          this.data.delete(keyToDelete);
-        }
-      },
-      clear() {
-        this.data.clear();
-      }
-    };
-
-    const poiRequestLimiter = {
-      lastRequest: 0,
-      minInterval: 2000
-    };
-
-    const poiManager = {
-      enabled: false,
-      loading: false,
-      layerGroup: L.layerGroup(),
-      debounceTimer: null,
-      abortController: null,
-      currentRequestId: 0,
-      stats: {
-        totalLoaded: 0,
-        currentDisplayed: 0,
-        requestCount: 0,
-        errorCount: 0
-      }
-    };
     let currentGpxDocument = null;
     let currentGpxFileName = '';
     let currentGeojson = null;
