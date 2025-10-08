@@ -59,10 +59,20 @@
       outline: none;
     }
 
+
     .import-button:disabled {
       opacity: 0.6;
       cursor: not-allowed;
       box-shadow: none;
+    }
+
+    .import-text-input {
+      background-color: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+      padding: 0.5rem 0.75rem;
+      font-size: 1rem;
+      color: #333;
     }
 
     .message {
@@ -143,6 +153,13 @@
 <body>
     <div id="map">
       <div class="import-container">
+        <input
+          id="gpx-name-input"
+          class="import-text-input"
+          type="text"
+          placeholder="Nom du fichier"
+          autocomplete="off"
+        />
         <button id="import-button" class="import-button" type="button">Importer GPX</button>
         <button id="export-button" class="import-button" type="button" disabled>Exporter GPX</button>
         <div id="message" class="message" role="status" aria-live="polite"></div>
@@ -332,6 +349,7 @@
     const fileInput = document.getElementById('file-input');
     const importButton = document.getElementById('import-button');
     const exportButton = document.getElementById('export-button');
+    const gpxNameInput = document.getElementById('gpx-name-input');
     const messageBox = document.getElementById('message');
     const mapContainer = document.getElementById('map');
 
@@ -378,6 +396,9 @@
         return;
       }
       exportButton.disabled = !isEnabled;
+      if (!isEnabled && gpxNameInput) {
+        gpxNameInput.value = '';
+      }
     }
 
     /**
@@ -614,7 +635,9 @@
       const blob = new Blob([gpxString], { type: 'application/gpx+xml' });
       const url = URL.createObjectURL(blob);
 
-      const baseName = currentGpxFileName
+      const baseName = (gpxNameInput && gpxNameInput.value.trim())
+        ? gpxNameInput.value.trim()
+        : currentGpxFileName
         ? currentGpxFileName.replace(/\.gpx$/i, '')
         : 'trace';
       const downloadName = `${baseName || 'trace'}_with_waypoints.gpx`;
@@ -855,6 +878,10 @@
       setExportAvailability(false);
       currentGpxDocument = null;
       currentGpxFileName = '';
+
+      if (gpxNameInput) {
+        gpxNameInput.value = file && file.name ? file.name.replace(/\.gpx$/i, '') : '';
+      }
 
       if (!file.name.toLowerCase().endsWith('.gpx')) {
         showMessage('Veuillez sélectionner un fichier .gpx.', true);
