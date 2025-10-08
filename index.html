@@ -338,6 +338,43 @@
       color: var(--color-text-muted);
     }
 
+    .trace-name {
+      font-weight: 600;
+      font-size: 1rem;
+      word-break: break-word;
+    }
+
+    .trace-name--gpx-track,
+    .trace-name--gpx-route,
+    .trace-name--gpx-metadata {
+      color: var(--color-primary);
+    }
+
+    .trace-name--filename {
+      color: var(--color-text-muted);
+      font-style: italic;
+    }
+
+    .trace-name--default {
+      color: #9e9e9e;
+      font-style: italic;
+    }
+
+    .file-name {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.9rem;
+      color: var(--color-text-muted);
+      word-break: break-all;
+    }
+
+    .trace-name-help {
+      font-size: 1rem;
+      cursor: help;
+      color: var(--color-text-muted);
+      display: inline-block;
+      margin-left: 0.35rem;
+    }
+
     .panel-messages {
       padding: 0;
     }
@@ -497,7 +534,18 @@
           <h3 class="section-title">Informations</h3>
           <dl class="info-list">
             <dt>Nom de la trace</dt>
-            <dd id="trace-name">—</dd>
+            <dd>
+              <span id="trace-name" class="trace-name">—</span>
+              <span
+                class="trace-name-help"
+                title="Le nom provient d'abord du fichier GPX, puis du nom de fichier, ou d'un nom par défaut."
+                aria-hidden="true"
+              >
+                ℹ️
+              </span>
+            </dd>
+            <dt>Nom du fichier</dt>
+            <dd id="file-name" class="file-name">—</dd>
             <dt>Nombre de points</dt>
             <dd id="point-count">—</dd>
             <dt>Type</dt>
@@ -708,6 +756,7 @@
     const closePanel = document.getElementById('close-panel');
     const fileInfo = document.getElementById('file-info');
     const currentFilename = document.getElementById('current-filename');
+    const traceFileNameLabel = document.getElementById('file-name');
     const waypointsSection = document.getElementById('waypoints-section');
     const waypointsList = document.getElementById('waypoints-list');
     const waypointCountLabel = document.getElementById('waypoint-count');
@@ -727,6 +776,8 @@
     let currentGpxDocument = null;
     let currentGpxFileName = '';
     let currentGeojson = null;
+    let currentTraceName = '';
+    let traceNameSource = '';
 
     setExportAvailability(false);
     updateWaypointsList();
@@ -737,18 +788,23 @@
      * @param {string} text
      * @param {boolean} isError
      */
-    function showMessage(text, isError = false) {
+    function showMessage(text, isError = false, isHtml = false) {
       if (!messageBox) {
         return;
       }
-      const trimmed = text ? text.trim() : '';
+      const content = text == null ? '' : String(text);
+      const trimmed = content.trim();
       if (!trimmed) {
         messageBox.classList.add('hidden');
         messageBox.textContent = '';
         messageBox.classList.remove('error');
         return;
       }
-      messageBox.textContent = trimmed;
+      if (isHtml) {
+        messageBox.innerHTML = content;
+      } else {
+        messageBox.textContent = trimmed;
+      }
       messageBox.classList.remove('hidden');
       messageBox.classList.toggle('error', Boolean(isError));
     }
@@ -768,6 +824,8 @@
       waypointLayerGroup.clearLayers();
       waypointCounter = 1;
       currentGeojson = null;
+      currentTraceName = '';
+      traceNameSource = '';
       updateWaypointsList();
       updateTraceInfo(null);
     }
@@ -784,8 +842,17 @@
         if (fileInfo) {
           fileInfo.style.display = 'none';
         }
+        if (currentFilename) {
+          currentFilename.textContent = '—';
+        }
+        if (traceFileNameLabel) {
+          traceFileNameLabel.textContent = '—';
+        }
       } else if (fileInfo) {
         fileInfo.style.display = 'block';
+        if (traceFileNameLabel && currentGpxFileName) {
+          traceFileNameLabel.textContent = currentGpxFileName;
+        }
       }
     }
 
@@ -827,6 +894,82 @@
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
+    }
+
+    function sanitizeFileName(name) {
+      if (!name) {
+        return 'trace';
+      }
+      const sanitized =
+        name
+          .replace(/[<>:"/\\|?*]/g, '_')
+          .replace(/\s+/g, '_')
+          .replace(/_+/g, '_')
+          .replace(/^_|_$/g, '')
+          .substring(0, 100) || 'trace';
+      return sanitized;
+    }
+
+    function extractTraceName(xmlDoc, fileName) {
+      if (xmlDoc) {
+        const trackNames = xmlDoc.querySelectorAll('trk > name');
+        for (const trackName of trackNames) {
+          const value = trackName.textContent && trackName.textContent.trim();
+          if (value) {
+            return { name: value, source: 'gpx-track' };
+          }
+        }
+
+        const routeNames = xmlDoc.querySelectorAll('rte > name');
+        for (const routeName of routeNames) {
+          const value = routeName.textContent && routeName.textContent.trim();
+          if (value) {
+            return { name: value, source: 'gpx-route' };
+          }
+        }
+
+        const metadataName = xmlDoc.querySelector('metadata > name');
+        if (metadataName) {
+          const value = metadataName.textContent && metadataName.textContent.trim();
+          if (value) {
+            return { name: value, source: 'gpx-metadata' };
+          }
+        }
+      }
+
+      if (fileName) {
+        const withoutExtension = fileName.replace(/\.gpx$/i, '');
+        if (withoutExtension.trim()) {
+          return { name: withoutExtension.trim(), source: 'filename' };
+        }
+      }
+
+      return { name: 'Trace sans nom', source: 'default' };
+    }
+
+    function displayTraceName(traceName, source) {
+      if (!traceNameLabel) {
+        return;
+      }
+      const safeName = traceName || '—';
+      traceNameLabel.textContent = safeName;
+      let tooltip = '';
+      switch (source) {
+        case 'gpx-track':
+        case 'gpx-route':
+        case 'gpx-metadata':
+          tooltip = 'Nom extrait du fichier GPX';
+          break;
+        case 'filename':
+          tooltip = 'Nom basé sur le nom de fichier';
+          break;
+        case 'default':
+        default:
+          tooltip = 'Nom par défaut (aucune information disponible)';
+          break;
+      }
+      traceNameLabel.setAttribute('title', tooltip);
+      traceNameLabel.className = `trace-name trace-name--${source || 'default'}`;
     }
 
     function createWaypointPopupHtml(name) {
@@ -1019,16 +1162,22 @@
 
       if (!info) {
         traceInfoSection.style.display = 'none';
-        traceNameLabel.textContent = '—';
+        displayTraceName('—', 'default');
         pointCountLabel.textContent = '—';
         traceTypeLabel.textContent = '—';
+        if (traceFileNameLabel) {
+          traceFileNameLabel.textContent = '—';
+        }
         return;
       }
 
       traceInfoSection.style.display = 'block';
-      traceNameLabel.textContent = info.name || '—';
+      displayTraceName(currentTraceName || info.name || '—', traceNameSource || 'default');
       pointCountLabel.textContent = Number.isFinite(info.pointCount) ? info.pointCount : '—';
       traceTypeLabel.textContent = info.type || '—';
+      if (traceFileNameLabel) {
+        traceFileNameLabel.textContent = currentGpxFileName || '—';
+      }
     }
 
     function createArrowIconHtml(bearing) {
@@ -1305,6 +1454,10 @@
       setExportAvailability(false);
       currentGpxDocument = null;
       currentGpxFileName = '';
+      currentTraceName = '';
+      traceNameSource = '';
+      displayTraceName('—', 'default');
+      updateTraceInfo(null);
 
       if (gpxNameInput) {
         gpxNameInput.value = file && file.name ? file.name.replace(/\.gpx$/i, '') : '';
@@ -1332,6 +1485,17 @@
           if (currentFilename) {
             currentFilename.textContent = file.name;
           }
+          if (traceFileNameLabel) {
+            traceFileNameLabel.textContent = file.name;
+          }
+
+          const extractedTrace = extractTraceName(xml, file.name);
+          currentTraceName = extractedTrace.name;
+          traceNameSource = extractedTrace.source;
+          if (gpxNameInput) {
+            gpxNameInput.value = currentTraceName;
+          }
+          displayTraceName(currentTraceName, traceNameSource);
 
           const geojson = convertGpxToGeoJSON(xml);
 
@@ -1341,13 +1505,31 @@
 
           setExportAvailability(true);
           displayGeoJSON(geojson);
-          showMessage(`Trace "${file.name}" chargée avec succès.`);
+          let successMessage = '';
+          switch (traceNameSource) {
+            case 'gpx-track':
+            case 'gpx-route':
+            case 'gpx-metadata':
+              successMessage = `Trace "<strong>${escapeHtml(currentTraceName)}</strong>" chargée avec succès.`;
+              break;
+            case 'filename':
+              successMessage = `Fichier "<strong>${escapeHtml(currentTraceName)}</strong>" chargé (aucun nom dans le GPX).`;
+              break;
+            case 'default':
+            default:
+              successMessage = 'Trace chargée (aucun nom disponible).';
+              break;
+          }
+          showMessage(successMessage, false, true);
         } catch (error) {
           console.error(error);
           showMessage(error.message || 'Impossible de lire ce fichier GPX.', true);
           clearPreviousLayers();
           currentGpxDocument = null;
           currentGpxFileName = '';
+          currentTraceName = '';
+          traceNameSource = '';
+          displayTraceName('—', 'default');
           setExportAvailability(false);
         }
       };
@@ -1356,6 +1538,9 @@
         showMessage('Erreur de lecture du fichier.', true);
         currentGpxDocument = null;
         currentGpxFileName = '';
+        currentTraceName = '';
+        traceNameSource = '';
+        displayTraceName('—', 'default');
         setExportAvailability(false);
       };
 
@@ -1416,8 +1601,13 @@
       const url = URL.createObjectURL(blob);
 
       const explicitName = gpxNameInput && gpxNameInput.value.trim() ? gpxNameInput.value.trim() : '';
-      const baseName = explicitName || (currentGpxFileName ? currentGpxFileName.replace(/\.gpx$/i, '') : 'trace');
-      const downloadName = `${baseName || 'trace'}_with_waypoints.gpx`;
+      const baseName =
+        explicitName ||
+        currentTraceName ||
+        (currentGpxFileName ? currentGpxFileName.replace(/\.gpx$/i, '') : '') ||
+        'trace';
+      const sanitizedName = sanitizeFileName(baseName);
+      const downloadName = `${sanitizedName}_with_waypoints.gpx`;
 
       const anchor = document.createElement('a');
       anchor.href = url;
