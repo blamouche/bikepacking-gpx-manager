@@ -1972,6 +1972,55 @@ html, body {
 .preset-select { flex: 1 1 auto; width: 100%; }
 </style>
 
+<style>
+/* ===== Mobile Portrait Sidebar Compatibility (overrides) ===== */
+@media (max-width: 600px) and (orientation: portrait) {
+  .tools-panel {
+    position: fixed;
+    inset: 0 auto 0 0;            /* top:0; left:0; full height */
+    width: 100vw !important;
+    max-width: 100vw !important;
+    min-width: 0 !important;
+    height: 100dvh !important;    /* account for mobile browser UI */
+    border-right: none !important;
+    box-shadow: 0 0 24px rgba(0,0,0,0.15) !important;
+    z-index: 2200 !important;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    transform: translateX(-100%); /* respect existing open/close behavior */
+  }
+  .tools-panel.open {
+    transform: translateX(0);
+  }
+
+  .panel-content {
+    padding: 0.75rem 1rem !important;
+  }
+
+  /* Presets layout: vertical, full width */
+  .layer-presets {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+  }
+  .layer-presets label { margin-right: 0 !important; }
+  .preset-select { width: 100% !important; min-height: 40px; }
+
+  /* Buttons row wraps gracefully */
+  .layer-global-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  /* Slightly smaller section titles to save space */
+  .section-title {
+    font-size: 1rem !important;
+    line-height: 1.25rem !important;
+  }
+}
+</style>
 </head>
 <body>
   <div class="app-container">
@@ -2031,7 +2080,7 @@ html, body {
 
   <section class="panel-section" id="layers-section-placeholder"></section>
 
-  <section class="panel-section" id="waypoints-section" style=" display: none;"">
+  <section class="panel-section" id="waypoints-section" style="display: none;">
           <h3 class="section-title">
             Waypoints
             <span class="badge" id="waypoint-count">0</span>
@@ -2040,7 +2089,7 @@ html, body {
           <button class="btn btn-secondary btn-small" id="clear-waypoints">Effacer tous les waypoints</button>
         </section>
 
-  <section class="panel-section" id="trace-info-section" style=" display: none;"">
+  <section class="panel-section" id="trace-info-section" style="display: none;">
           <h3 class="section-title">Informations</h3>
           <dl class="info-list">
             <dt>Nom de la trace</dt>
