@@ -1965,7 +1965,30 @@ html, body {
         <button class="btn-close-panel" id="close-panel" aria-label="Fermer le panneau">✕</button>
       </header>
       <div class="panel-content">
-        <section class="panel-section">
+  <section class="panel-section geolocation-section" id="geolocation-section">
+  <h3 class="section-title">Ma position</h3>
+  <label class="layer-toggle geolocation-toggle">
+    <input type="checkbox" id="geolocation-toggle" class="toggle-input" aria-label="Activer la géolocalisation en temps réel"/>
+    <span class="toggle-switch"></span>
+    <span class="toggle-text">
+      <span class="toggle-icon" aria-hidden="true">📍</span>
+      Activer la localisation
+    </span>
+  </label>
+  <div class="geolocation-info" id="geolocation-info" style="display: none;">
+    <div class="geolocation-status" id="geolocation-status">
+      <span class="status-icon">🔄</span>
+      <span class="status-text">Recherche de position...</span>
+    </div>
+    <button type="button" class="btn btn-secondary btn-small" id="center-on-position" style="margin-top: 0.5rem;" disabled>
+      <span aria-hidden="true">🎯</span>
+      Centrer sur ma position
+    </button>
+  </div>
+  <div class="geolocation-error" id="geolocation-error" style="display: none;"></div>
+</section>
+
+  <section class="panel-section">
           <h3 class="section-title">Fichier GPX</h3>
           <div class="import-actions">
             <button class="btn btn-primary" id="import-button">
@@ -1990,7 +2013,9 @@ html, body {
           </div>
         </section>
 
-        <section class="panel-section" id="waypoints-section" style="display: none;">
+  <section class="panel-section" id="layers-section-placeholder"></section>
+
+  <section class="panel-section" id="waypoints-section" style=" display: none;"">
           <h3 class="section-title">
             Waypoints
             <span class="badge" id="waypoint-count">0</span>
@@ -1999,7 +2024,7 @@ html, body {
           <button class="btn btn-secondary btn-small" id="clear-waypoints">Effacer tous les waypoints</button>
         </section>
 
-        <section class="panel-section" id="trace-info-section" style="display: none;">
+  <section class="panel-section" id="trace-info-section" style=" display: none;"">
           <h3 class="section-title">Informations</h3>
           <dl class="info-list">
             <dt>Nom de la trace</dt>
@@ -2030,12 +2055,10 @@ html, body {
           </dl>
         </section>
 
-        <div id="layers-section-placeholder"></div>
-
-        <section class="panel-section panel-messages">
+  <section class="panel-section panel-messages">
           <div id="message" class="message hidden" role="status" aria-live="polite"></div>
         </section>
-      </div>
+</div>
     </aside>
 
     <main class="map-container">
@@ -2764,46 +2787,7 @@ html, body {
           </div>
         </section>
 
-<section class="panel-section geolocation-section" id="geolocation-section">
-  <h3 class="section-title">Ma position</h3>
-  
-  <!-- Toggle de géolocalisation -->
-  <label class="layer-toggle geolocation-toggle">
-    <input
-      type="checkbox"
-      id="geolocation-toggle"
-      class="toggle-input"
-      aria-label="Activer la géolocalisation en temps réel"
-    />
-    <span class="toggle-switch"></span>
-    <span class="toggle-text">
-      <span class="toggle-icon" aria-hidden="true">📍</span>
-      Activer la localisation
-    </span>
-  </label>
-  
-  <!-- Informations de position (visible uniquement si activé) -->
-  <div class="geolocation-info" id="geolocation-info" style="display: none;">
-    <div class="geolocation-status" id="geolocation-status">
-      <span class="status-icon">🔄</span>
-      <span class="status-text">Recherche de position...</span>
-    </div>
-    
-    <button 
-      type="button" 
-      class="btn btn-secondary btn-small" 
-      id="center-on-position"
-      style="margin-top: 0.5rem;"
-      disabled
-    >
-      <span aria-hidden="true">🎯</span>
-      Centrer sur ma position
-    </button>
-  </div>
-  
-  <!-- Message d'erreur (si nécessaire) -->
-  <div class="geolocation-error" id="geolocation-error" style="display: none;"></div>
-</section>
+
 `;
       return html;
     }
@@ -2836,7 +2820,7 @@ html, body {
       if (!placeholder) {
         return;
       }
-      placeholder.innerHTML = generateLayersHTML();
+      placeholder.outerHTML = generateLayersHTML();
       layersSectionElement = document.getElementById('layers-section');
       layersLoadingElement = document.getElementById('layers-loading');
       layersErrorElement = document.getElementById('layers-error');
@@ -5366,7 +5350,7 @@ const geolocationManager = {
   marker: null,
   accuracyCircle: null,
   lastUpdate: null,
-  refreshInterval: 60000,
+  refreshInterval: 30000,
   refreshTimer: null,
   // DOM
   toggleCheckbox: null,
