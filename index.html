@@ -375,6 +375,185 @@
       margin-left: 0.35rem;
     }
 
+    .stat-highlight {
+      font-weight: 600;
+      color: var(--color-primary);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .elevation-profile {
+      position: relative;
+      width: 100%;
+      background: var(--color-background);
+      border-top: 2px solid var(--color-primary);
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+      display: none;
+      flex-direction: column;
+      z-index: 500;
+      transition: height 0.3s ease;
+      height: 200px;
+    }
+
+    .elevation-profile.visible {
+      display: flex;
+    }
+
+    .elevation-profile.collapsed {
+      height: 40px;
+    }
+
+    .elevation-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.75rem 1rem;
+      background: var(--color-background-alt);
+      border-bottom: 1px solid var(--color-border);
+      cursor: pointer;
+      user-select: none;
+      min-height: 40px;
+    }
+
+    .elevation-header:hover {
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    .elevation-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .elevation-title h3 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+
+    .elevation-icon {
+      font-size: 1.25rem;
+    }
+
+    .elevation-stats-quick {
+      display: flex;
+      gap: 1.5rem;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .stat-item {
+      display: flex;
+      gap: 0.25rem;
+      font-size: 0.9rem;
+    }
+
+    .stat-label {
+      color: var(--color-text-muted);
+    }
+
+    .stat-value {
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+
+    .btn-collapse {
+      border: none;
+      background: transparent;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .btn-collapse:hover,
+    .btn-collapse:focus {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .elevation-profile.collapsed .btn-collapse span {
+      transform: rotate(180deg);
+      display: inline-block;
+    }
+
+    .elevation-content {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      padding: 1rem;
+      display: none;
+    }
+
+    .elevation-profile:not(.collapsed) .elevation-content {
+      display: block;
+    }
+
+    #elevation-canvas {
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+    }
+
+    .elevation-tooltip {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      pointer-events: none;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .tooltip-row {
+      display: flex;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .tooltip-label {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .tooltip-value {
+      font-weight: 600;
+    }
+
+    @media (max-width: 767px) {
+      .elevation-profile {
+        height: 150px;
+      }
+
+      .elevation-stats-quick {
+        display: none;
+      }
+
+      .elevation-header {
+        padding: 0.5rem 0.75rem;
+      }
+    }
+
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .elevation-stats-quick {
+        gap: 1rem;
+        font-size: 0.85rem;
+      }
+    }
+
     .panel-messages {
       padding: 0;
     }
@@ -402,6 +581,14 @@
       flex: 1;
       position: relative;
       height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .map-main {
+      position: relative;
+      flex: 1;
+      min-height: 0;
     }
 
     #map {
@@ -546,6 +733,14 @@
             </dd>
             <dt>Nom du fichier</dt>
             <dd id="file-name" class="file-name">—</dd>
+            <dt>Distance totale</dt>
+            <dd id="trace-distance" class="stat-highlight">—</dd>
+            <dt>Dénivelé positif (D+)</dt>
+            <dd id="trace-elevation-gain" class="stat-highlight">—</dd>
+            <dt>Dénivelé négatif (D-)</dt>
+            <dd id="trace-elevation-loss" class="stat-highlight">—</dd>
+            <dt>Altitude</dt>
+            <dd id="trace-altitude-range">—</dd>
             <dt>Nombre de points</dt>
             <dd id="point-count">—</dd>
             <dt>Type</dt>
@@ -560,8 +755,61 @@
     </aside>
 
     <main class="map-container">
-      <div id="map"></div>
-      <button class="btn-menu" id="menu-toggle" aria-label="Ouvrir le panneau" aria-expanded="false">☰</button>
+      <div class="map-main">
+        <div id="map"></div>
+        <button class="btn-menu" id="menu-toggle" aria-label="Ouvrir le panneau" aria-expanded="false">☰</button>
+      </div>
+      <div class="elevation-profile" id="elevation-profile" aria-hidden="true">
+        <div class="elevation-header" id="elevation-header">
+          <div class="elevation-title" title="Profil altimétrique">
+            <span class="elevation-icon" aria-hidden="true">📊</span>
+            <h3>Profil altimétrique</h3>
+          </div>
+          <div class="elevation-stats-quick">
+            <span class="stat-item">
+              <span class="stat-label">Distance :</span>
+              <span class="stat-value" id="profile-distance">—</span>
+            </span>
+            <span class="stat-item">
+              <span class="stat-label">D+ :</span>
+              <span class="stat-value" id="profile-elevation-gain">—</span>
+            </span>
+            <span class="stat-item">
+              <span class="stat-label">D- :</span>
+              <span class="stat-value" id="profile-elevation-loss">—</span>
+            </span>
+          </div>
+          <button class="btn-collapse" id="elevation-collapse" type="button" aria-expanded="true" aria-label="Réduire le profil">
+            <span aria-hidden="true">▼</span>
+          </button>
+        </div>
+        <div class="elevation-content" id="elevation-content">
+          <canvas
+            id="elevation-canvas"
+            role="img"
+            aria-label="Graphique du profil altimétrique de la trace"
+            aria-describedby="elevation-description"
+            tabindex="0"
+          ></canvas>
+          <div id="elevation-description" class="sr-only">
+            Le graphique montre l'élévation en mètres en fonction de la distance parcourue en kilomètres.
+            Distance totale : <span id="aria-distance">—</span>.
+            Dénivelé positif : <span id="aria-d-plus">—</span>.
+            Altitude minimum : <span id="aria-min">—</span>.
+            Altitude maximum : <span id="aria-max">—</span>.
+          </div>
+          <div class="elevation-tooltip" id="elevation-tooltip" style="display: none;">
+            <div class="tooltip-row">
+              <span class="tooltip-label">Distance :</span>
+              <span class="tooltip-value" id="tooltip-distance">—</span>
+            </div>
+            <div class="tooltip-row">
+              <span class="tooltip-label">Altitude :</span>
+              <span class="tooltip-value" id="tooltip-elevation">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 
@@ -765,6 +1013,23 @@
     const traceNameLabel = document.getElementById('trace-name');
     const pointCountLabel = document.getElementById('point-count');
     const traceTypeLabel = document.getElementById('trace-type');
+    const traceDistanceLabel = document.getElementById('trace-distance');
+    const traceElevationGainLabel = document.getElementById('trace-elevation-gain');
+    const traceElevationLossLabel = document.getElementById('trace-elevation-loss');
+    const traceAltitudeRangeLabel = document.getElementById('trace-altitude-range');
+    const ariaDistance = document.getElementById('aria-distance');
+    const ariaDPlus = document.getElementById('aria-d-plus');
+    const ariaMin = document.getElementById('aria-min');
+    const ariaMax = document.getElementById('aria-max');
+    const profileDistanceValue = document.getElementById('profile-distance');
+    const profileElevationGainValue = document.getElementById('profile-elevation-gain');
+    const profileElevationLossValue = document.getElementById('profile-elevation-loss');
+    const elevationProfile = document.getElementById('elevation-profile');
+    const elevationHeader = document.getElementById('elevation-header');
+    const elevationCollapseButton = document.getElementById('elevation-collapse');
+    const elevationContent = document.getElementById('elevation-content');
+    const elevationCanvas = document.getElementById('elevation-canvas');
+    const elevationTooltip = document.getElementById('elevation-tooltip');
 
     let backdropElement = null;
 
@@ -778,6 +1043,10 @@
     let currentGeojson = null;
     let currentTraceName = '';
     let traceNameSource = '';
+    let currentElevationData = null;
+    let elevationHoverMarker = null;
+    let elevationMouseMoveHandler = null;
+    let elevationMouseLeaveHandler = null;
 
     setExportAvailability(false);
     updateWaypointsList();
@@ -824,10 +1093,9 @@
       waypointLayerGroup.clearLayers();
       waypointCounter = 1;
       currentGeojson = null;
-      currentTraceName = '';
-      traceNameSource = '';
       updateWaypointsList();
       updateTraceInfo(null);
+      resetElevationDisplay();
     }
 
     function setExportAvailability(isEnabled) {
@@ -848,6 +1116,7 @@
         if (traceFileNameLabel) {
           traceFileNameLabel.textContent = '—';
         }
+        resetElevationDisplay();
       } else if (fileInfo) {
         fileInfo.style.display = 'block';
         if (traceFileNameLabel && currentGpxFileName) {
@@ -970,6 +1239,546 @@
       }
       traceNameLabel.setAttribute('title', tooltip);
       traceNameLabel.className = `trace-name trace-name--${source || 'default'}`;
+    }
+
+    function haversineDistance(pointA, pointB) {
+      if (!pointA || !pointB) {
+        return 0;
+      }
+      const R = 6371000;
+      const lat1 = (pointA.lat * Math.PI) / 180;
+      const lat2 = (pointB.lat * Math.PI) / 180;
+      const dLat = ((pointB.lat - pointA.lat) * Math.PI) / 180;
+      const dLng = ((pointB.lng - pointA.lng) * Math.PI) / 180;
+
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    function calculateElevationStats(points) {
+      if (!Array.isArray(points) || points.length === 0) {
+        return null;
+      }
+
+      let elevationGain = 0;
+      let elevationLoss = 0;
+      let minElevation = Infinity;
+      let maxElevation = -Infinity;
+      let sumElevation = 0;
+
+      points.forEach((point, index) => {
+        const elevation = point.elevation;
+        if (elevation < minElevation) {
+          minElevation = elevation;
+        }
+        if (elevation > maxElevation) {
+          maxElevation = elevation;
+        }
+        sumElevation += elevation;
+
+        if (index > 0) {
+          const diff = elevation - points[index - 1].elevation;
+          if (diff > 0) {
+            elevationGain += diff;
+          } else if (diff < 0) {
+            elevationLoss += Math.abs(diff);
+          }
+        }
+      });
+
+      return {
+        totalDistance: Math.round(points[points.length - 1].distance),
+        elevationGain: Math.round(elevationGain),
+        elevationLoss: Math.round(elevationLoss),
+        minElevation: Math.round(minElevation),
+        maxElevation: Math.round(maxElevation),
+        avgElevation: Math.round(sumElevation / points.length)
+      };
+    }
+
+    function simplifyElevationData(points, maxPoints = 1500) {
+      if (!Array.isArray(points) || points.length <= maxPoints) {
+        return points || [];
+      }
+      const step = Math.max(1, Math.floor(points.length / maxPoints));
+      const simplified = [];
+      for (let i = 0; i < points.length; i += step) {
+        simplified.push(points[i]);
+      }
+      if (simplified[simplified.length - 1] !== points[points.length - 1]) {
+        simplified.push(points[points.length - 1]);
+      }
+      return simplified;
+    }
+
+    function extractElevationData(geojson, gpxDoc) {
+      if (!geojson || !Array.isArray(geojson.features) || !gpxDoc) {
+        return null;
+      }
+
+      const trackPoints = Array.from(gpxDoc.querySelectorAll('trkpt, rtept'));
+      const elevationMap = new Map();
+      trackPoints.forEach((trkpt) => {
+        const lat = parseFloat(trkpt.getAttribute('lat'));
+        const lng = parseFloat(trkpt.getAttribute('lon'));
+        const eleNode = trkpt.querySelector('ele');
+        if (!Number.isFinite(lat) || !Number.isFinite(lng) || !eleNode) {
+          return;
+        }
+        const elevation = parseFloat(eleNode.textContent);
+        if (!Number.isFinite(elevation)) {
+          return;
+        }
+        const key = `${lat.toFixed(6)},${lng.toFixed(6)}`;
+        elevationMap.set(key, elevation);
+      });
+
+      if (elevationMap.size === 0) {
+        return null;
+      }
+
+      const points = [];
+      let previousPoint = null;
+      let cumulativeDistance = 0;
+
+      const processCoordinates = (coords) => {
+        coords.forEach((coord) => {
+          if (!Array.isArray(coord) || coord.length < 2) {
+            return;
+          }
+          const [lng, lat] = coord;
+          const key = `${lat.toFixed(6)},${lng.toFixed(6)}`;
+          const elevation = elevationMap.get(key);
+          if (!Number.isFinite(elevation)) {
+            previousPoint = { lat, lng };
+            return;
+          }
+
+          const currentPoint = { lat, lng };
+          if (previousPoint) {
+            cumulativeDistance += haversineDistance(previousPoint, currentPoint);
+          }
+
+          points.push({
+            distance: cumulativeDistance,
+            elevation,
+            lat,
+            lng,
+            index: points.length
+          });
+
+          previousPoint = currentPoint;
+        });
+      };
+
+      geojson.features.forEach((feature) => {
+        if (!feature || !feature.geometry) {
+          return;
+        }
+        const geometry = feature.geometry;
+        previousPoint = null;
+        if (geometry.type === 'LineString') {
+          processCoordinates(geometry.coordinates || []);
+        } else if (geometry.type === 'MultiLineString') {
+          (geometry.coordinates || []).forEach((segment) => {
+            previousPoint = null;
+            processCoordinates(segment || []);
+          });
+        }
+      });
+
+      if (points.length < 2) {
+        return null;
+      }
+
+      const stats = calculateElevationStats(points);
+      if (!stats) {
+        return null;
+      }
+
+      const simplifiedPoints = simplifyElevationData(points);
+      return { points: simplifiedPoints, stats };
+    }
+
+    function calculateDistanceOnly(geojson) {
+      if (!geojson || !Array.isArray(geojson.features)) {
+        return null;
+      }
+      let cumulativeDistance = 0;
+      let previousPoint = null;
+
+      const processCoordinates = (coords) => {
+        coords.forEach((coord) => {
+          if (!Array.isArray(coord) || coord.length < 2) {
+            return;
+          }
+          const [lng, lat] = coord;
+          const currentPoint = { lat, lng };
+          if (previousPoint) {
+            cumulativeDistance += haversineDistance(previousPoint, currentPoint);
+          }
+          previousPoint = currentPoint;
+        });
+      };
+
+      geojson.features.forEach((feature) => {
+        if (!feature || !feature.geometry) {
+          return;
+        }
+        const geometry = feature.geometry;
+        previousPoint = null;
+        if (geometry.type === 'LineString') {
+          processCoordinates(geometry.coordinates || []);
+        } else if (geometry.type === 'MultiLineString') {
+          (geometry.coordinates || []).forEach((segment) => {
+            previousPoint = null;
+            processCoordinates(segment || []);
+          });
+        }
+      });
+
+      if (cumulativeDistance === 0) {
+        return null;
+      }
+      return { distance: cumulativeDistance };
+    }
+
+    function updateElevationStats(stats) {
+      if (
+        !traceDistanceLabel ||
+        !traceElevationGainLabel ||
+        !traceElevationLossLabel ||
+        !traceAltitudeRangeLabel ||
+        !profileDistanceValue ||
+        !profileElevationGainValue ||
+        !profileElevationLossValue
+      ) {
+        return;
+      }
+
+      if (!stats) {
+        traceDistanceLabel.textContent = '—';
+        traceElevationGainLabel.textContent = '—';
+        traceElevationLossLabel.textContent = '—';
+        traceAltitudeRangeLabel.textContent = '—';
+        profileDistanceValue.textContent = '—';
+        profileElevationGainValue.textContent = '—';
+        profileElevationLossValue.textContent = '—';
+        if (ariaDistance) ariaDistance.textContent = '—';
+        if (ariaDPlus) ariaDPlus.textContent = '—';
+        if (ariaMin) ariaMin.textContent = '—';
+        if (ariaMax) ariaMax.textContent = '—';
+        if (elevationProfile) {
+          elevationProfile.classList.remove('visible');
+          elevationProfile.setAttribute('aria-hidden', 'true');
+        }
+        return;
+      }
+
+      const distanceKm = stats.totalDistance / 1000;
+      traceDistanceLabel.textContent = `${distanceKm.toFixed(2)} km`;
+      traceElevationGainLabel.textContent = `${stats.elevationGain} m`;
+      traceElevationLossLabel.textContent = `${stats.elevationLoss} m`;
+      traceAltitudeRangeLabel.textContent = `${stats.minElevation} m - ${stats.maxElevation} m`;
+
+      profileDistanceValue.textContent = `${distanceKm.toFixed(2)} km`;
+      profileElevationGainValue.textContent = `${stats.elevationGain} m`;
+      profileElevationLossValue.textContent = `${stats.elevationLoss} m`;
+
+      if (ariaDistance) ariaDistance.textContent = `${distanceKm.toFixed(2)} km`;
+      if (ariaDPlus) ariaDPlus.textContent = `${stats.elevationGain} m`;
+      if (ariaMin) ariaMin.textContent = `${stats.minElevation} m`;
+      if (ariaMax) ariaMax.textContent = `${stats.maxElevation} m`;
+
+      if (elevationProfile) {
+        elevationProfile.classList.add('visible');
+        elevationProfile.setAttribute('aria-hidden', 'false');
+      }
+    }
+
+    function resetElevationDisplay() {
+      currentElevationData = null;
+      if (elevationHoverMarker) {
+        map.removeLayer(elevationHoverMarker);
+        elevationHoverMarker = null;
+      }
+      removeElevationInteraction();
+      updateElevationStats(null);
+      if (elevationTooltip) {
+        elevationTooltip.style.display = 'none';
+      }
+      if (elevationContent && elevationCanvas) {
+        const ctx = elevationCanvas.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, elevationCanvas.width, elevationCanvas.height);
+        }
+      }
+      if (elevationProfile) {
+        elevationProfile.classList.remove('collapsed');
+        elevationProfile.setAttribute('aria-hidden', 'true');
+      }
+      if (elevationCollapseButton) {
+        elevationCollapseButton.setAttribute('aria-expanded', 'true');
+        elevationCollapseButton.setAttribute('aria-label', 'Réduire le profil');
+      }
+      map.invalidateSize();
+    }
+
+    function drawElevationProfile(canvas, points, stats) {
+      if (!canvas || !Array.isArray(points) || points.length < 2 || !stats) {
+        return;
+      }
+
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        return;
+      }
+
+      const width = canvas.width;
+      const height = canvas.height;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const margin = { top: 20, right: 20, bottom: 40, left: 60 };
+      const chartWidth = Math.max(10, width - margin.left - margin.right);
+      const chartHeight = Math.max(10, height - margin.top - margin.bottom);
+      const maxDistance = stats.totalDistance || 1;
+      const minEle = stats.minElevation - 20;
+      const maxEle = stats.maxElevation + 20;
+
+      const xScale = (distance) =>
+        margin.left + (Math.min(distance, maxDistance) / maxDistance) * chartWidth;
+      const yScale = (elevation) =>
+        margin.top + chartHeight - ((elevation - minEle) / (maxEle - minEle)) * chartHeight;
+
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.lineWidth = 1;
+
+      const elevationStep = Math.max(10, Math.ceil((maxEle - minEle) / 5 / 50) * 50);
+      for (let ele = Math.ceil(minEle / elevationStep) * elevationStep; ele <= maxEle; ele += elevationStep) {
+        const y = yScale(ele);
+        ctx.beginPath();
+        ctx.moveTo(margin.left, y);
+        ctx.lineTo(width - margin.right, y);
+        ctx.stroke();
+        ctx.fillStyle = '#757575';
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(`${Math.round(ele)} m`, margin.left - 5, y + 4);
+      }
+
+      const distanceStepRaw = Math.max(100, Math.ceil(maxDistance / 5 / 1000) * 1000);
+      for (let dist = 0; dist <= maxDistance; dist += distanceStepRaw) {
+        const x = xScale(dist);
+        ctx.beginPath();
+        ctx.moveTo(x, margin.top);
+        ctx.lineTo(x, height - margin.bottom);
+        ctx.stroke();
+        ctx.fillStyle = '#757575';
+        ctx.font = '11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${(dist / 1000).toFixed(1)} km`, x, height - margin.bottom + 18);
+      }
+
+      ctx.beginPath();
+      points.forEach((point, index) => {
+        const x = xScale(point.distance);
+        const y = yScale(point.elevation);
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+      ctx.lineTo(xScale(points[points.length - 1].distance), height - margin.bottom);
+      ctx.lineTo(margin.left, height - margin.bottom);
+      ctx.closePath();
+
+      const gradient = ctx.createLinearGradient(0, margin.top, 0, height - margin.bottom);
+      gradient.addColorStop(0, 'rgba(25, 118, 210, 0.3)');
+      gradient.addColorStop(1, 'rgba(25, 118, 210, 0.05)');
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      ctx.beginPath();
+      points.forEach((point, index) => {
+        const x = xScale(point.distance);
+        const y = yScale(point.elevation);
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+      ctx.strokeStyle = '#1976d2';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = '#424242';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Distance (km)', width / 2, height - 8);
+
+      ctx.save();
+      ctx.translate(15, height / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText('Altitude (m)', 0, 0);
+      ctx.restore();
+    }
+
+    function renderElevationProfile() {
+      if (
+        !currentElevationData ||
+        !currentElevationData.points ||
+        !currentElevationData.stats ||
+        !elevationCanvas ||
+        !elevationProfile
+      ) {
+        return;
+      }
+      if (
+        elevationProfile.classList.contains('collapsed') ||
+        !elevationProfile.classList.contains('visible')
+      ) {
+        return;
+      }
+      drawElevationProfile(elevationCanvas, currentElevationData.points, currentElevationData.stats);
+      setupElevationInteraction(currentElevationData.points, currentElevationData.stats);
+    }
+
+    function findClosestElevationPoint(canvas, points, stats, event) {
+      if (!canvas || !points || !stats) {
+        return null;
+      }
+
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const margin = { left: 60, right: 20 };
+      const chartWidth = canvas.width - margin.left - margin.right;
+      const relativeX = x - margin.left;
+      if (relativeX < 0 || relativeX > chartWidth) {
+        return null;
+      }
+      const distance = (relativeX / chartWidth) * stats.totalDistance;
+      let closestPoint = points[0];
+      let minDiff = Math.abs(points[0].distance - distance);
+      for (let i = 1; i < points.length; i++) {
+        const diff = Math.abs(points[i].distance - distance);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestPoint = points[i];
+        }
+      }
+      return { point: closestPoint, canvasX: x };
+    }
+
+    function removeElevationInteraction() {
+      if (!elevationCanvas) {
+        return;
+      }
+      if (elevationMouseMoveHandler) {
+        elevationCanvas.removeEventListener('mousemove', elevationMouseMoveHandler);
+      }
+      if (elevationMouseLeaveHandler) {
+        elevationCanvas.removeEventListener('mouseleave', elevationMouseLeaveHandler);
+      }
+      elevationMouseMoveHandler = null;
+      elevationMouseLeaveHandler = null;
+    }
+
+    function setupElevationInteraction(points, stats) {
+      if (!elevationCanvas || !Array.isArray(points) || points.length < 2 || !stats) {
+        return;
+      }
+
+      removeElevationInteraction();
+
+      elevationMouseMoveHandler = (event) => {
+        const result = findClosestElevationPoint(elevationCanvas, points, stats, event);
+        if (!result) {
+          if (elevationTooltip) {
+            elevationTooltip.style.display = 'none';
+          }
+          if (elevationHoverMarker) {
+            map.removeLayer(elevationHoverMarker);
+            elevationHoverMarker = null;
+          }
+          return;
+        }
+
+        const { point, canvasX } = result;
+        if (elevationTooltip) {
+          const rect = elevationCanvas.getBoundingClientRect();
+          elevationTooltip.style.display = 'block';
+          elevationTooltip.style.left = `${canvasX + 15}px`;
+          elevationTooltip.style.top = `${event.clientY - rect.top + 15}px`;
+          const distanceElement = document.getElementById('tooltip-distance');
+          const elevationElement = document.getElementById('tooltip-elevation');
+          if (distanceElement) {
+            distanceElement.textContent = `${(point.distance / 1000).toFixed(2)} km`;
+          }
+          if (elevationElement) {
+            elevationElement.textContent = `${point.elevation.toFixed(0)} m`;
+          }
+        }
+
+        if (elevationHoverMarker) {
+          map.removeLayer(elevationHoverMarker);
+        }
+        elevationHoverMarker = L.circleMarker([point.lat, point.lng], {
+          radius: 7,
+          fillColor: '#ff5722',
+          fillOpacity: 0.9,
+          color: '#ffffff',
+          weight: 2,
+          interactive: false
+        }).addTo(map);
+      };
+
+      elevationMouseLeaveHandler = () => {
+        if (elevationTooltip) {
+          elevationTooltip.style.display = 'none';
+        }
+        if (elevationHoverMarker) {
+          map.removeLayer(elevationHoverMarker);
+          elevationHoverMarker = null;
+        }
+      };
+
+      elevationCanvas.addEventListener('mousemove', elevationMouseMoveHandler);
+      elevationCanvas.addEventListener('mouseleave', elevationMouseLeaveHandler);
+    }
+
+    function setElevationCollapsed(collapsed) {
+      if (!elevationProfile || !elevationCollapseButton) {
+        return;
+      }
+      if (!elevationProfile.classList.contains('visible') && !collapsed) {
+        return;
+      }
+
+      elevationProfile.classList.toggle('collapsed', collapsed);
+      elevationCollapseButton.setAttribute('aria-expanded', String(!collapsed));
+      elevationCollapseButton.setAttribute(
+        'aria-label',
+        collapsed ? 'Agrandir le profil' : 'Réduire le profil'
+      );
+
+      if (!collapsed) {
+        requestAnimationFrame(() => {
+          renderElevationProfile();
+          map.invalidateSize();
+        });
+      } else {
+        removeElevationInteraction();
+        map.invalidateSize();
+      }
     }
 
     function createWaypointPopupHtml(name) {
@@ -1331,6 +2140,8 @@
     function displayGeoJSON(geojsonData) {
       clearPreviousLayers();
 
+      currentGeojson = geojsonData;
+
       const lineFeatures = [];
       const pointFeatures = [];
 
@@ -1505,6 +2316,55 @@
 
           setExportAvailability(true);
           displayGeoJSON(geojson);
+
+          currentElevationData = extractElevationData(geojson, xml);
+          let noElevationData = false;
+          if (currentElevationData) {
+            updateElevationStats(currentElevationData.stats);
+            setElevationCollapsed(false);
+            requestAnimationFrame(() => renderElevationProfile());
+          } else {
+            updateElevationStats(null);
+            const distanceOnly = calculateDistanceOnly(geojson);
+            if (distanceOnly && traceDistanceLabel) {
+              traceDistanceLabel.textContent = `${(distanceOnly.distance / 1000).toFixed(2)} km`;
+              if (profileDistanceValue) {
+                profileDistanceValue.textContent = `${(distanceOnly.distance / 1000).toFixed(2)} km`;
+              }
+              if (ariaDistance) {
+                ariaDistance.textContent = `${(distanceOnly.distance / 1000).toFixed(2)} km`;
+              }
+            }
+            if (traceElevationGainLabel) {
+              traceElevationGainLabel.textContent = 'N/A';
+            }
+            if (traceElevationLossLabel) {
+              traceElevationLossLabel.textContent = 'N/A';
+            }
+            if (traceAltitudeRangeLabel) {
+              traceAltitudeRangeLabel.textContent = 'N/A';
+            }
+            if (profileElevationGainValue) {
+              profileElevationGainValue.textContent = 'N/A';
+            }
+            if (profileElevationLossValue) {
+              profileElevationLossValue.textContent = 'N/A';
+            }
+            if (ariaDPlus) {
+              ariaDPlus.textContent = 'N/A';
+            }
+            if (ariaMin) {
+              ariaMin.textContent = 'N/A';
+            }
+            if (ariaMax) {
+              ariaMax.textContent = 'N/A';
+            }
+            if (elevationProfile) {
+              elevationProfile.setAttribute('aria-hidden', 'true');
+            }
+            noElevationData = true;
+          }
+
           let successMessage = '';
           switch (traceNameSource) {
             case 'gpx-track':
@@ -1519,6 +2379,9 @@
             default:
               successMessage = 'Trace chargée (aucun nom disponible).';
               break;
+          }
+          if (noElevationData) {
+            successMessage += '<br><small>Cette trace ne contient pas de données d\'élévation.</small>';
           }
           showMessage(successMessage, false, true);
         } catch (error) {
@@ -1647,6 +2510,7 @@
           backdropElement = null;
         }
       }
+      map.invalidateSize();
     }
 
     // Gestion du clic sur le bouton pour ouvrir le sélecteur de fichier
@@ -1662,6 +2526,24 @@
 
     if (closePanel) {
       closePanel.addEventListener('click', () => togglePanel(false));
+    }
+
+    if (elevationHeader && elevationProfile) {
+      elevationHeader.addEventListener('click', (event) => {
+        if (event.target === elevationCollapseButton) {
+          return;
+        }
+        const collapsed = elevationProfile.classList.contains('collapsed');
+        setElevationCollapsed(!collapsed);
+      });
+    }
+
+    if (elevationCollapseButton && elevationProfile) {
+      elevationCollapseButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const collapsed = elevationProfile.classList.contains('collapsed');
+        setElevationCollapsed(!collapsed);
+      });
     }
 
     // Gestion du changement de fichier via le sélecteur
@@ -1751,6 +2633,7 @@
     // S'assure que la carte s'ajuste lors des changements de taille de fenêtre
     window.addEventListener('resize', () => {
       map.invalidateSize();
+      requestAnimationFrame(() => renderElevationProfile());
     });
 
     // Fermer le panneau avec la touche Échap sur mobile
