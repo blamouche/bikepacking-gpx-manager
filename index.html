@@ -104,6 +104,131 @@
       margin-bottom: 0;
     }
 
+    /* Calques OSM */
+    .layer-toggle {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      background: #ccc;
+      border-radius: 12px;
+      transition: background 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.3s ease;
+    }
+
+    .toggle-input:checked + .toggle-switch {
+      background: var(--color-primary);
+    }
+
+    .toggle-input:checked + .toggle-switch::after {
+      transform: translateX(20px);
+    }
+
+    .toggle-input:focus + .toggle-switch {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    .toggle-text {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+      color: var(--color-text-primary);
+      flex: 1;
+    }
+
+    .toggle-icon {
+      font-size: 1.1rem;
+    }
+
+    .toggle-count {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      font-weight: 600;
+    }
+
+    .toggle-help {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      padding-left: 3.5rem;
+    }
+
+    .layer-loading,
+    .layer-error,
+    .layer-info {
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    .layer-loading {
+      background: #e3f2fd;
+      color: #1976d2;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .layer-error {
+      background: #ffebee;
+      color: #c62828;
+      border: 1px solid rgba(198, 40, 40, 0.2);
+    }
+
+    .layer-info {
+      background: #fff8e1;
+      color: #f57f17;
+      border: 1px solid rgba(245, 127, 23, 0.2);
+    }
+
+    .layer-loading .loading-spinner {
+      display: inline-block;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
     .section-title {
       margin: 0 0 1rem 0;
       font-size: 1.1rem;
@@ -525,6 +650,100 @@
       white-space: nowrap;
     }
 
+    /* Marqueurs POI OSM */
+    .poi-marker {
+      border: none !important;
+      background: transparent !important;
+    }
+
+    .poi-marker-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      border: 2px solid #fff;
+      transition: transform 0.2s ease;
+    }
+
+    .poi-marker:hover .poi-marker-inner {
+      transform: scale(1.15);
+    }
+
+    .poi-marker-icon {
+      font-size: 14px;
+      line-height: 1;
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
+    }
+
+    .poi-popup-container .leaflet-popup-content-wrapper {
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .poi-popup {
+      font-family: inherit;
+      min-width: 220px;
+    }
+
+    .poi-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: 0.75rem;
+    }
+
+    .poi-header .poi-icon {
+      font-size: 1.5rem;
+    }
+
+    .poi-name {
+      font-size: 1rem;
+      color: var(--color-text-primary);
+    }
+
+    .poi-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .poi-row {
+      display: flex;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .poi-label {
+      color: var(--color-text-muted);
+      min-width: 70px;
+    }
+
+    .poi-value {
+      color: var(--color-text-primary);
+      font-weight: 500;
+    }
+
+    .poi-footer {
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .poi-footer a {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+
+    .poi-footer a:hover {
+      text-decoration: underline;
+    }
+
     .tooltip-label {
       color: rgba(255, 255, 255, 0.7);
     }
@@ -746,6 +965,37 @@
             <dt>Type</dt>
             <dd id="trace-type">—</dd>
           </dl>
+        </section>
+
+        <section class="panel-section" id="layers-section">
+          <h3 class="section-title">Calques et affichage</h3>
+          <div class="layer-toggle">
+            <label class="toggle-label" for="show-cemeteries">
+              <input
+                type="checkbox"
+                id="show-cemeteries"
+                class="toggle-input"
+                aria-describedby="cemeteries-description"
+              />
+              <span class="toggle-switch"></span>
+              <span class="toggle-text">
+                <span class="toggle-icon" aria-hidden="true">🪦</span>
+                Cimetières OSM
+              </span>
+              <span class="toggle-count" id="cemeteries-count" style="display: none;">(0)</span>
+            </label>
+            <p id="cemeteries-description" class="toggle-help">
+              Affiche les cimetières sur la zone visible
+            </p>
+          </div>
+          <div class="layer-loading" id="cemeteries-loading" style="display: none;">
+            <span class="loading-spinner" aria-hidden="true">⏳</span>
+            Chargement des POI...
+          </div>
+          <div class="layer-error" id="cemeteries-error" style="display: none;" role="alert"></div>
+          <div class="layer-info" id="cemeteries-zoom-info" style="display: none;">
+            <small>ℹ️ Zoomez davantage pour voir les cimetières (zoom ≥ 12)</small>
+          </div>
         </section>
 
         <section class="panel-section panel-messages">
@@ -983,6 +1233,496 @@
       };
     }
 
+    function initPOIManager() {
+      if (!cemeteriesToggle) {
+        return;
+      }
+      cemeteriesToggle.checked = false;
+      cemeteriesToggle.addEventListener('change', handleCemeteriesToggle);
+      map.on('moveend', handlePOIViewportChange);
+      map.on('zoomend', handlePOIViewportChange);
+    }
+
+    function handleCemeteriesToggle(event) {
+      const isEnabled = Boolean(event?.target?.checked);
+      if (isEnabled) {
+        enableCemeteryLayer();
+      } else {
+        disableCemeteryLayer();
+      }
+    }
+
+    function enableCemeteryLayer() {
+      poiManager.enabled = true;
+      hidePOIError();
+      if (!map.hasLayer(poiManager.layerGroup)) {
+        poiManager.layerGroup.addTo(map);
+      }
+      if (map.getZoom() < POI_SETTINGS.minZoom) {
+        showPOIZoomInfo();
+        poiManager.layerGroup.clearLayers();
+        updatePOICount(0);
+        return;
+      }
+      hidePOIZoomInfo();
+      loadPOIForCurrentView(true);
+    }
+
+    function disableCemeteryLayer() {
+      poiManager.enabled = false;
+      poiManager.layerGroup.clearLayers();
+      updatePOICount(0);
+      hidePOILoadingIndicator();
+      hidePOIZoomInfo();
+      hidePOIError();
+      if (map.hasLayer(poiManager.layerGroup)) {
+        map.removeLayer(poiManager.layerGroup);
+      }
+      if (poiManager.debounceTimer) {
+        clearTimeout(poiManager.debounceTimer);
+        poiManager.debounceTimer = null;
+      }
+      if (poiManager.abortController) {
+        poiManager.abortController.abort();
+        poiManager.abortController = null;
+      }
+    }
+
+    function handlePOIViewportChange() {
+      if (!poiManager.enabled) {
+        return;
+      }
+      if (poiManager.debounceTimer) {
+        clearTimeout(poiManager.debounceTimer);
+      }
+      poiManager.debounceTimer = setTimeout(() => {
+        loadPOIForCurrentView();
+      }, POI_SETTINGS.debounceMs);
+    }
+
+    async function loadPOIForCurrentView(isImmediate = false) {
+      if (!poiManager.enabled) {
+        return;
+      }
+      if (poiManager.loading && !isImmediate) {
+        return;
+      }
+
+      const bounds = map.getBounds();
+
+      if (map.getZoom() < POI_SETTINGS.minZoom) {
+        poiManager.layerGroup.clearLayers();
+        updatePOICount(0);
+        showPOIZoomInfo();
+        hidePOILoadingIndicator();
+        return;
+      }
+
+      if (isBoundsTooLarge(bounds)) {
+        poiManager.layerGroup.clearLayers();
+        updatePOICount(0);
+        showPOIError('Zone trop grande, veuillez zoomer davantage.');
+        hidePOILoadingIndicator();
+        return;
+      }
+
+      hidePOIZoomInfo();
+      hidePOIError();
+
+      const cacheKey = boundsToKey(bounds);
+      const cachedPois = poiCache.get(cacheKey);
+      if (cachedPois) {
+        displayPOIMarkers(cachedPois);
+        return;
+      }
+
+      const requestId = ++poiManager.currentRequestId;
+      poiManager.loading = true;
+      showPOILoadingIndicator();
+
+      try {
+        const pois = await fetchPOIsFromOverpass(bounds);
+        if (poiManager.currentRequestId !== requestId) {
+          return;
+        }
+        poiCache.set(cacheKey, pois);
+        poiCache.prune(POI_SETTINGS.maxCacheEntries);
+        displayPOIMarkers(pois);
+        poiManager.stats.totalLoaded += pois.length;
+        poiManager.stats.requestCount += 1;
+      } catch (error) {
+        if (error && error.name === 'AbortError') {
+          return;
+        }
+        if (poiManager.currentRequestId !== requestId) {
+          return;
+        }
+        poiManager.stats.errorCount += 1;
+        showPOIError(error?.message || 'Impossible de charger les cimetières.');
+        poiManager.layerGroup.clearLayers();
+        updatePOICount(0);
+      } finally {
+        if (poiManager.currentRequestId === requestId) {
+          poiManager.loading = false;
+          hidePOILoadingIndicator();
+        }
+      }
+    }
+
+    function boundsToKey(bounds) {
+      const precision = 3;
+      return [
+        bounds.getSouth().toFixed(precision),
+        bounds.getWest().toFixed(precision),
+        bounds.getNorth().toFixed(precision),
+        bounds.getEast().toFixed(precision)
+      ].join(',');
+    }
+
+    function isBoundsTooLarge(bounds) {
+      const north = bounds.getNorth();
+      const south = bounds.getSouth();
+      const east = bounds.getEast();
+      const west = bounds.getWest();
+      const latDiff = Math.abs(north - south);
+      const lngDiff = Math.abs(east - west);
+      const area = latDiff * lngDiff;
+      return area > POI_SETTINGS.areaLimitDegSq;
+    }
+
+    async function enforceRequestThrottle() {
+      const now = Date.now();
+      const elapsed = now - poiRequestLimiter.lastRequest;
+      if (elapsed < poiRequestLimiter.minInterval) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, poiRequestLimiter.minInterval - elapsed)
+        );
+      }
+      poiRequestLimiter.lastRequest = Date.now();
+    }
+
+    async function fetchPOIsFromOverpass(bounds) {
+      const query = buildOverpassQuery(bounds);
+      let lastError = null;
+
+      for (let attempt = 0; attempt <= POI_SETTINGS.maxRetries; attempt++) {
+        const endpoint = OVERPASS_ENDPOINTS[attempt % OVERPASS_ENDPOINTS.length];
+        const backoffDelay = attempt > 0 ? 1000 * Math.pow(2, attempt - 1) : 0;
+        if (backoffDelay > 0) {
+          await new Promise((resolve) => setTimeout(resolve, backoffDelay));
+        }
+
+        const controller = new AbortController();
+        poiManager.abortController = controller;
+        let timedOut = false;
+        const timeoutId = setTimeout(() => {
+          timedOut = true;
+          controller.abort();
+        }, POI_SETTINGS.requestTimeoutMs);
+
+        try {
+          await enforceRequestThrottle();
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `data=${encodeURIComponent(query)}`,
+            signal: controller.signal
+          });
+
+          clearTimeout(timeoutId);
+
+          if (!response.ok) {
+            if (response.status === 429) {
+              lastError = new Error('Trop de requêtes. Veuillez patienter quelques instants.');
+            } else if (response.status === 504) {
+              lastError = new Error('Timeout du serveur. Essayez de zoomer davantage.');
+            } else {
+              lastError = new Error(`Erreur HTTP ${response.status}`);
+            }
+            continue;
+          }
+
+          const data = await response.json();
+          const elements = Array.isArray(data?.elements) ? data.elements : [];
+          const pois = elements.map(parsePOIElement).filter(Boolean);
+
+          if (pois.length > POI_SETTINGS.maxItems) {
+            return pois.slice(0, POI_SETTINGS.maxItems);
+          }
+          return pois;
+        } catch (error) {
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            if (timedOut) {
+              lastError = new Error('Timeout de la requête');
+              continue;
+            }
+            throw error;
+          }
+          lastError =
+            error instanceof Error
+              ? error
+              : new Error('Erreur inconnue lors du chargement des POI.');
+        } finally {
+          if (poiManager.abortController === controller) {
+            poiManager.abortController = null;
+          }
+        }
+      }
+
+      throw lastError || new Error('Impossible de récupérer les cimetières.');
+    }
+
+    function buildOverpassQuery(bounds) {
+      const south = bounds.getSouth();
+      const west = bounds.getWest();
+      const north = bounds.getNorth();
+      const east = bounds.getEast();
+      const bbox = `${south},${west},${north},${east}`;
+      return `
+        [out:json][timeout:25][bbox:${bbox}];
+        (
+          node["amenity"="grave_yard"];
+          way["amenity"="grave_yard"];
+          relation["amenity"="grave_yard"];
+          node["landuse"="cemetery"];
+          way["landuse"="cemetery"];
+          relation["landuse"="cemetery"];
+          node["amenity"="crematorium"];
+          way["amenity"="crematorium"];
+          relation["amenity"="crematorium"];
+        );
+        out center;
+      `.trim();
+    }
+
+    function parsePOIElement(element) {
+      if (!element) {
+        return null;
+      }
+      const tags = element.tags || {};
+      let lat;
+      let lon;
+
+      if (element.type === 'node') {
+        lat = element.lat;
+        lon = element.lon;
+      } else if (element.center) {
+        lat = element.center.lat;
+        lon = element.center.lon;
+      }
+
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+        return null;
+      }
+
+      const type =
+        tags.amenity === 'grave_yard'
+          ? 'grave_yard'
+          : tags.landuse === 'cemetery'
+          ? 'cemetery'
+          : tags.amenity === 'crematorium'
+          ? 'crematorium'
+          : null;
+
+      if (!type) {
+        return null;
+      }
+
+      let address = '';
+      if (tags['addr:street']) {
+        address = tags['addr:housenumber']
+          ? `${tags['addr:housenumber']} ${tags['addr:street']}`
+          : tags['addr:street'];
+        if (tags['addr:city']) {
+          address += `, ${tags['addr:city']}`;
+        }
+      }
+
+      return {
+        id: element.id,
+        osmType: element.type,
+        lat,
+        lon,
+        type,
+        name: tags.name || 'Sans nom',
+        religion: tags.religion || null,
+        address: address || null
+      };
+    }
+
+    function displayPOIMarkers(pois) {
+      poiManager.layerGroup.clearLayers();
+      if (!Array.isArray(pois) || pois.length === 0) {
+        poiManager.stats.currentDisplayed = 0;
+        updatePOICount(0);
+        return;
+      }
+
+      pois.forEach((poi) => {
+        const marker = createPOIMarker(poi);
+        if (marker) {
+          marker.poi = poi;
+          poiManager.layerGroup.addLayer(marker);
+        }
+      });
+
+      poiManager.stats.currentDisplayed = pois.length;
+      updatePOICount(pois.length);
+    }
+
+    function createPOIMarker(poi) {
+      if (!poi) {
+        return null;
+      }
+      const style = POI_STYLES[poi.type] || POI_STYLES.cemetery;
+      const iconSize = style.size === 'small' ? [24, 24] : [30, 30];
+      const iconAnchor = [iconSize[0] / 2, iconSize[1] / 2];
+      const icon = L.divIcon({
+        className: 'poi-marker',
+        html: `
+          <div class="poi-marker-inner" style="background-color: ${style.color};">
+            <span class="poi-marker-icon">${style.icon}</span>
+          </div>
+        `,
+        iconSize,
+        iconAnchor
+      });
+
+      const marker = L.marker([poi.lat, poi.lon], {
+        icon,
+        opacity: 0.85,
+        title: poi.name
+      });
+
+      marker.bindPopup(createPOIPopupContent(poi), {
+        maxWidth: 300,
+        className: 'poi-popup-container'
+      });
+
+      if (poi.name) {
+        marker.bindTooltip(poi.name, {
+          direction: 'top',
+          offset: [0, -15]
+        });
+      }
+
+      return marker;
+    }
+
+    function createPOIPopupContent(poi) {
+      const style = POI_STYLES[poi.type] || POI_STYLES.cemetery;
+      const typeLabel =
+        poi.type === 'grave_yard'
+          ? 'Petit cimetière'
+          : poi.type === 'cemetery'
+          ? 'Cimetière'
+          : poi.type === 'crematorium'
+          ? 'Crématorium'
+          : poi.type;
+
+      let html = `
+        <div class="poi-popup">
+          <div class="poi-header">
+            <span class="poi-icon" aria-hidden="true">${style.icon}</span>
+            <strong class="poi-name">${escapeHtml(poi.name)}</strong>
+          </div>
+          <div class="poi-details">
+            <div class="poi-row">
+              <span class="poi-label">Type :</span>
+              <span class="poi-value">${typeLabel}</span>
+            </div>
+      `;
+
+      if (poi.religion) {
+        html += `
+            <div class="poi-row">
+              <span class="poi-label">Religion :</span>
+              <span class="poi-value">${escapeHtml(poi.religion)}</span>
+            </div>
+        `;
+      }
+
+      if (poi.address) {
+        html += `
+            <div class="poi-row">
+              <span class="poi-label">Adresse :</span>
+              <span class="poi-value">${escapeHtml(poi.address)}</span>
+            </div>
+        `;
+      }
+
+      html += `
+          </div>
+          <div class="poi-footer">
+            <small>
+              <a href="https://www.openstreetmap.org/${poi.osmType}/${poi.id}" target="_blank" rel="noopener noreferrer">
+                Voir sur OpenStreetMap ↗
+              </a>
+            </small>
+          </div>
+        </div>
+      `;
+
+      return html;
+    }
+
+    function showPOILoadingIndicator() {
+      if (cemeteriesLoading) {
+        cemeteriesLoading.style.display = 'flex';
+      }
+    }
+
+    function hidePOILoadingIndicator() {
+      if (cemeteriesLoading) {
+        cemeteriesLoading.style.display = 'none';
+      }
+    }
+
+    function showPOIZoomInfo() {
+      if (cemeteriesZoomInfo) {
+        cemeteriesZoomInfo.style.display = 'block';
+      }
+    }
+
+    function hidePOIZoomInfo() {
+      if (cemeteriesZoomInfo) {
+        cemeteriesZoomInfo.style.display = 'none';
+      }
+    }
+
+    function showPOIError(message) {
+      if (cemeteriesError) {
+        cemeteriesError.textContent = `⚠️ ${message}`;
+        cemeteriesError.style.display = 'block';
+        setTimeout(() => {
+          if (cemeteriesError) {
+            cemeteriesError.style.display = 'none';
+          }
+        }, 5000);
+      }
+    }
+
+    function hidePOIError() {
+      if (cemeteriesError) {
+        cemeteriesError.style.display = 'none';
+      }
+    }
+
+    function updatePOICount(count) {
+      if (!cemeteriesCountLabel) {
+        return;
+      }
+      if (count > 0) {
+        cemeteriesCountLabel.textContent = `(${count})`;
+        cemeteriesCountLabel.style.display = 'inline';
+      } else {
+        cemeteriesCountLabel.style.display = 'none';
+      }
+    }
+
     // Initialisation de la carte Leaflet centrée sur Paris
     const map = L.map('map').setView([48.8566, 2.3522], 12);
     map.zoomControl.setPosition('topright');
@@ -1030,6 +1770,11 @@
     const elevationContent = document.getElementById('elevation-content');
     const elevationCanvas = document.getElementById('elevation-canvas');
     const elevationTooltip = document.getElementById('elevation-tooltip');
+    const cemeteriesToggle = document.getElementById('show-cemeteries');
+    const cemeteriesCountLabel = document.getElementById('cemeteries-count');
+    const cemeteriesLoading = document.getElementById('cemeteries-loading');
+    const cemeteriesError = document.getElementById('cemeteries-error');
+    const cemeteriesZoomInfo = document.getElementById('cemeteries-zoom-info');
 
     let backdropElement = null;
 
@@ -1038,6 +1783,94 @@
 
     let gpxLayerGroup = null;
     let arrowLayerGroup = null;
+
+    const POI_STYLES = {
+      grave_yard: {
+        icon: '⛪',
+        color: '#757575',
+        size: 'small'
+      },
+      cemetery: {
+        icon: '🪦',
+        color: '#6a1b9a',
+        size: 'medium'
+      },
+      crematorium: {
+        icon: '🕯️',
+        color: '#424242',
+        size: 'small'
+      }
+    };
+
+    const OVERPASS_ENDPOINTS = [
+      'https://overpass-api.de/api/interpreter',
+      'https://overpass.kumi.systems/api/interpreter',
+      'https://overpass.openstreetmap.fr/api/interpreter'
+    ];
+
+    const POI_SETTINGS = {
+      minZoom: 12,
+      debounceMs: 2000,
+      maxItems: 200,
+      cacheTtlMs: 10 * 60 * 1000,
+      maxCacheEntries: 10,
+      areaLimitDegSq: 0.1,
+      maxRetries: 2,
+      requestTimeoutMs: 10000
+    };
+
+    const poiCache = {
+      data: new Map(),
+      set(key, value) {
+        this.data.set(key, { value, timestamp: Date.now() });
+      },
+      get(key) {
+        const entry = this.data.get(key);
+        if (!entry) {
+          return null;
+        }
+        if (Date.now() - entry.timestamp > POI_SETTINGS.cacheTtlMs) {
+          this.data.delete(key);
+          return null;
+        }
+        return entry.value;
+      },
+      prune(maxEntries) {
+        if (this.data.size <= maxEntries) {
+          return;
+        }
+        const sorted = Array.from(this.data.entries()).sort(
+          (a, b) => a[1].timestamp - b[1].timestamp
+        );
+        while (sorted.length > maxEntries) {
+          const [keyToDelete] = sorted.shift();
+          this.data.delete(keyToDelete);
+        }
+      },
+      clear() {
+        this.data.clear();
+      }
+    };
+
+    const poiRequestLimiter = {
+      lastRequest: 0,
+      minInterval: 2000
+    };
+
+    const poiManager = {
+      enabled: false,
+      loading: false,
+      layerGroup: L.layerGroup(),
+      debounceTimer: null,
+      abortController: null,
+      currentRequestId: 0,
+      stats: {
+        totalLoaded: 0,
+        currentDisplayed: 0,
+        requestCount: 0,
+        errorCount: 0
+      }
+    };
     let currentGpxDocument = null;
     let currentGpxFileName = '';
     let currentGeojson = null;
@@ -2512,6 +3345,8 @@
       }
       map.invalidateSize();
     }
+
+    initPOIManager();
 
     // Gestion du clic sur le bouton pour ouvrir le sélecteur de fichier
     importButton.addEventListener('click', () => fileInput.click());
