@@ -13,273 +13,116 @@
     crossorigin=""
   />
   <style>
-    :root {
-      --color-primary: #1976d2;
-      --color-primary-hover: #1565c0;
-      --color-secondary: #f5f5f5;
-      --color-secondary-hover: #eeeeee;
-      --color-danger: #f44336;
-      --color-background: #ffffff;
-      --color-background-alt: #f8f9fa;
-      --color-text-primary: #212121;
-      --color-text-secondary: #424242;
-      --color-text-muted: #757575;
-      --color-border: #e0e0e0;
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-      --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
+    /* Mise en page de base : carte en plein écran */
     html,
     body {
       height: 100%;
       margin: 0;
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--color-background-alt);
-      color: var(--color-text-primary);
-    }
-
-    body {
+      background-color: #f4f4f4;
       overflow: hidden;
     }
 
-    .app-container {
-      display: flex;
+    #map {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
       height: 100vh;
-      overflow: hidden;
     }
 
-    .hidden {
-      display: none !important;
-    }
-
-    .tools-panel {
-      width: 320px;
-      min-width: 320px;
-      height: 100vh;
-      background: var(--color-background);
-      border-right: 1px solid var(--color-border);
-      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+    /* Bouton d'import en overlay */
+    .import-container {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      z-index: 1000;
       display: flex;
       flex-direction: column;
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
-
-    .panel-header {
-      padding: 1.5rem;
-      background: var(--color-background-alt);
-      border-bottom: 1px solid var(--color-border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       gap: 0.5rem;
     }
 
-    .panel-title {
-      margin: 0;
-      font-size: 1.4rem;
-      font-weight: 600;
-      color: var(--color-text-primary);
-    }
-
-    .panel-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 1rem 1.5rem;
-    }
-
-    .panel-section {
-      margin-bottom: 1.5rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--color-border);
-    }
-
-    .panel-section:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-      margin-bottom: 0;
-    }
-
-    .section-title {
-      margin: 0 0 1rem 0;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--color-text-primary);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 1.75rem;
-      padding: 0.1rem 0.5rem;
-      border-radius: 999px;
-      background: var(--color-primary);
-      color: #fff;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      width: 100%;
-      border: none;
-      border-radius: 6px;
-      padding: 0.75rem 1rem;
+    .import-button {
+      background-color: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+      padding: 0.5rem 1rem;
       font-size: 1rem;
       cursor: pointer;
-      transition: box-shadow 0.2s ease, transform 0.1s ease;
+      transition: background-color 0.2s ease, box-shadow 0.2s ease;
+      color: #333;
     }
 
-    .btn:disabled {
+    .import-button:hover,
+    .import-button:focus {
+      background-color: rgba(255, 255, 255, 1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      outline: none;
+    }
+
+
+    .import-button:disabled {
       opacity: 0.6;
       cursor: not-allowed;
       box-shadow: none;
     }
 
-    .btn-primary {
-      background: var(--color-primary);
-      color: #ffffff;
-    }
-
-    .btn-primary:not(:disabled):hover,
-    .btn-primary:not(:disabled):focus {
-      background: var(--color-primary-hover);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .btn-secondary {
-      background: var(--color-secondary);
-      color: var(--color-text-secondary);
-    }
-
-    .btn-secondary:hover,
-    .btn-secondary:focus {
-      background: var(--color-secondary-hover);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .btn-small {
-      padding: 0.5rem 0.75rem;
-      font-size: 0.9rem;
-    }
-
-    .btn-icon-small {
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      font-size: 1rem;
-      padding: 0.25rem;
+    .import-text-input {
+      background-color: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(0, 0, 0, 0.2);
       border-radius: 4px;
-      transition: background 0.2s ease;
-    }
-
-    .btn-icon-small:hover,
-    .btn-icon-small:focus {
-      background: rgba(0, 0, 0, 0.05);
-    }
-
-    .import-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .file-info {
-      margin-top: 1rem;
-      padding: 0.75rem;
-      border-radius: 6px;
-      background: var(--color-background-alt);
-      border: 1px solid var(--color-border);
-    }
-
-    .file-info small {
-      display: block;
-      color: var(--color-text-muted);
-      margin-bottom: 0.25rem;
-    }
-
-    .filename {
-      margin: 0;
-      font-weight: 600;
-      color: var(--color-text-primary);
-      word-break: break-all;
-    }
-
-    .file-name-input {
-      width: 100%;
       padding: 0.5rem 0.75rem;
-      border-radius: 6px;
-      border: 1px solid var(--color-border);
-      font-size: 0.95rem;
-      margin-top: 0.75rem;
+      font-size: 1rem;
+      color: #333;
     }
 
-    .drop-zone {
-      margin-top: 1rem;
-      padding: 1rem;
-      border: 2px dashed var(--color-border);
-      border-radius: 8px;
-      text-align: center;
-      color: var(--color-text-muted);
-      background: #fff;
-      transition: border-color 0.2s ease, background 0.2s ease;
+    .message {
+      padding: 0.5rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      max-width: 220px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      color: #333;
+      display: none;
     }
 
-    .drop-zone.dragover {
-      border-color: var(--color-primary);
-      background: rgba(25, 118, 210, 0.08);
-      color: var(--color-text-primary);
+    .message.visible {
+      display: block;
     }
 
-    .waypoints-list {
-      max-height: 240px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
+    /* Effet visuel lors du drag & drop */
+    .dragover {
+      outline: 3px dashed rgba(33, 150, 243, 0.8);
+      outline-offset: -10px;
     }
 
-    .waypoint-item {
-      display: grid;
-      grid-template-columns: auto 1fr auto auto;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 0.6rem;
-      border: 1px solid var(--color-border);
-      border-radius: 6px;
-      background: #fff;
-      box-shadow: var(--shadow-sm);
+    .direction-arrow {
+      display: inline-block;
+      color: #ff5722;
+      font-size: 1rem;
+      line-height: 1;
+      text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+      transform-origin: center;
     }
 
     .waypoint-popup {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: 0.5rem;
       min-width: 200px;
     }
 
     .waypoint-popup label {
       font-weight: 600;
-      font-size: 0.9rem;
-      color: var(--color-text-secondary);
+      font-size: 0.85rem;
+      color: #333;
     }
 
     .waypoint-popup input {
-      padding: 0.4rem 0.6rem;
+      padding: 0.35rem 0.5rem;
+      border: 1px solid rgba(0, 0, 0, 0.2);
       border-radius: 4px;
-      border: 1px solid var(--color-border);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
     }
 
     .waypoint-popup-buttons {
@@ -287,235 +130,41 @@
       gap: 0.5rem;
     }
 
-    .waypoint-popup-buttons button {
+    .waypoint-popup button {
       flex: 1;
       padding: 0.4rem 0.6rem;
-      border-radius: 4px;
       border: none;
+      border-radius: 4px;
+      font-size: 0.85rem;
       cursor: pointer;
-      background: var(--color-secondary);
     }
 
-    .waypoint-popup-buttons button[data-action="save"] {
-      background: var(--color-primary);
+    .waypoint-popup button[data-action="save"] {
+      background-color: #1976d2;
       color: #fff;
     }
 
-    .waypoint-popup-buttons button[data-action="delete"] {
-      background: var(--color-danger);
+    .waypoint-popup button[data-action="delete"] {
+      background-color: #f44336;
       color: #fff;
-    }
-
-    .waypoint-name {
-      font-size: 0.95rem;
-      color: var(--color-text-primary);
-    }
-
-    .waypoint-icon {
-      font-size: 1.1rem;
-    }
-
-    .info-list {
-      margin: 0;
-      display: grid;
-      grid-template-columns: auto 1fr;
-      row-gap: 0.75rem;
-      column-gap: 1rem;
-      font-size: 0.95rem;
-    }
-
-    .info-list dt {
-      font-weight: 600;
-      color: var(--color-text-secondary);
-    }
-
-    .info-list dd {
-      margin: 0;
-      color: var(--color-text-primary);
-    }
-
-    .text-muted {
-      color: var(--color-text-muted);
-    }
-
-    .panel-messages {
-      padding: 0;
-    }
-
-    .message {
-      min-height: 3rem;
-      padding: 0.75rem 1rem;
-      border-radius: 6px;
-      border: 1px solid transparent;
-      background: #f1f8ff;
-      color: #0d47a1;
-    }
-
-    .message.hidden {
-      display: none;
-    }
-
-    .message.error {
-      background: #ffebee;
-      border-color: rgba(244, 67, 54, 0.3);
-      color: #c62828;
-    }
-
-    .map-container {
-      flex: 1;
-      position: relative;
-      height: 100vh;
-    }
-
-    #map {
-      width: 100%;
-      height: 100%;
-    }
-
-    .btn-menu {
-      display: none;
-      position: absolute;
-      top: 1rem;
-      left: 1rem;
-      z-index: 1000;
-      background: #fff;
-      border: 2px solid var(--color-border);
-      border-radius: 6px;
-      padding: 0.6rem 0.8rem;
-      font-size: 1.5rem;
-      cursor: pointer;
-      box-shadow: var(--shadow-md);
-    }
-
-    .btn-close-panel {
-      border: none;
-      background: transparent;
-      font-size: 1.25rem;
-      cursor: pointer;
-      border-radius: 4px;
-      padding: 0.2rem 0.4rem;
-    }
-
-    .btn-close-panel:hover,
-    .btn-close-panel:focus {
-      background: rgba(0, 0, 0, 0.05);
-    }
-
-    .panel-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.35);
-      z-index: 1500;
-      opacity: 0;
-      animation: fadeIn 0.2s forwards;
-    }
-
-    @keyframes fadeIn {
-      to {
-        opacity: 1;
-      }
-    }
-
-    @media (max-width: 767px) {
-      .tools-panel {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 85vw;
-        max-width: 320px;
-        z-index: 2000;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-      }
-
-      .tools-panel.open {
-        transform: translateX(0);
-      }
-
-      .btn-menu {
-        display: block;
-      }
-    }
-
-    @media (min-width: 768px) {
-      .btn-close-panel {
-        display: none;
-      }
-    }
-
-    @media (min-width: 768px) and (max-width: 1023px) {
-      .tools-panel {
-        width: 280px;
-        min-width: 280px;
-      }
     }
   </style>
 </head>
 <body>
-  <div class="app-container">
-    <aside class="tools-panel" id="tools-panel" role="complementary" aria-label="Panneau d'outils">
-      <header class="panel-header">
-        <h1 class="panel-title">Lecteur GPX</h1>
-        <button class="btn-close-panel" id="close-panel" aria-label="Fermer le panneau">✕</button>
-      </header>
-      <div class="panel-content">
-        <section class="panel-section">
-          <h3 class="section-title">Fichier GPX</h3>
-          <div class="import-actions">
-            <button class="btn btn-primary" id="import-button">
-              <span aria-hidden="true">📁</span>
-              Importer GPX
-            </button>
-            <button class="btn btn-primary" id="export-button" disabled>
-              <span aria-hidden="true">💾</span>
-              Exporter GPX
-            </button>
-          </div>
-          <div class="file-info" id="file-info" style="display: none;">
-            <small class="text-muted">Fichier actuel :</small>
-            <p class="filename" id="current-filename">—</p>
-            <label for="gpx-name-input" style="display:block; font-size:0.85rem; color:var(--color-text-muted); margin-top:0.75rem;">
-              Nom d'export
-            </label>
-            <input id="gpx-name-input" class="file-name-input" type="text" placeholder="Nom du fichier" autocomplete="off" />
-          </div>
-          <div class="drop-zone" id="panel-drop-zone">
-            <p>Ou glissez-déposez un fichier .gpx ici</p>
-          </div>
-        </section>
-
-        <section class="panel-section" id="waypoints-section" style="display: none;">
-          <h3 class="section-title">
-            Waypoints
-            <span class="badge" id="waypoint-count">0</span>
-          </h3>
-          <div class="waypoints-list" id="waypoints-list"></div>
-          <button class="btn btn-secondary btn-small" id="clear-waypoints">Effacer tous les waypoints</button>
-        </section>
-
-        <section class="panel-section" id="trace-info-section" style="display: none;">
-          <h3 class="section-title">Informations</h3>
-          <dl class="info-list">
-            <dt>Nom de la trace</dt>
-            <dd id="trace-name">—</dd>
-            <dt>Nombre de points</dt>
-            <dd id="point-count">—</dd>
-            <dt>Type</dt>
-            <dd id="trace-type">—</dd>
-          </dl>
-        </section>
-
-        <section class="panel-section panel-messages">
-          <div id="message" class="message hidden" role="status" aria-live="polite"></div>
-        </section>
+    <div id="map">
+      <div class="import-container">
+        <input
+          id="gpx-name-input"
+          class="import-text-input"
+          type="text"
+          placeholder="Nom du fichier"
+          autocomplete="off"
+        />
+        <button id="import-button" class="import-button" type="button">Importer GPX</button>
+        <button id="export-button" class="import-button" type="button" disabled>Exporter GPX</button>
+        <div id="message" class="message" role="status" aria-live="polite"></div>
       </div>
-    </aside>
-
-    <main class="map-container">
-      <div id="map"></div>
-      <button class="btn-menu" id="menu-toggle" aria-label="Ouvrir le panneau" aria-expanded="false">☰</button>
-    </main>
-  </div>
+    </div>
 
   <input id="file-input" type="file" accept=".gpx" hidden />
 
@@ -702,22 +351,7 @@
     const exportButton = document.getElementById('export-button');
     const gpxNameInput = document.getElementById('gpx-name-input');
     const messageBox = document.getElementById('message');
-    const panelDropZone = document.getElementById('panel-drop-zone');
-    const toolsPanel = document.getElementById('tools-panel');
-    const menuToggle = document.getElementById('menu-toggle');
-    const closePanel = document.getElementById('close-panel');
-    const fileInfo = document.getElementById('file-info');
-    const currentFilename = document.getElementById('current-filename');
-    const waypointsSection = document.getElementById('waypoints-section');
-    const waypointsList = document.getElementById('waypoints-list');
-    const waypointCountLabel = document.getElementById('waypoint-count');
-    const clearWaypointsButton = document.getElementById('clear-waypoints');
-    const traceInfoSection = document.getElementById('trace-info-section');
-    const traceNameLabel = document.getElementById('trace-name');
-    const pointCountLabel = document.getElementById('point-count');
-    const traceTypeLabel = document.getElementById('trace-type');
-
-    let backdropElement = null;
+    const mapContainer = document.getElementById('map');
 
     const waypointLayerGroup = L.layerGroup().addTo(map);
     let waypointCounter = 1;
@@ -726,11 +360,8 @@
     let arrowLayerGroup = null;
     let currentGpxDocument = null;
     let currentGpxFileName = '';
-    let currentGeojson = null;
 
     setExportAvailability(false);
-    updateWaypointsList();
-    updateTraceInfo(null);
 
     /**
      * Affiche un message utilisateur discret.
@@ -738,19 +369,10 @@
      * @param {boolean} isError
      */
     function showMessage(text, isError = false) {
-      if (!messageBox) {
-        return;
-      }
-      const trimmed = text ? text.trim() : '';
-      if (!trimmed) {
-        messageBox.classList.add('hidden');
-        messageBox.textContent = '';
-        messageBox.classList.remove('error');
-        return;
-      }
-      messageBox.textContent = trimmed;
-      messageBox.classList.remove('hidden');
-      messageBox.classList.toggle('error', Boolean(isError));
+      messageBox.textContent = text;
+      messageBox.classList.toggle('visible', Boolean(text));
+      messageBox.style.borderColor = isError ? 'rgba(244, 67, 54, 0.6)' : 'rgba(0, 0, 0, 0.1)';
+      messageBox.style.color = isError ? '#c62828' : '#333';
     }
 
     /**
@@ -767,9 +389,6 @@
       }
       waypointLayerGroup.clearLayers();
       waypointCounter = 1;
-      currentGeojson = null;
-      updateWaypointsList();
-      updateTraceInfo(null);
     }
 
     function setExportAvailability(isEnabled) {
@@ -777,18 +396,15 @@
         return;
       }
       exportButton.disabled = !isEnabled;
-      if (!isEnabled) {
-        if (gpxNameInput) {
-          gpxNameInput.value = '';
-        }
-        if (fileInfo) {
-          fileInfo.style.display = 'none';
-        }
-      } else if (fileInfo) {
-        fileInfo.style.display = 'block';
+      if (!isEnabled && gpxNameInput) {
+        gpxNameInput.value = '';
       }
     }
 
+    /**
+     * Affiche le contenu GeoJSON sur la carte.
+     * @param {GeoJSON.FeatureCollection} geojsonData
+     */
     function normalizeLatLngSegments(latlngs) {
       if (!Array.isArray(latlngs)) {
         return [];
@@ -861,13 +477,11 @@
         marker.waypointName = newName;
         marker.setPopupContent(createWaypointPopupHtml(marker.waypointName));
         marker.openPopup();
-        updateWaypointsList();
       };
 
       const deleteAction = () => {
         waypointLayerGroup.removeLayer(marker);
         map.closePopup(popup);
-        updateWaypointsList();
       };
 
       if (input) {
@@ -910,7 +524,6 @@
       );
 
       waypointLayerGroup.addLayer(marker);
-      updateWaypointsList();
       return marker;
     }
 
@@ -969,71 +582,83 @@
       return markers;
     }
 
-    function updateWaypointsList() {
-      if (!waypointsList || !waypointCountLabel || !waypointsSection) {
+    function exportUpdatedGpx() {
+      if (!currentGpxDocument) {
+        showMessage('Aucune trace GPX à exporter.', true);
         return;
       }
+
+      const xmlDoc = currentGpxDocument.cloneNode(true);
+      const gpxRoot = xmlDoc && xmlDoc.documentElement ? xmlDoc.documentElement : null;
+
+      if (!gpxRoot) {
+        showMessage('Impossible de préparer le fichier GPX.', true);
+        return;
+      }
+
+      const existingWaypoints = xmlDoc.querySelectorAll('wpt');
+      existingWaypoints.forEach((node) => {
+        if (node.parentNode) {
+          node.parentNode.removeChild(node);
+        }
+      });
 
       const markers = getWaypointMarkers();
-      waypointCountLabel.textContent = markers.length;
-      waypointsSection.style.display = markers.length > 0 ? 'block' : 'none';
-      waypointsList.innerHTML = '';
-
       markers.forEach((marker) => {
-        const item = document.createElement('div');
-        item.className = 'waypoint-item';
-        item.innerHTML = `
-          <span class="waypoint-icon" aria-hidden="true">📍</span>
-          <span class="waypoint-name">${escapeHtml(marker.waypointName)}</span>
-          <button class="btn-icon-small" data-action="center" title="Centrer">🎯</button>
-          <button class="btn-icon-small" data-action="delete" title="Supprimer">🗑️</button>
-        `;
-
-        const centerButton = item.querySelector('[data-action="center"]');
-        if (centerButton) {
-          centerButton.addEventListener('click', () => {
-            const latlng = marker.getLatLng();
-            if (latlng) {
-              map.setView(latlng, Math.max(map.getZoom(), 16));
-              marker.openPopup();
-            }
-          });
+        if (typeof marker.getLatLng !== 'function') {
+          return;
+        }
+        const latlng = marker.getLatLng();
+        if (!latlng) {
+          return;
         }
 
-        const deleteButton = item.querySelector('[data-action="delete"]');
-        if (deleteButton) {
-          deleteButton.addEventListener('click', () => {
-            waypointLayerGroup.removeLayer(marker);
-            updateWaypointsList();
-          });
+        const wptNode = xmlDoc.createElement('wpt');
+        wptNode.setAttribute('lat', latlng.lat.toFixed(6));
+        wptNode.setAttribute('lon', latlng.lng.toFixed(6));
+
+        if (marker.waypointName) {
+          const nameNode = xmlDoc.createElement('name');
+          nameNode.textContent = marker.waypointName;
+          wptNode.appendChild(nameNode);
         }
 
-        waypointsList.appendChild(item);
+        gpxRoot.appendChild(wptNode);
       });
-    }
 
-    function updateTraceInfo(info) {
-      if (!traceInfoSection || !traceNameLabel || !pointCountLabel || !traceTypeLabel) {
-        return;
+      const serializer = new XMLSerializer();
+      let gpxString = serializer.serializeToString(xmlDoc);
+      if (!gpxString.startsWith('<?xml')) {
+        gpxString = `<?xml version="1.0" encoding="UTF-8"?>\n${gpxString}`;
       }
 
-      if (!info) {
-        traceInfoSection.style.display = 'none';
-        traceNameLabel.textContent = '—';
-        pointCountLabel.textContent = '—';
-        traceTypeLabel.textContent = '—';
-        return;
-      }
+      const blob = new Blob([gpxString], { type: 'application/gpx+xml' });
+      const url = URL.createObjectURL(blob);
 
-      traceInfoSection.style.display = 'block';
-      traceNameLabel.textContent = info.name || '—';
-      pointCountLabel.textContent = Number.isFinite(info.pointCount) ? info.pointCount : '—';
-      traceTypeLabel.textContent = info.type || '—';
+      const baseName = (gpxNameInput && gpxNameInput.value.trim())
+        ? gpxNameInput.value.trim()
+        : currentGpxFileName
+        ? currentGpxFileName.replace(/\.gpx$/i, '')
+        : 'trace';
+      const downloadName = `${baseName || 'trace'}_with_waypoints.gpx`;
+
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = downloadName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 0);
+
+      showMessage(`Fichier "${downloadName}" exporté.`);
     }
 
     function createArrowIconHtml(bearing) {
       const rotation = ((bearing - 90) + 360) % 360;
-      return `<span class="direction-arrow" style="display:inline-block; color:#ff5722; font-size:1rem; line-height:1; text-shadow:0 0 2px rgba(0,0,0,0.5); transform-origin:center; transform: rotate(${rotation}deg);">➤</span>`;
+      return `<span class="direction-arrow" style="transform: rotate(${rotation}deg);">➤</span>`;
     }
 
     function createArrowMarker(point, bearing) {
@@ -1132,53 +757,6 @@
       return arrowMarkers;
     }
 
-    function computeTraceInfo(lineFeatures, geojson) {
-      if (!Array.isArray(lineFeatures) || lineFeatures.length === 0) {
-        return null;
-      }
-
-      const first = lineFeatures[0];
-      const properties = first.properties || {};
-      const name = properties.name || properties.description || (currentGpxFileName ? currentGpxFileName.replace(/\.gpx$/i, '') : 'Trace');
-      let pointCount = 0;
-      let type = properties.kind || first.geometry?.type || '—';
-
-      lineFeatures.forEach((feature) => {
-        if (!feature.geometry) {
-          return;
-        }
-        const geometry = feature.geometry;
-        if (geometry.type === 'LineString') {
-          pointCount += Array.isArray(geometry.coordinates) ? geometry.coordinates.length : 0;
-        } else if (geometry.type === 'MultiLineString') {
-          (geometry.coordinates || []).forEach((segment) => {
-            pointCount += Array.isArray(segment) ? segment.length : 0;
-          });
-        }
-        if (!type && geometry.type) {
-          type = geometry.type;
-        }
-        if (!properties.kind && feature.properties && feature.properties.kind) {
-          type = feature.properties.kind;
-        }
-      });
-
-      if (!type && geojson && Array.isArray(geojson.features)) {
-        const kinds = geojson.features
-          .map((feature) => feature?.properties?.kind)
-          .filter(Boolean);
-        if (kinds.length > 0) {
-          type = kinds[0];
-        }
-      }
-
-      return {
-        name,
-        pointCount,
-        type: type || '—'
-      };
-    }
-
     function displayGeoJSON(geojsonData) {
       clearPreviousLayers();
 
@@ -1231,7 +809,7 @@
               patterns: [
                 {
                   offset: '5%',
-                  repeat: '50%',
+        repeat: '50%',
                   symbol: L.Symbol.arrowHead({
                     pixelSize: 10,
                     headAngle: 60,
@@ -1262,8 +840,6 @@
 
       if (pointFeatures.length > 0) {
         addWaypointsFromFeatures(pointFeatures);
-      } else {
-        updateWaypointsList();
       }
 
       let bounds = null;
@@ -1288,9 +864,6 @@
       if (bounds && typeof bounds.isValid === 'function' && bounds.isValid()) {
         map.fitBounds(bounds.pad(0.1));
       }
-
-      updateTraceInfo(computeTraceInfo(lineFeatures, geojsonData));
-      currentGeojson = geojsonData;
     }
 
     /**
@@ -1329,9 +902,6 @@
 
           currentGpxDocument = xml;
           currentGpxFileName = file.name;
-          if (currentFilename) {
-            currentFilename.textContent = file.name;
-          }
 
           const geojson = convertGpxToGeoJSON(xml);
 
@@ -1362,103 +932,6 @@
       reader.readAsText(file);
     }
 
-    function exportUpdatedGpx() {
-      if (!currentGpxDocument) {
-        showMessage('Aucune trace GPX à exporter.', true);
-        return;
-      }
-
-      const xmlDoc = currentGpxDocument.cloneNode(true);
-      const gpxRoot = xmlDoc && xmlDoc.documentElement ? xmlDoc.documentElement : null;
-
-      if (!gpxRoot) {
-        showMessage('Impossible de préparer le fichier GPX.', true);
-        return;
-      }
-
-      const existingWaypoints = xmlDoc.querySelectorAll('wpt');
-      existingWaypoints.forEach((node) => {
-        if (node.parentNode) {
-          node.parentNode.removeChild(node);
-        }
-      });
-
-      const markers = getWaypointMarkers();
-      markers.forEach((marker) => {
-        if (typeof marker.getLatLng !== 'function') {
-          return;
-        }
-        const latlng = marker.getLatLng();
-        if (!latlng) {
-          return;
-        }
-
-        const wptNode = xmlDoc.createElement('wpt');
-        wptNode.setAttribute('lat', latlng.lat.toFixed(6));
-        wptNode.setAttribute('lon', latlng.lng.toFixed(6));
-
-        if (marker.waypointName) {
-          const nameNode = xmlDoc.createElement('name');
-          nameNode.textContent = marker.waypointName;
-          wptNode.appendChild(nameNode);
-        }
-
-        gpxRoot.appendChild(wptNode);
-      });
-
-      const serializer = new XMLSerializer();
-      let gpxString = serializer.serializeToString(xmlDoc);
-      if (!gpxString.startsWith('<?xml')) {
-        gpxString = `<?xml version="1.0" encoding="UTF-8"?>\n${gpxString}`;
-      }
-
-      const blob = new Blob([gpxString], { type: 'application/gpx+xml' });
-      const url = URL.createObjectURL(blob);
-
-      const explicitName = gpxNameInput && gpxNameInput.value.trim() ? gpxNameInput.value.trim() : '';
-      const baseName = explicitName || (currentGpxFileName ? currentGpxFileName.replace(/\.gpx$/i, '') : 'trace');
-      const downloadName = `${baseName || 'trace'}_with_waypoints.gpx`;
-
-      const anchor = document.createElement('a');
-      anchor.href = url;
-      anchor.download = downloadName;
-      document.body.appendChild(anchor);
-      anchor.click();
-      document.body.removeChild(anchor);
-
-      setTimeout(() => {
-        URL.revokeObjectURL(url);
-      }, 0);
-
-      showMessage(`Fichier "${downloadName}" exporté.`);
-    }
-
-    function togglePanel(open) {
-      if (!toolsPanel) {
-        return;
-      }
-      const shouldOpen = open !== undefined ? open : !toolsPanel.classList.contains('open');
-      if (shouldOpen) {
-        toolsPanel.classList.add('open');
-        menuToggle?.setAttribute('aria-expanded', 'true');
-        if (!backdropElement) {
-          backdropElement = document.createElement('div');
-          backdropElement.className = 'panel-backdrop';
-          backdropElement.addEventListener('click', () => {
-            togglePanel(false);
-          });
-          document.body.appendChild(backdropElement);
-        }
-      } else {
-        toolsPanel.classList.remove('open');
-        menuToggle?.setAttribute('aria-expanded', 'false');
-        if (backdropElement) {
-          backdropElement.remove();
-          backdropElement = null;
-        }
-      }
-    }
-
     // Gestion du clic sur le bouton pour ouvrir le sélecteur de fichier
     importButton.addEventListener('click', () => fileInput.click());
 
@@ -1466,89 +939,36 @@
       exportButton.addEventListener('click', exportUpdatedGpx);
     }
 
-    if (menuToggle) {
-      menuToggle.addEventListener('click', () => togglePanel(true));
-    }
-
-    if (closePanel) {
-      closePanel.addEventListener('click', () => togglePanel(false));
-    }
-
     // Gestion du changement de fichier via le sélecteur
     fileInput.addEventListener('change', (event) => {
       const selectedFile = event.target.files && event.target.files[0];
       handleFile(selectedFile);
+      // Réinitialise l'input pour permettre de recharger le même fichier si besoin
       fileInput.value = '';
     });
 
-    if (clearWaypointsButton) {
-      clearWaypointsButton.addEventListener('click', () => {
-        waypointLayerGroup.clearLayers();
-        updateWaypointsList();
+    // Gestion du drag & drop directement sur la carte
+    ['dragenter', 'dragover'].forEach((eventName) => {
+      mapContainer.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        mapContainer.classList.add('dragover');
       });
-    }
+    });
 
-    function handleDragEnter(zone, event) {
-      event.preventDefault();
-      event.stopPropagation();
-      zone.classList.add('dragover');
-    }
-
-    function handleDragLeave(zone, event) {
-      event.preventDefault();
-      event.stopPropagation();
-      zone.classList.remove('dragover');
-    }
-
-    function handleDrop(zone, event) {
-      event.preventDefault();
-      event.stopPropagation();
-      zone.classList.remove('dragover');
-      const files = event.dataTransfer && event.dataTransfer.files;
-      if (files && files.length > 0) {
-        handleFile(files[0]);
-      }
-    }
-
-    if (panelDropZone) {
-      ['dragenter', 'dragover'].forEach((eventName) => {
-        panelDropZone.addEventListener(eventName, (event) => handleDragEnter(panelDropZone, event));
-      });
-
-      ['dragleave', 'drop'].forEach((eventName) => {
-        panelDropZone.addEventListener(eventName, (event) => {
-          if (eventName === 'drop') {
-            handleDrop(panelDropZone, event);
-          } else {
-            handleDragLeave(panelDropZone, event);
+    ['dragleave', 'drop'].forEach((eventName) => {
+      mapContainer.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (eventName === 'drop') {
+          const droppedFiles = event.dataTransfer && event.dataTransfer.files;
+          if (droppedFiles && droppedFiles.length > 0) {
+            handleFile(droppedFiles[0]);
           }
-        });
+        }
+        mapContainer.classList.remove('dragover');
       });
-    }
-
-    // Gestion du drag & drop sur la carte
-    const mapContainer = document.querySelector('#map');
-    if (mapContainer) {
-      ['dragenter', 'dragover'].forEach((eventName) => {
-        mapContainer.addEventListener(eventName, (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-        });
-      });
-
-      ['dragleave', 'drop'].forEach((eventName) => {
-        mapContainer.addEventListener(eventName, (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          if (eventName === 'drop') {
-            const droppedFiles = event.dataTransfer && event.dataTransfer.files;
-            if (droppedFiles && droppedFiles.length > 0) {
-              handleFile(droppedFiles[0]);
-            }
-          }
-        });
-      });
-    }
+    });
 
     // Empêche le navigateur d'ouvrir le fichier en dehors de la zone prévue
     document.addEventListener('dragover', (event) => {
@@ -1561,13 +981,6 @@
     // S'assure que la carte s'ajuste lors des changements de taille de fenêtre
     window.addEventListener('resize', () => {
       map.invalidateSize();
-    });
-
-    // Fermer le panneau avec la touche Échap sur mobile
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        togglePanel(false);
-      }
     });
   </script>
 </body>
