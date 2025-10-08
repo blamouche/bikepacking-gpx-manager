@@ -57,8 +57,8 @@
     }
 
     .tools-panel {
-      width: 320px;
-      min-width: 320px;
+      width: 420px;
+      min-width: 420px;
       height: 100vh;
       background: var(--color-background);
       border-right: 1px solid var(--color-border);
@@ -1024,8 +1024,8 @@
         position: fixed;
         top: 0;
         left: 0;
-        width: 85vw;
-        max-width: 320px;
+        width: 90vw;
+        max-width: 420px;
         z-index: 2000;
         transform: translateX(-100%);
         transition: transform 0.3s ease;
@@ -1956,6 +1956,22 @@ html, body {
 .user-location-accuracy { fill: rgba(66,133,244,0.15); stroke: rgba(66,133,244,0.3); stroke-width: 2; }
 </style>
 
+
+<style>
+/* Sidebar widening & preset select layout overrides */
+.tools-panel { width: 460px !important; min-width: 460px !important; }
+@media (max-width: 1024px) {
+  .tools-panel { width: 92vw !important; max-width: 460px !important; }
+}
+@media (max-width: 767px) {
+  .tools-panel { width: 95vw !important; max-width: 460px !important; }
+  .layer-presets { flex-direction: column !important; align-items: stretch !important; }
+}
+.layer-presets { display: flex; gap: 0.5rem; align-items: center; }
+.layer-presets label { flex: 0 0 auto; margin-right: 0.25rem; }
+.preset-select { flex: 1 1 auto; width: 100%; }
+</style>
+
 </head>
 <body>
   <div class="app-container">
@@ -2493,6 +2509,18 @@ html, body {
         priority: 'high',
         minZoom: 12
       },
+
+      hospital: {
+        id: 'hospital',
+        label: 'Hôpital',
+        icon: '🏥',
+        color: '#E53935',
+        group: 'health',
+        tags: { amenity: 'hospital' },
+        priority: 'high',
+        minZoom: 11
+      },
+
       cemetery: {
         id: 'cemetery',
         label: 'Cimetière',
@@ -2517,63 +2545,55 @@ html, body {
 
 
     const LAYER_PRESETS = {
-      bikepacking: {
-        label: 'Bikepacking',
-        icon: '🚴',
-        categories: [
-          'bicycle_repair',
-          'bicycle_shop',
-          'drinking_water',
-          'camp_site',
-          'camp_site_backcountry',
-          'supermarket',
-          'convenience',
-          'pharmacy'
-        ]
-      },
-      hiking: {
-        label: 'Randonnée',
-        icon: '🥾',
-        categories: [
-          'drinking_water',
-          'wilderness_hut',
-          'alpine_hut',
-          'camp_site',
-          'toilets',
-          'pharmacy'
-        ]
-      },
-      touring: {
-        label: 'Voyage à vélo',
-        icon: '🚵',
-        categories: [
-          'bicycle_repair',
-          'drinking_water',
-          'camp_site',
-          'hotel',
-          'hostel',
-          'supermarket',
-          'restaurant',
-          'cafe',
-          'pharmacy'
-        ]
-      },
-      urban: {
-        label: 'Urbain',
-        icon: '🏙️',
-        categories: [
-          'bicycle_shop',
-          'drinking_water',
-          'toilets',
-          'supermarket',
-          'convenience',
-          'restaurant',
-          'cafe',
-          'fast_food',
-          'pharmacy'
-        ]
-      }
-    };
+  need_water: {
+    label: "J'ai besoin d'eau",
+    icon: '💧',
+    categories: [
+      'drinking_water',
+      'cemetery',
+      'grave_yard',
+      'convenience'
+    ]
+  },
+  need_food: {
+    label: 'J\'ai besoin de manger',
+    icon: '🍽️',
+    categories: [
+      'supermarket',
+      'convenience',
+      'restaurant',
+      'fast_food'
+    ]
+  },
+  need_repair: {
+    label: 'J\'ai besoin de réparer',
+    icon: '🔧',
+    categories: [
+      'bicycle_repair',
+      'bicycle_shop'
+    ]
+  },
+  need_accommodation: {
+    label: 'J\'ai besoin d\'un hébergement',
+    icon: '🏕️',
+    categories: [
+      'camp_site',
+      'wilderness_hut',
+      'alpine_hut',
+      'hotel',
+      'hostel',
+      'guest_house'
+    ]
+  },
+  need_health: {
+    label: 'J\'ai besoin de me soigner',
+    icon: '🏥',
+    categories: [
+      'pharmacy',
+      'hospital'
+    ]
+  }
+};
 
     const POI_SETTINGS = {
       debounceMs: 2000,
