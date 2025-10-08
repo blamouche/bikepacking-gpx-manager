@@ -939,7 +939,7 @@
     .poi-refresh-button {
       position: absolute;
       z-index: 900;
-      top: 1rem;
+      top: 3.25rem;
       display: none;
       align-items: center;
       gap: 0.4rem;
@@ -1052,7 +1052,9 @@
         min-width: 280px;
       }
     }
-  </style>
+  
+/* === Layer indicators overrides merged === */
+</style>
 
 <!-- Modern Compact UI Overrides -->
 <style>
@@ -1455,6 +1457,474 @@ html, body {
   background: var(--color-text-muted);
 }
 </style>
+
+<!-- Layer Indicators on Map Overrides -->
+<style>
+/* 1) Container des indicateurs - arraché du panneau et centré en haut de la carte */
+.panel-section .layer-indicators {
+  /* Retirer du flux normal du panneau */
+  position: absolute;
+
+  /* Positionnement centré en haut de la carte */
+  left: 50%;
+  top: 1rem;
+  transform: translateX(-50%);
+
+  /* Z-index supérieur au bouton POI (900) mais inférieur aux popups */
+  z-index: 950;
+
+  /* Largeur adaptative */
+  max-width: 500px;
+  width: calc(100vw - 2rem);
+
+  /* Espacement entre les indicateurs */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  /* Permettre le clic à travers si vide */
+  pointer-events: none;
+}
+
+/* Restaurer pointer-events sur les éléments visibles */
+.layer-loading,
+.layer-error,
+.layer-info,
+.layer-zoom-info,
+.layer-total {
+  pointer-events: auto;
+}
+
+/* 2) Styles modernisés des indicateurs */
+.layer-loading {
+  display: none; /* caché par défaut */
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+
+  /* Glassmorphism */
+  background: rgba(0, 102, 255, 0.95);
+  color: #FFFFFF;
+  backdrop-filter: blur(10px);
+
+  /* Ombre */
+  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+
+  /* Animation */
+  animation: slideDown 0.3s ease-out;
+}
+
+/* keyframes communs */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-10px); }
+}
+
+.layer-error {
+  display: none;
+  padding: 0.625rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: rgba(255, 59, 48, 0.95);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3);
+  animation: slideDown 0.3s ease-out;
+}
+
+.layer-info {
+  display: none;
+  padding: 0.625rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: rgba(255, 149, 0, 0.95);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(255, 149, 0, 0.3);
+  animation: slideDown 0.3s ease-out;
+}
+
+/* Le HTML existant utilise id="layers-zoom-info" avec la classe .layer-info.
+   On applique donc le style "zoom-info" sur cet id pour respecter la spec,
+   sans modifier le JS/HTML. */
+#layers-zoom-info {
+  display: none;
+  padding: 0.625rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: rgba(255, 204, 0, 0.95);
+  color: #1A1A1A;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(255, 204, 0, 0.3);
+  animation: slideDown 0.3s ease-out;
+}
+
+/* 3) Bouton POI : déjà centré. On confirme la hiérarchie (z-index: 900) */
+.poi-refresh-button {
+  position: absolute;
+  z-index: 900; /* Inférieur aux indicateurs */
+  left: 50%;
+  top: 1rem;
+  transform: translateX(-50%);
+  transition: transform 0.3s ease, top 0.3s ease;
+}
+
+/* 4) Compteur total POI : overlay sous les indicateurs */
+.layer-total {
+  display: none; /* caché par défaut */
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-light);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: slideDown 0.3s ease-out;
+
+  /* Position fixe pour apparaître sur la carte, sous les indicateurs */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 950;
+  top: 4.25rem; /* espace sous la ligne des indicateurs */
+}
+
+.layer-count-value {
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+/* 5) Responsive mobile */
+@media (max-width: 767px) {
+  .panel-section .layer-indicators {
+    top: 4.5rem; /* sous le bouton menu mobile */
+    left: 1rem;
+    right: 1rem;
+    transform: none;
+    width: auto;
+    max-width: none;
+  }
+
+  .layer-loading,
+  .layer-error,
+  .layer-info,
+  #layers-zoom-info,
+  .layer-total {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .poi-refresh-button {
+    top: 1rem;
+  }
+
+  .layer-total {
+    left: 1rem;
+    right: 1rem;
+    transform: none;
+    top: 7.25rem; /* sous la zone d'indicateurs sur mobile */
+  }
+}
+
+/* 6) Gestion du panneau ouvert sur mobile : éviter chevauchement */
+@media (max-width: 767px) {
+  .tools-panel.open ~ .map-container .map-main::after {
+    /* pseudo repère (aucun rendu) */
+    content: '';
+  }
+  /* Les indicateurs étant positionnés fixed depuis le panneau, on ajuste avec l'état du panneau */
+  .tools-panel.open .panel-section .layer-indicators {
+    left: calc(85vw + 1rem);
+    right: 1rem;
+    width: auto;
+    transform: none;
+  }
+
+  @media (max-width: 480px) {
+    .tools-panel.open .panel-section .layer-indicators {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+}
+
+/* 7) Animations d'apparition lorsqu'ils passent à display: ... */
+.layer-loading[style*="display: flex"],
+.layer-error[style*="display: block"],
+.layer-info[style*="display: block"],
+#layers-zoom-info[style*="display: block"],
+.layer-total[style*="display: flex"] {
+  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 8) Spinner de chargement */
+.layer-loading .loading-spinner {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+  font-size: 1rem;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* 9) Icônes/visuels via pseudo-éléments */
+.layer-error::before { content: "⚠️ "; }
+.layer-info::before { content: "ℹ️ "; }
+/* zoom-info déjà traité via #layers-zoom-info ; ajout d'icône via ::before */
+#layers-zoom-info::before { content: "🔍 "; }
+
+/* 10) Accessibilité (focus visible) */
+.layer-error:focus-within,
+.layer-info:focus-within,
+#layers-zoom-info:focus-within {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* 11) Dark mode */
+@media (prefers-color-scheme: dark) {
+  .layer-loading { background: rgba(10, 132, 255, 0.95); }
+  .layer-error { background: rgba(255, 69, 58, 0.95); }
+  .layer-info { background: rgba(255, 159, 10, 0.95); }
+  #layers-zoom-info { background: rgba(255, 214, 10, 0.95); color: #1A1A1A; }
+  .layer-total {
+    background: rgba(28, 28, 30, 0.95);
+    color: #FFFFFF;
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+}
+</style>
+
+
+<!-- Center & Stack Indicators Override -->
+<style>
+/* Center the indicators container (relative to viewport for consistency) */
+.panel-section .layer-indicators {
+  position: fixed !important;       /* ensure not relative to panel */
+  left: 50% !important;
+  top: 1rem !important;
+  transform: translateX(-50%) !important;
+  max-width: 500px !important;
+  width: auto !important;           /* shrink to content */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;   /* center children horizontally */
+  gap: 0.5rem !important;
+  pointer-events: none !important;
+}
+
+/* Make each message box intrinsically sized and centered */
+.layer-loading,
+.layer-error,
+.layer-info,
+#layers-zoom-info,
+.layer-total {
+  width: max-content;               /* fit content width */
+  max-width: 90vw;                  /* avoid overflow */
+  text-align: center;
+  pointer-events: auto;
+}
+
+/* Ensure the total counter stacks with others (not absolutely positioned) */
+.layer-total {
+  position: static !important;
+  left: auto !important;
+  top: auto !important;
+  transform: none !important;
+}
+
+/* Give the POI refresh button room below stacked indicators */
+.poi-refresh-button {
+  top: 3.75rem !important;          /* slightly lower to clear stacked messages */
+}
+
+@media (max-width: 767px) {
+  .panel-section .layer-indicators {
+    top: 4.5rem !important;
+  }
+  .poi-refresh-button {
+    top: 1rem !important;
+  }
+}
+</style>
+
+
+<!-- === Empilement vertical des indicateurs & bouton POI (CSS + JS) === -->
+<style>
+/* 1) Pile virtuelle centrée : on utilise .layer-indicators comme pile fixe */
+.layer-indicators {
+  position: fixed !important;
+  top: 1rem !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 950 !important;
+  max-width: 500px !important;
+  width: min(500px, calc(100vw - 2rem)) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  pointer-events: none !important;
+}
+
+/* Les enfants redeviennent interactifs et prennent la largeur de la pile */
+.layer-indicators > .layer-loading,
+.layer-indicators > .layer-error,
+.layer-indicators > .layer-info,
+.layer-indicators > #layers-zoom-info,
+.layer-indicators > .layer-zoom-info,
+.layer-indicators > .layer-total {
+  pointer-events: auto;
+  width: 100%;
+  text-align: center;
+}
+
+/* 3) Styles communs (au cas où non appliqués ailleurs) */
+.layer-loading,
+.layer-error,
+.layer-info,
+.layer-zoom-info,
+#layers-zoom-info,
+.layer-total {
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: slideDown 0.3s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Variantes couleurs (rappel) */
+.layer-loading { background: rgba(0,102,255,0.95); color:#fff; border:1px solid rgba(255,255,255,0.2); }
+.layer-error   { background: rgba(255,59,48,0.95); color:#fff; border:1px solid rgba(255,255,255,0.2); }
+.layer-info    { background: rgba(255,149,0,0.95); color:#fff; border:1px solid rgba(255,255,255,0.2); }
+.layer-zoom-info, #layers-zoom-info { background: rgba(255,204,0,0.95); color:#1A1A1A; border:1px solid rgba(255,255,255,0.3); }
+.layer-total   { background: rgba(255,255,255,0.95); color: var(--color-text-primary, #1A1A1A); border:1px solid var(--color-border-light, rgba(0,0,0,0.08)); }
+
+/* Padding standard des boîtes */
+.layer-loading, .layer-error, .layer-info, .layer-zoom-info, #layers-zoom-info, .layer-total {
+  padding: 0.625rem 1rem;
+}
+
+/* 5) Bouton POI : centré et positionné sous la pile dynamique */
+.poi-refresh-button {
+  position: fixed !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 949 !important; /* juste sous les boîtes */
+  transition: top 0.25s cubic-bezier(0.4,0,0.2,1);
+  white-space: nowrap;
+}
+
+/* 7) Responsive */
+@media (max-width: 767px) {
+  .layer-indicators {
+    top: 4.5rem !important;
+    left: 1rem !important;
+    right: 1rem !important;
+    transform: none !important;
+    max-width: none !important;
+    width: auto !important;
+    align-items: stretch !important;
+  }
+  .poi-refresh-button {
+    /* Le JS ajustera top; on garde centré par défaut si assez de place */
+  }
+  .layer-loading, .layer-error, .layer-info, .layer-zoom-info, #layers-zoom-info, .layer-total {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+}
+
+/* Animations */
+@keyframes slideDown {
+  from { opacity:0; transform: translateY(-10px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+</style>
+
+<script>
+// === Empilement dynamique : calcule la hauteur totale des indicateurs visibles
+(function() {
+  function isVisible(el) {
+    if (!el) return false;
+    const cs = getComputedStyle(el);
+    return cs.display !== 'none' && cs.visibility !== 'hidden' && cs.opacity !== '0';
+  }
+
+  function updateButtonPosition() {
+    const stack = document.querySelector('.layer-indicators');
+    const btn = document.querySelector('.poi-refresh-button');
+    if (!stack || !btn) return;
+
+    // Mesurer uniquement les éléments visibles dans la pile
+    const items = Array.from(stack.children).filter(isVisible);
+    const gap = parseFloat(getComputedStyle(stack).gap || '8'); // px
+    const stackTop = stack.getBoundingClientRect().top + window.scrollY; // position initiale top
+
+    // Hauteur totale = somme des hauteurs + gaps
+    let total = 0;
+    items.forEach((el, idx) => {
+      total += el.offsetHeight;
+      if (idx < items.length - 1) total += gap;
+    });
+
+    // Positionner le bouton sous la pile (si pile vide, coller au top de la pile)
+    const topPx = Math.round((stackTop || 16) + total);
+    btn.style.top = topPx + 'px';
+  }
+
+  // Observer les mutations de visibilité/changement de texte/contenu
+  const observer = new MutationObserver(() => {
+    requestAnimationFrame(updateButtonPosition);
+  });
+
+  function init() {
+    const stack = document.querySelector('.layer-indicators');
+    const btn = document.querySelector('.poi-refresh-button');
+    if (!stack || !btn) return;
+
+    observer.observe(stack, { attributes: true, childList: true, subtree: true, attributeFilter: ['style', 'class'] });
+
+    // Ajuster à l'ouverture/fermeture du panneau (resize / orientation)
+    window.addEventListener('resize', () => requestAnimationFrame(updateButtonPosition));
+    window.addEventListener('orientationchange', () => requestAnimationFrame(updateButtonPosition));
+
+    // Premier calcul
+    updateButtonPosition();
+
+    // Exposer une fonction globale légère si le code existant veut forcer un recalcul
+    window.__updatePoiButtonPosition = updateButtonPosition;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+
 </head>
 <body>
   <div class="app-container">
