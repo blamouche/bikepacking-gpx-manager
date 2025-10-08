@@ -1925,6 +1925,37 @@ html, body {
 })();
 </script>
 
+
+<style>
+/* === Géolocalisation : styles === */
+.geolocation-toggle { padding: 0.5rem 0; }
+.geolocation-info {
+  margin-top: 0.75rem; padding: 0.75rem; border-radius: var(--radius-md);
+  background: var(--color-background-alt); border: 1px solid var(--color-border-light);
+}
+.geolocation-status {
+  display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--color-text-secondary);
+}
+.geolocation-status .status-icon { font-size: 1rem; }
+.geolocation-status.active .status-icon { animation: pulse 2s ease-in-out infinite; }
+.geolocation-status.error { color: var(--color-danger); }
+.geolocation-error {
+  margin-top: 0.75rem; padding: 0.625rem 0.875rem; border-radius: var(--radius-md);
+  background: rgba(255, 59, 48, 0.1); color: var(--color-danger); font-size: 0.875rem;
+  border: 1px solid rgba(255, 59, 48, 0.2);
+}
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.5;} }
+
+/* Marqueur de position */
+.user-location-marker { border: none !important; background: transparent !important; }
+.user-location-marker-inner {
+  width: 100%; height: 100%; border-radius: 50%; background: #4285F4; border: 3px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(66,133,244,0.4); animation: locationPulse 2s ease-in-out infinite;
+}
+@keyframes locationPulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.1);opacity:.8;} }
+.user-location-accuracy { fill: rgba(66,133,244,0.15); stroke: rgba(66,133,244,0.3); stroke-width: 2; }
+</style>
+
 </head>
 <body>
   <div class="app-container">
@@ -2731,7 +2762,49 @@ html, body {
             <strong>Total POI affichés :</strong>
             <span class="layer-count-value" id="layers-total-count">0</span>
           </div>
-        </section>`;
+        </section>
+
+<section class="panel-section geolocation-section" id="geolocation-section">
+  <h3 class="section-title">Ma position</h3>
+  
+  <!-- Toggle de géolocalisation -->
+  <label class="layer-toggle geolocation-toggle">
+    <input
+      type="checkbox"
+      id="geolocation-toggle"
+      class="toggle-input"
+      aria-label="Activer la géolocalisation en temps réel"
+    />
+    <span class="toggle-switch"></span>
+    <span class="toggle-text">
+      <span class="toggle-icon" aria-hidden="true">📍</span>
+      Activer la localisation
+    </span>
+  </label>
+  
+  <!-- Informations de position (visible uniquement si activé) -->
+  <div class="geolocation-info" id="geolocation-info" style="display: none;">
+    <div class="geolocation-status" id="geolocation-status">
+      <span class="status-icon">🔄</span>
+      <span class="status-text">Recherche de position...</span>
+    </div>
+    
+    <button 
+      type="button" 
+      class="btn btn-secondary btn-small" 
+      id="center-on-position"
+      style="margin-top: 0.5rem;"
+      disabled
+    >
+      <span aria-hidden="true">🎯</span>
+      Centrer sur ma position
+    </button>
+  </div>
+  
+  <!-- Message d'erreur (si nécessaire) -->
+  <div class="geolocation-error" id="geolocation-error" style="display: none;"></div>
+</section>
+`;
       return html;
     }
 
@@ -5283,5 +5356,222 @@ html, body {
       }
     });
   </script>
+
+<script>
+// === Géolocalisation : manager & fonctions ===
+const geolocationManager = {
+  enabled: false,
+  watchId: null,
+  currentPosition: null,
+  marker: null,
+  accuracyCircle: null,
+  lastUpdate: null,
+  refreshInterval: 60000,
+  refreshTimer: null,
+  // DOM
+  toggleCheckbox: null,
+  statusElement: null,
+  infoContainer: null,
+  errorContainer: null,
+  centerButton: null,
+  // Options
+  options: { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+};
+
+function initGeolocation() {
+  geolocationManager.toggleCheckbox = document.getElementById('geolocation-toggle');
+  geolocationManager.statusElement = document.getElementById('geolocation-status');
+  geolocationManager.infoContainer = document.getElementById('geolocation-info');
+  geolocationManager.errorContainer = document.getElementById('geolocation-error');
+  geolocationManager.centerButton = document.getElementById('center-on-position');
+
+  if (!navigator.geolocation) {
+    showGeolocationError('Votre navigateur ne supporte pas la géolocalisation.');
+    if (geolocationManager.toggleCheckbox) geolocationManager.toggleCheckbox.disabled = true;
+    return;
+  }
+
+  const savedPreference = loadGeolocationPreference();
+  if (savedPreference && geolocationManager.toggleCheckbox) {
+    geolocationManager.toggleCheckbox.checked = true;
+    enableGeolocation();
+  }
+
+  attachGeolocationHandlers();
+}
+
+function enableGeolocation() {
+  if (!navigator.geolocation) return;
+  geolocationManager.enabled = true;
+  if (geolocationManager.infoContainer) geolocationManager.infoContainer.style.display = 'block';
+  if (geolocationManager.errorContainer) geolocationManager.errorContainer.style.display = 'none';
+  updateGeolocationStatus('Recherche de position...', 'searching');
+  getCurrentPosition();
+  startGeolocationRefresh();
+  saveGeolocationPreference(true);
+}
+
+function disableGeolocation() {
+  geolocationManager.enabled = false;
+  stopGeolocationRefresh();
+  removeGeolocationMarker();
+  if (geolocationManager.infoContainer) geolocationManager.infoContainer.style.display = 'none';
+  if (geolocationManager.errorContainer) geolocationManager.errorContainer.style.display = 'none';
+  saveGeolocationPreference(false);
+}
+
+function getCurrentPosition() {
+  if (!navigator.geolocation || !geolocationManager.enabled) return;
+  navigator.geolocation.getCurrentPosition(
+    handleGeolocationSuccess,
+    handleGeolocationError,
+    geolocationManager.options
+  );
+}
+
+function handleGeolocationSuccess(position) {
+  if (!geolocationManager.enabled) return;
+  const { latitude, longitude, accuracy } = position.coords;
+  geolocationManager.currentPosition = { lat: latitude, lng: longitude, accuracy, timestamp: position.timestamp };
+  geolocationManager.lastUpdate = Date.now();
+  updateGeolocationMarker(latitude, longitude, accuracy);
+  const accuracyText = accuracy < 50 ? 'précise' : accuracy < 100 ? 'moyenne' : 'approximative';
+  updateGeolocationStatus(`Position obtenue (précision ${accuracyText}: ±${Math.round(accuracy)}m)`, 'active');
+  if (geolocationManager.centerButton) geolocationManager.centerButton.disabled = false;
+  hideGeolocationError();
+
+  // Centrage automatique à chaque mise à jour
+  centerOnUserPosition();
+}
+
+function handleGeolocationError(error) {
+  if (!geolocationManager.enabled) return;
+  let message = '';
+  switch (error.code) {
+    case error.PERMISSION_DENIED: message = 'Permission de localisation refusée. Veuillez autoriser l\'accès dans les paramètres de votre navigateur.'; break;
+    case error.POSITION_UNAVAILABLE: message = 'Position indisponible. Vérifiez votre connexion et vos paramètres de localisation.'; break;
+    case error.TIMEOUT: message = 'Délai d\'attente dépassé. Réessayez dans quelques instants.'; break;
+    default: message = 'Erreur de géolocalisation inconnue.';
+  }
+  updateGeolocationStatus('Erreur de localisation', 'error');
+  showGeolocationError(message);
+  if (geolocationManager.centerButton) geolocationManager.centerButton.disabled = true;
+}
+
+function updateGeolocationMarker(lat, lng, accuracy) {
+  // Réutilisation si existant
+  if (geolocationManager.accuracyCircle) {
+    geolocationManager.accuracyCircle.setLatLng([lat,lng]).setRadius(Math.min(accuracy || 0, 1000));
+  } else if (accuracy && accuracy < 1000) {
+    geolocationManager.accuracyCircle = L.circle([lat, lng], {
+      radius: accuracy, className: 'user-location-accuracy', interactive: false
+    }).addTo(map);
+  }
+
+  const icon = L.divIcon({
+    className: 'user-location-marker',
+    html: '<div class="user-location-marker-inner"></div>',
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
+  });
+
+  if (geolocationManager.marker) {
+    geolocationManager.marker.setLatLng([lat,lng]).setIcon(icon);
+  } else {
+    geolocationManager.marker = L.marker([lat, lng], { icon, zIndexOffset: 1000, title: 'Ma position' }).addTo(map);
+  }
+
+  const popupContent = '<div style="text-align:center;"><strong>📍 Ma position</strong><br><small>Précision: ±' + Math.round(accuracy) + 'm</small><br><small>' + new Date().toLocaleTimeString('fr-FR') + '</small></div>';
+  geolocationManager.marker.bindPopup(popupContent);
+}
+
+function removeGeolocationMarker() {
+  if (geolocationManager.marker) { try { map.removeLayer(geolocationManager.marker); } catch(e){} geolocationManager.marker = null; }
+  if (geolocationManager.accuracyCircle) { try { map.removeLayer(geolocationManager.accuracyCircle); } catch(e){} geolocationManager.accuracyCircle = null; }
+}
+
+function startGeolocationRefresh() {
+  stopGeolocationRefresh();
+  geolocationManager.refreshTimer = setInterval(() => {
+    if (geolocationManager.enabled) getCurrentPosition();
+  }, geolocationManager.refreshInterval);
+}
+
+function stopGeolocationRefresh() {
+  if (geolocationManager.refreshTimer) { clearInterval(geolocationManager.refreshTimer); geolocationManager.refreshTimer = null; }
+}
+
+function centerOnUserPosition() {
+  if (!geolocationManager.currentPosition) return;
+  const { lat, lng, accuracy } = geolocationManager.currentPosition;
+  let zoom = 16;
+  if (accuracy > 500) zoom = 13; else if (accuracy > 100) zoom = 15;
+  map.setView([lat, lng], zoom);
+  if (geolocationManager.marker) geolocationManager.marker.openPopup();
+}
+
+function updateGeolocationStatus(text, state) {
+  if (!geolocationManager.statusElement) return;
+  const statusText = geolocationManager.statusElement.querySelector('.status-text');
+  if (statusText) statusText.textContent = text;
+  geolocationManager.statusElement.className = 'geolocation-status ' + state;
+}
+
+function showGeolocationError(message) {
+  if (!geolocationManager.errorContainer) return;
+  geolocationManager.errorContainer.textContent = '⚠️ ' + message;
+  geolocationManager.errorContainer.style.display = 'block';
+}
+
+function hideGeolocationError() {
+  if (!geolocationManager.errorContainer) return;
+  geolocationManager.errorContainer.style.display = 'none';
+  geolocationManager.errorContainer.textContent = '';
+}
+
+function attachGeolocationHandlers() {
+  if (geolocationManager.toggleCheckbox) {
+    geolocationManager.toggleCheckbox.addEventListener('change', (e) => {
+      if (e.target.checked) enableGeolocation();
+      else disableGeolocation();
+    });
+  }
+  if (geolocationManager.centerButton) geolocationManager.centerButton.addEventListener('click', centerOnUserPosition);
+}
+
+function saveGeolocationPreference(enabled) {
+  try { localStorage.setItem('gpx_geolocation_enabled', JSON.stringify(enabled)); } catch(e){}
+}
+function loadGeolocationPreference() {
+  try { const saved = localStorage.getItem('gpx_geolocation_enabled'); return saved ? JSON.parse(saved) : false; } catch(e){ return false; }
+}
+
+// ---- Bootstrapping (après que la carte soit prête) ----
+(function bootGeolocWhenReady(){
+  function ready() {
+    // S'assure que map & L existent
+    if (typeof L === 'undefined' || typeof map === 'undefined' || !map) {
+      // réessaie au prochain tick
+      return void requestAnimationFrame(ready);
+    }
+    initGeolocation();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', ready);
+  } else {
+    ready();
+  }
+})();
+
+// Nettoyage
+window.addEventListener('beforeunload', () => { stopGeolocationRefresh(); });
+
+// Économie de batterie
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) stopGeolocationRefresh();
+  else if (geolocationManager.enabled) { getCurrentPosition(); startGeolocationRefresh(); }
+});
+</script>
+
 </body>
 </html>
