@@ -2263,6 +2263,7 @@ function initMapStyleControl() {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && mapStyleControl.isOpen) toggleMapStylePanel(false); });
 }
 
+document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersistence(); } catch(e){} });
 </script>
 
 
@@ -2450,6 +2451,76 @@ function initMapStyleControl() {
 })();
 </script>
 
+
+<style>
+/* Bouton "Effacer la trace" */
+#clear-trace-button {
+  margin-top: 0.5rem;
+}
+
+#clear-trace-button:hover {
+  background: var(--color-danger);
+  color: white;
+}
+</style>
+
+
+<style>
+  /* Ensure elevation canvas has a minimum render size after reload */
+  #elevation-canvas {
+    min-height: 220px;
+    width: 100%;
+    display: block;
+  }
+</style>
+
+
+<style>
+  /* Elevation panel responsive sizing */
+  #elevation-profile {
+    overflow: hidden;
+  }
+  #elevation-canvas {
+    width: 100%;
+    display: block;
+    /* height is set dynamically by JS; this is a safe fallback */
+    max-height: 40vh;
+  }
+</style>
+
+
+<style>
+  /* Viewport-aware elevation sizing */
+  #elevation-profile { overflow: hidden; }
+  #elevation-canvas { width: 100%; display: block; }
+</style>
+
+
+<style>
+  /* Elevation container should auto-size to its content */
+  #elevation-profile { overflow: visible; }
+  #elevation-content {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+</style>
+
+
+<style>
+  /* Canvas fills its parent container */
+  #elevation-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  /* Parent controls height; provide a safe default you can override */
+  #elevation-content {
+    --elev-content-height: 260px;
+    height: var(--elev-content-height);
+  }
+</style>
+
 </head>
 <body>
   <div class="app-container">
@@ -2489,6 +2560,14 @@ function initMapStyleControl() {
               <span aria-hidden="true">📁</span>
               Importer GPX
             </button>
+
+<!-- Après le bouton "Exporter GPX" -->
+<button class="btn btn-secondary" id="clear-trace-button" style="display: none;">
+  <span aria-hidden="true">🗑️</span>
+  Effacer la trace
+</button>
+
+
             <button class="btn btn-primary" id="export-button" disabled>
               <span aria-hidden="true">💾</span>
               Exporter GPX
@@ -4264,19 +4343,47 @@ function initMapStyleControl() {
     let backdropElement = null;
 
     const waypointLayerGroup = L.layerGroup().addTo(map);
+// === PERSISTENCE WAYPOINTS — debounce & group hooks (defined early) ===
+if (typeof window.__saveWpTimer === 'undefined') window.__saveWpTimer = null;
+function saveTraceDebounced(delay = 120) {
+  if (typeof saveTraceToLocalStorage !== 'function') return;
+  clearTimeout(window.__saveWpTimer);
+  window.__saveWpTimer = setTimeout(() => {
+    try { saveTraceToLocalStorage(); } catch(e) { console.warn(e); }
+  }, delay);
+}
+function attachWaypointPersistence() {
+  try {
+    if (!waypointLayerGroup || typeof waypointLayerGroup.on !== 'function') return;
+    waypointLayerGroup.off('layeradd', saveTraceDebounced);
+    waypointLayerGroup.off('layerremove', saveTraceDebounced);
+    waypointLayerGroup.on('layeradd', () => saveTraceDebounced());
+    waypointLayerGroup.on('layerremove', () => saveTraceDebounced());
+    saveTraceDebounced(10);
+  } catch (e) { console.warn('attachWaypointPersistence:', e); }
+}
+// Attach once after map init
+attachWaypointPersistence();
     let waypointCounter = 1;
 
-    let gpxLayerGroup = null;
-    let arrowLayerGroup = null;
-    let currentGpxDocument = null;
-    let currentGpxFileName = '';
-    let currentGeojson = null;
-    let currentTraceName = '';
-    let traceNameSource = '';
-    let currentElevationData = null;
-    let elevationHoverMarker = null;
-    let elevationMouseMoveHandler = null;
-    let elevationMouseLeaveHandler = null;
+let gpxLayerGroup = null;
+let arrowLayerGroup = null;
+let currentGpxDocument = null;
+let currentGpxFileName = '';
+let currentGeojson = null;
+let currentTraceName = '';
+let traceNameSource = '';
+
+// Exposer les variables importantes sur window pour la sauvegarde
+window.currentGpxDocument = null;
+window.currentGpxFileName = '';
+window.currentTraceName = '';
+window.traceNameSource = '';
+let currentElevationData = null;
+let elevationHoverMarker = null;
+let elevationMouseMoveHandler = null;
+let elevationMouseLeaveHandler = null;
+
 
     setExportAvailability(false);
     updateWaypointsList();
@@ -4878,6 +4985,7 @@ function initMapStyleControl() {
       ) {
         return;
       }
+      sizeCanvasToParent();
       drawElevationProfile(elevationCanvas, currentElevationData.points, currentElevationData.stats);
       setupElevationInteraction(currentElevationData.points, currentElevationData.stats);
     }
@@ -5050,6 +5158,11 @@ function initMapStyleControl() {
         waypointLayerGroup.removeLayer(marker);
         map.closePopup(popup);
         updateWaypointsList();
+      
+        // Sauvegarde immédiate (sans debounce) pour figer l’état
+        if (typeof saveTraceToLocalStorage === 'function') {
+          try { saveTraceToLocalStorage(); } catch(e) { console.warn(e); }
+        }
       };
 
       if (input) {
@@ -5115,6 +5228,14 @@ function createWaypointMarker(latlng, name = '') {
 
   waypointLayerGroup.addLayer(marker);
   updateWaypointsList();
+  
+  if (typeof marker.on === 'function') {
+    marker.on('remove', () => { if (typeof saveTraceDebounced === 'function') saveTraceDebounced(50); });
+  }
+// Auto-save right after waypoint creation
+  if (typeof saveTraceToLocalStorage === 'function') {
+    setTimeout(() => saveTraceToLocalStorage(), 50);
+  }
   return marker;
 }
 
@@ -5175,7 +5296,7 @@ function createWaypointMarker(latlng, name = '') {
     }
 
     function updateWaypointsList() {
-      if (!waypointsList || !waypointCountLabel || !waypointsSection) {
+if (!waypointsList || !waypointCountLabel || !waypointsSection) {
         return;
       }
 
@@ -5210,10 +5331,20 @@ function createWaypointMarker(latlng, name = '') {
           deleteButton.addEventListener('click', () => {
             waypointLayerGroup.removeLayer(marker);
             updateWaypointsList();
-          });
+          
+        
+    
+        // Persist deletion (debounced + immediate safeguard)
+        if (typeof saveTraceDebounced === 'function') saveTraceDebounced(60);
+        if (typeof saveTraceToLocalStorage === 'function') { try { saveTraceToLocalStorage(); } catch(e) { console.warn(e); } }
+if (typeof saveTraceDebounced === 'function') saveTraceDebounced(50);
+// Persist deletion
+        if (typeof saveTraceDebounced === 'function') saveTraceDebounced(50);
+    });
         }
 
-        waypointsList.appendChild(item);
+        
+waypointsList.appendChild(item);
       });
     }
 
@@ -5544,8 +5675,8 @@ function createWaypointMarker(latlng, name = '') {
             throw new Error('Fichier GPX invalide.');
           }
 
-          currentGpxDocument = xml;
-          currentGpxFileName = file.name;
+          currentGpxDocument = window.currentGpxDocument = xml;
+          currentGpxFileName = window.currentGpxFileName = file.name;
           if (currentFilename) {
             currentFilename.textContent = file.name;
           }
@@ -5554,8 +5685,8 @@ function createWaypointMarker(latlng, name = '') {
           }
 
           const extractedTrace = extractTraceName(xml, file.name);
-          currentTraceName = extractedTrace.name;
-          traceNameSource = extractedTrace.source;
+          currentTraceName = window.currentTraceName = extractedTrace.name;
+          traceNameSource = window.traceNameSource = extractedTrace.source;
           if (gpxNameInput) {
             gpxNameInput.value = currentTraceName;
           }
@@ -5569,9 +5700,12 @@ function createWaypointMarker(latlng, name = '') {
 
           setExportAvailability(true);
           displayGeoJSON(geojson);
+    if (typeof attachWaypointPersistence === 'function') attachWaypointPersistence();
+          // Guarded elevation render after import
+          if (typeof ensureElevationRendered === 'function') ensureElevationRendered(12);
 
-          currentElevationData = extractElevationData(geojson, xml);
-          let noElevationData = false;
+          currentElevationData = currentElevationData = window.currentElevationData = extractElevationData(geojson, xml);
+      let noElevationData = false;
           if (currentElevationData) {
             updateElevationStats(currentElevationData.stats);
             setElevationCollapsed(false);
@@ -5637,6 +5771,18 @@ function createWaypointMarker(latlng, name = '') {
             successMessage += '<br><small>Cette trace ne contient pas de données d\'élévation.</small>';
           }
           showMessage(successMessage, false, true);
+          
+          // Sauvegarder la trace après chargement réussi
+          setTimeout(() => {
+            if (typeof saveTraceToLocalStorage === 'function') {
+              saveTraceToLocalStorage();
+              console.log('Trace sauvegardée après import');
+            }
+          }, 200);
+
+          
+          // Sauvegarder automatiquement la trace chargée
+setTimeout(() => { if (typeof saveTraceToLocalStorage === 'function') saveTraceToLocalStorage(); }, 500);
         } catch (error) {
           console.error(error);
           showMessage(error.message || 'Impossible de lire ce fichier GPX.', true);
@@ -5771,7 +5917,15 @@ function createWaypointMarker(latlng, name = '') {
     // Gestion du clic sur le bouton pour ouvrir le sélecteur de fichier
     importButton.addEventListener('click', () => fileInput.click());
 
+    if (typeof attachWaypointPersistence === 'function') attachWaypointPersistence();
     if (exportButton) {
+    // Ensure local saved trace is loaded AFTER map & layers are ready
+    setTimeout(() => {
+      if (typeof loadTraceFromLocalStorage === 'function') {
+        loadTraceFromLocalStorage();
+      }
+    }, 300);
+
       exportButton.addEventListener('click', exportUpdatedGpx);
     }
 
@@ -5812,7 +5966,13 @@ function createWaypointMarker(latlng, name = '') {
       clearWaypointsButton.addEventListener('click', () => {
         waypointLayerGroup.clearLayers();
         updateWaypointsList();
-      });
+      
+      if (typeof saveTraceDebounced === 'function') saveTraceDebounced(60);
+      if (typeof saveTraceToLocalStorage === 'function') { try { saveTraceToLocalStorage(); } catch(e) {} }
+  // FINAL SAFETY: persist the current state after any list refresh
+  if (window.currentGpxDocument && typeof saveTraceDebounced === 'function') saveTraceDebounced(80);
+
+});
     }
 
     function handleDragEnter(zone, event) {
@@ -5917,7 +6077,7 @@ const geolocationManager = {
   errorContainer: null,
   centerButton: null,
   // Options
-  options: { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  options: { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
 };
 
 function initGeolocation() {
@@ -6113,6 +6273,537 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) stopGeolocationRefresh();
   else if (geolocationManager.enabled) { getCurrentPosition(); startGeolocationRefresh(); }
 });
+
+
+// === SAUVEGARDE LOCALE DE LA TRACE GPX ===
+
+const GPX_STORAGE_KEY = 'gpx_saved_trace';
+const GPX_WAYPOINTS_KEY = 'gpx_saved_waypoints';
+const clearTraceButton = document.getElementById('clear-trace-button');
+
+/**
+ * Sauvegarde la trace GPX et les waypoints dans localStorage
+ */
+
+function saveTraceToLocalStorage() {
+  console.log('saveTraceToLocalStorage appelée');
+  console.log('currentGpxDocument:', window.currentGpxDocument);
+  console.log('currentGpxFileName:', window.currentGpxFileName);
+  
+  if (!window.currentGpxDocument || !window.currentGpxFileName) {
+    console.warn('Pas de trace à sauvegarder');
+    return;
+  }
+
+  try {
+    // Sérialiser le document XML
+    const serializer = new XMLSerializer();
+    let gpxString = serializer.serializeToString(window.currentGpxDocument);
+    if (!gpxString.startsWith('<?xml')) {
+      gpxString = `<?xml version="1.0" encoding="UTF-8"?>
+${gpxString}`;
+    }
+
+        // Collecter les waypoints affichés sur la carte (tous, GPX + personnalisés)
+    const waypoints = [];
+    const seen = new Set(); // anti-doublons lat/lng+nom
+    const markers = (typeof getWaypointMarkers === 'function') ? getWaypointMarkers() : [];
+    (markers || []).forEach((marker) => {
+      const latlng = marker.getLatLng && marker.getLatLng();
+      if (!latlng) return;
+      const key = latlng.lat.toFixed(6) + ',' + latlng.lng.toFixed(6);
+      const nameKey = (marker.waypointName || '').trim();
+      const dedupKey = key + '|' + nameKey;
+      if (seen.has(dedupKey)) return;
+      seen.add(dedupKey);
+      waypoints.push({ lat: latlng.lat, lng: latlng.lng, name: marker.waypointName || '' });
+    });
+
+    // Préparer les données à sauvegarder
+    const traceData = {
+      fileName: window.currentGpxFileName,
+      traceName: window.currentTraceName || '',
+      traceNameSource: window.traceNameSource || 'default',
+      gpxContent: gpxString,
+      waypoints: waypoints,
+      timestamp: Date.now()
+    };
+
+    // Sauvegarder dans localStorage
+    localStorage.setItem(GPX_STORAGE_KEY, JSON.stringify(traceData));
+    console.log('📝 localStorage updated (waypoints:', waypoints.length, ')');
+    
+    console.log('✅ Trace sauvegardée avec succès:', window.currentGpxFileName);
+    console.log('Waypoints sauvegardés:', waypoints.length);
+    
+    // Afficher le bouton "Effacer"
+    if (clearTraceButton) {
+      clearTraceButton.style.display = 'inline-flex';
+    }
+
+  } catch (error) {
+    console.error('❌ Erreur sauvegarde:', error);
+    
+    // Si erreur de quota, informer l'utilisateur
+    if (error && (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
+      if (typeof showMessage === 'function') {
+        showMessage('Trace trop volumineuse pour être sauvegardée localement.', true);
+      }
+    }
+  }
+}
+
+
+/**
+ * Charge la trace sauvegardée depuis localStorage
+ */
+
+function loadTraceFromLocalStorage() {
+  try {
+    const savedData = localStorage.getItem(GPX_STORAGE_KEY);
+    if (!savedData) return false;
+
+    const traceData = JSON.parse(savedData);
+    if (!traceData || !traceData.gpxContent || !traceData.fileName) return false;
+
+    if (typeof showMessage === 'function') {
+      showMessage('Chargement de la trace sauvegardée...', false);
+    }
+
+    // Parse GPX
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(traceData.gpxContent, 'application/xml');
+    const parseError = xml.querySelector('parsererror');
+    if (parseError) throw new Error('Fichier GPX sauvegardé invalide.');
+
+    // Restore basic state
+    window.currentGpxDocument = currentGpxDocument = xml;
+    window.currentGpxFileName = currentGpxFileName = traceData.fileName;
+    window.currentTraceName = currentTraceName = traceData.traceName || '';
+    window.traceNameSource = traceNameSource = traceData.traceNameSource || 'default';
+
+    if (typeof currentFilename !== 'undefined' && currentFilename) {
+      currentFilename.textContent = traceData.fileName;
+    }
+    if (typeof traceFileNameLabel !== 'undefined' && traceFileNameLabel) {
+      traceFileNameLabel.textContent = traceData.fileName;
+    }
+    if (typeof gpxNameInput !== 'undefined' && gpxNameInput) {
+      gpxNameInput.value = window.currentTraceName;
+    }
+    if (typeof displayTraceName === 'function') {
+      displayTraceName(window.currentTraceName, window.traceNameSource);
+    }
+
+    // Convert GPX to GeoJSON
+    const geojson = (typeof convertGpxToGeoJSON === 'function') ? convertGpxToGeoJSON(xml) : null;
+    const hasStoredWaypoints = Array.isArray(traceData.waypoints) && traceData.waypoints.length > 0;
+    if (hasStoredWaypoints && geojson && Array.isArray(geojson.features)) {
+      geojson.features = geojson.features.filter(f => {
+        const t = f && f.geometry && f.geometry.type;
+        return t !== 'Point' && t !== 'MultiPoint';
+      });
+    }
+    if (!geojson || !geojson.features || geojson.features.length === 0) {
+      throw new Error('La trace sauvegardée est vide.');
+    }
+
+    if (typeof setExportAvailability === 'function') setExportAvailability(true);
+    if (typeof displayGeoJSON === 'function') displayGeoJSON(geojson);
+    if (typeof attachWaypointPersistence === 'function') attachWaypointPersistence();
+
+    // Restore saved waypoints (dedup against any existing markers)
+    if (hasStoredWaypoints) {
+      if (typeof waypointCounter !== 'undefined') window.waypointCounter = 1;
+      const existing = (typeof getWaypointMarkers === 'function') ? (getWaypointMarkers() || []) : [];
+      traceData.waypoints.forEach((wp) => {
+        if (!wp || !wp.lat || !wp.lng || typeof createWaypointMarker !== 'function') return;
+        const lat = parseFloat(wp.lat), lng = parseFloat(wp.lng);
+        const nameKey = (wp.name || '').trim();
+        let duplicate = false;
+        existing.forEach(m => {
+          const ll = m && m.getLatLng && m.getLatLng();
+          if (!ll) return;
+          const mkName = (m.waypointName || '').trim();
+          if (Math.abs(ll.lat - lat) < 1e-5 && Math.abs(ll.lng - lng) < 1e-5) {
+            if (mkName === nameKey || !nameKey || !mkName) duplicate = true;
+          }
+        });
+        if (!duplicate) createWaypointMarker(L.latLng(lat, lng), wp.name);
+      });
+    }
+
+    // Elevation data
+    if (typeof extractElevationData === 'function') {
+      window.currentElevationData = currentElevationData = extractElevationData(geojson, xml);
+      if (window.currentElevationData) {
+        if (typeof updateElevationStats === 'function') updateElevationStats(window.currentElevationData.stats);
+        if (typeof elevationProfile !== 'undefined' && elevationProfile) {
+          elevationProfile.classList.add('visible');
+          elevationProfile.setAttribute('aria-hidden', 'false');
+          elevationProfile.classList.remove('collapsed');
+          sizeCanvasToParent();
+          if (typeof renderElevationProfile === 'function') renderElevationProfile();
+        }
+        if (typeof setElevationCollapsed === 'function') setElevationCollapsed(false);
+        if (typeof renderElevationProfile === 'function') {
+          requestAnimationFrame(() => {
+            renderElevationProfile();
+            setTimeout(() => { renderElevationProfile(); }, 200);
+          });
+          if (typeof ensureElevationRendered === 'function') ensureElevationRendered(12);
+        }
+      } else {
+        if (typeof updateElevationStats === 'function') updateElevationStats(null);
+        if (typeof calculateDistanceOnly === 'function') {
+          const distanceOnly = calculateDistanceOnly(geojson);
+          if (distanceOnly && typeof traceDistanceLabel !== 'undefined' && traceDistanceLabel) {
+            traceDistanceLabel.textContent = `${(distanceOnly.distance / 1000).toFixed(2)} km`;
+          }
+        }
+      }
+    }
+
+    // UX message
+    const elapsed = Date.now() - (traceData.timestamp || Date.now());
+    const minutes = Math.max(0, Math.floor(elapsed / 60000));
+    const timeAgo = minutes < 1 ? "à l'instant" : minutes < 60 ? `il y a ${minutes} min` : `il y a ${Math.floor(minutes / 60)}h`;
+    if (typeof showMessage === 'function' && typeof escapeHtml === 'function') {
+      showMessage(`Trace "<strong>${escapeHtml(window.currentTraceName || traceData.fileName)}</strong>" rechargée (sauvegardée ${timeAgo}).`, false, true);
+    } else {
+      console.log(`Trace "${window.currentTraceName || traceData.fileName}" rechargée (sauvegardée ${timeAgo}).`);
+    }
+
+    // Show clear button
+    if (typeof clearTraceButton !== 'undefined' && clearTraceButton) {
+      clearTraceButton.style.display = 'inline-flex';
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Erreur lors du chargement de la trace sauvegardée :', error);
+    try { localStorage.removeItem(GPX_STORAGE_KEY); } catch(_) {}
+    return false;
+  }
+}
+
+function clearSavedTrace() {
+  try {
+    currentGpxDocument = null;
+    currentGpxFileName = '';
+    currentTraceName = '';
+    traceNameSource = 'default';
+    currentGeojson = null;
+  } catch (_){}
+
+  try {
+    if (typeof setExportAvailability === 'function') setExportAvailability(false);
+    if (typeof updateWaypointsList === 'function') updateWaypointsList();
+    if (typeof updateTraceInfo === 'function') updateTraceInfo(null);
+    if (typeof displayTraceName === 'function') displayTraceName('—', 'default');
+    if (typeof gpxNameInput !== 'undefined' && gpxNameInput) gpxNameInput.value = '';
+    if (typeof currentFilename !== 'undefined' && currentFilename) currentFilename.textContent = '—';
+    if (typeof traceFileNameLabel !== 'undefined' && traceFileNameLabel) traceFileNameLabel.textContent = '—';
+    if (typeof resetElevationDisplay === 'function') resetElevationDisplay();
+  } catch (_){}
+
+  if (typeof showMessage === 'function') showMessage('Trace sauvegardée effacée et carte nettoyée.', false);
+
+  try {
+    localStorage.removeItem(GPX_STORAGE_KEY);
+    localStorage.removeItem(GPX_WAYPOINTS_KEY);
+  } catch (error) {
+    console.error('Erreur lors de la suppression du stockage local :', error);
+  }
+
+  try {
+    if (typeof clearPreviousLayers === 'function') clearPreviousLayers();
+    if (typeof waypointLayerGroup !== 'undefined' && waypointLayerGroup && typeof waypointLayerGroup.clearLayers === 'function') waypointLayerGroup.clearLayers();
+    if (typeof gpxLayerGroup !== 'undefined' && gpxLayerGroup && typeof gpxLayerGroup.clearLayers === 'function') gpxLayerGroup.clearLayers();
+    if (typeof arrowLayerGroup !== 'undefined' && arrowLayerGroup && typeof arrowLayerGroup.clearLayers === 'function') arrowLayerGroup.clearLayers();
+  } catch (error) {
+    console.warn('Nettoyage des calques :', error);
+  }
+
+  try {
+    window.currentGpxDocument = null;
+    window.currentGpxFileName = '';
+    window.currentTraceName = '';
+    window.traceNameSource = 'default';
+    if (typeof currentGpxDocument !== 'undefined') currentGpxDocument = null;
+    if (typeof currentGpxFileName !== 'undefined') currentGpxFileName = '';
+    if (typeof currentTraceName !== 'undefined') currentTraceName = '';
+    if (typeof traceNameSource !== 'undefined') traceNameSource = 'default';
+    if (typeof currentGeojson !== 'undefined') currentGeojson = null;
+  } catch (error) {
+    console.warn('Réinit variables :', error);
+  }
+}
+
+
+// Événement du bouton "Effacer la trace" - Attachement différé
+function attachClearTraceButton() {
+  const btn = document.getElementById('clear-trace-button');
+  if (btn && !btn.__listenerAttached) {
+    btn.__listenerAttached = true;
+    btn.addEventListener('click', () => {
+      if (confirm('Voulez-vous vraiment effacer la trace sauvegardée localement ?')) {
+        clearSavedTrace();
+      }
+    });
+  }
+}
+
+// Charger automatiquement au démarrage
+window.addEventListener('DOMContentLoaded', () => {
+  // Attacher le bouton d'effacement
+  attachClearTraceButton();
+  
+  // Attendre que la carte soit initialisée
+  setTimeout(() => {
+    loadTraceFromLocalStorage();
+  }, 500);
+});
+// === Robust elevation render helper (enhanced) ===
+function ensureElevationRendered(retries = 8) {
+  try {
+    const hasData = typeof currentElevationData !== 'undefined' && currentElevationData;
+    const hasPoints = hasData && Array.isArray(currentElevationData.points) && currentElevationData.points.length > 1;
+    const hasStats = hasData && currentElevationData.stats;
+    const hasCanvas = typeof elevationCanvas !== 'undefined' && elevationCanvas;
+    const hasProfile = typeof elevationProfile !== 'undefined' && elevationProfile;
+
+    if (!(hasPoints && hasStats && hasCanvas && hasProfile)) {
+      // Attempt self-heal: recompute elevation if geojson exists
+      if ((!hasData || !hasPoints || !hasStats) && typeof extractElevationData === 'function' && typeof currentGeojson !== 'undefined' && currentGeojson) {
+        try {
+          const xml = window.currentGpxDocument || null;
+          const recomputed = extractElevationData(currentGeojson, xml);
+          if (recomputed) {
+            window.currentElevationData = recomputed;
+            if (typeof updateElevationStats === 'function') updateElevationStats(recomputed.stats);
+          }
+        } catch (e) {
+          console.warn('Recompute elevation failed:', e);
+        }
+      }
+
+      if (retries > 0) {
+        setTimeout(() => ensureElevationRendered(retries - 1), 200);
+      } else {
+        console.warn('Elevation not ready after retries.', {
+          hasData: !!hasData, hasPoints: !!hasPoints, hasStats: !!hasStats,
+          hasCanvas: !!hasCanvas, hasProfile: !!hasProfile,
+          pointsLen: hasData && currentElevationData.points ? currentElevationData.points.length : 0,
+          canvasW: hasCanvas ? elevationCanvas.offsetWidth : null,
+          canvasH: hasCanvas ? elevationCanvas.offsetHeight : null
+        });
+      }
+      return;
+    }
+
+    // Ensure panel visible and not collapsed
+    elevationProfile.classList.add('visible');
+    elevationProfile.classList.remove('collapsed');
+    elevationProfile.setAttribute('aria-hidden', 'false');
+
+    // Ensure canvas has a non-zero size
+    if (elevationCanvas && (elevationCanvas.offsetHeight === 0 || elevationCanvas.offsetWidth === 0)) {
+      elevationCanvas.style.height = '240px';
+      elevationCanvas.style.width = '100%';
+    }
+
+    // Render now
+    if (typeof renderElevationProfile === 'function') {
+      if (typeof fitElevationToViewport === 'function') fitElevationToViewport();
+      renderElevationProfile();
+      setTimeout(() => { if (typeof fitElevationToViewport === 'function') fitElevationToViewport(); renderElevationProfile(); }, 200);
+    }
+  } catch (e) {
+    console.warn('ensureElevationRendered error:', e);
+  }
+}
+
+// Re-render on resize as a safety net
+window.addEventListener('resize', () => {
+  if (typeof renderElevationProfile === 'function') {
+    renderElevationProfile();
+  }
+});
+
+
+// --- Responsive elevation canvas sizing ---
+function resizeElevationCanvas() {
+  if (!elevationCanvas || !elevationProfile) return;
+  // Reserve a fraction of the viewport height while accounting for the panel header
+  const viewportH = window.innerHeight || 800;
+  const header = elevationProfile.querySelector('.elevation-header');
+  const headerH = header ? header.offsetHeight : 48;
+  // Target 28% of viewport, min 160px, max 420px
+  const target = Math.max(160, Math.min(420, Math.floor(viewportH * 0.28)));
+  // Apply height only if different to avoid layout thrash
+  const targetPx = target + 'px';
+  if (elevationCanvas.style.height !== targetPx) {
+    elevationCanvas.style.height = targetPx;
+  }
+  elevationCanvas.style.width = '100%';
+}
+
+window.addEventListener('resize', () => {
+  resizeElevationCanvas();
+  if (typeof renderElevationProfile === 'function') {
+    renderElevationProfile();
+  }
+});
+
+
+
+// --- Viewport-aware elevation fit (strong) ---
+function fitElevationToViewport() {
+  try {
+    if (typeof elevationProfile === 'undefined' || typeof elevationCanvas === 'undefined') return;
+    if (!elevationProfile || !elevationCanvas) return;
+
+    const rect = elevationProfile.getBoundingClientRect();
+    const viewportH = window.innerHeight || document.documentElement.clientHeight || 800;
+
+    // Account for bottom UI (dock, browser UI). Tune this if needed.
+    const safeBottom = 40;
+    let available = Math.floor(viewportH - rect.top - safeBottom);
+    const minH = 180, maxH = 360; // tighter to avoid overflow
+
+    if (!Number.isFinite(available) || available <= 0) available = 240;
+    const target = Math.max(minH, Math.min(maxH, available));
+
+    // Apply CSS size
+    const targetPx = target + 'px';
+    if (elevationCanvas.style.height !== targetPx) {
+      elevationCanvas.style.height = targetPx;
+    }
+    elevationCanvas.style.width = '100%';
+
+    // Sync intrinsic canvas size with DPR to avoid blurriness/clipping mismatch
+    const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
+    const cssW = elevationCanvas.clientWidth || elevationCanvas.offsetWidth || 800;
+    const cssH = target;
+    const wantW = Math.floor(cssW * dpr);
+    const wantH = Math.floor(cssH * dpr);
+    if (elevationCanvas.width !== wantW) elevationCanvas.width = wantW;
+    if (elevationCanvas.height !== wantH) elevationCanvas.height = wantH;
+  } catch (e) {
+    console.warn('fitElevationToViewport error:', e);
+  }
+}
+
+// (removed dynamic observers to prevent loops)
+// === Elevation render scheduler (prevents tight loops) ===
+let __elevRenderScheduled = false;
+function scheduleElevationRender(reason) {
+  try {
+    if (__elevRenderScheduled) return;
+    __elevRenderScheduled = true;
+    requestAnimationFrame(() => {
+      __elevRenderScheduled = false;
+      if (typeof fitElevationToViewport === 'function') fitElevationToViewport();
+      if (typeof renderElevationProfile === 'function') renderElevationProfile();
+    });
+  } catch (e) {
+    console.warn('scheduleElevationRender error:', e);
+    // Fallback direct render
+    if (typeof renderElevationProfile === 'function') renderElevationProfile();
+  }
+}
+
+
+// --- Minimal elevation canvas sizing (fixed height) ---
+const ELEV_CANVAS_FIXED_H = 260; // px; change if you want bigger/smaller
+function setElevationCanvasSize() {
+  if (!window.elevationCanvas || !window.elevationProfile) return;
+  const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
+  const cssW = elevationProfile.clientWidth || elevationCanvas.parentElement?.clientWidth || elevationCanvas.clientWidth || 800;
+  const cssH = ELEV_CANVAS_FIXED_H;
+  elevationCanvas.style.width = '100%';
+  elevationCanvas.style.height = cssH + 'px';
+  const wantW = Math.max(1, Math.floor(cssW * dpr));
+  const wantH = Math.max(1, Math.floor(cssH * dpr));
+  if (elevationCanvas.width !== wantW) elevationCanvas.width = wantW;
+  if (elevationCanvas.height !== wantH) elevationCanvas.height = wantH;
+}
+
+
+// --- Keep elevation container sized to canvas ---
+function syncElevationContainer() {
+  try {
+    if (typeof elevationCanvas === 'undefined' || typeof elevationProfile === 'undefined') return;
+    const content = document.getElementById('elevation-content');
+    if (!content || !elevationCanvas) return;
+    // Read actual canvas CSS height (not intrinsic pixels)
+    const h = elevationCanvas.getBoundingClientRect().height;
+    if (h && Math.abs((content.getBoundingClientRect().height || 0) - h) > 1) {
+      content.style.height = h + 'px';
+    }
+  } catch (e) {
+    console.warn('syncElevationContainer error:', e);
+  }
+}
+
+
+// --- Canvas == parent size (with DPR) ---
+function sizeCanvasToParent() {
+  const parent = document.getElementById('elevation-content');
+  const canvas = typeof elevationCanvas !== 'undefined' ? elevationCanvas : document.getElementById('elevation-canvas');
+  if (!parent || !canvas) return;
+  const rect = parent.getBoundingClientRect();
+  // If parent is hidden/collapsed, skip (will be re-called later)
+  if (!rect.width || !rect.height) return;
+
+  // CSS size already set via width/height:100%; sync intrinsic pixels for crisp rendering
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+  const wantW = Math.max(1, Math.floor(rect.width * dpr));
+  const wantH = Math.max(1, Math.floor(rect.height * dpr));
+  if (canvas.width !== wantW) canvas.width = wantW;
+  if (canvas.height !== wantH) canvas.height = wantH;
+}
+
+// Observe parent size changes
+(function observeParentForCanvas(){
+  try {
+    const parent = document.getElementById('elevation-content');
+    if (!parent) return;
+    const ro = new ResizeObserver(() => sizeCanvasToParent());
+    ro.observe(parent);
+    // First sizing attempt
+    sizeCanvasToParent();
+  } catch (e) {
+    console.warn('ResizeObserver not available or failed:', e);
+    // Fallback: size once on load
+    setTimeout(sizeCanvasToParent, 100);
+  }
+})();
+
+
+// === PERSISTENCE WAYPOINTS — debounce & group hooks ===
+if (typeof window.__saveWpTimer === 'undefined') window.__saveWpTimer = null;
+function saveTraceDebounced(delay = 120) {
+  if (typeof saveTraceToLocalStorage !== 'function') return;
+  clearTimeout(window.__saveWpTimer);
+  window.__saveWpTimer = setTimeout(() => {
+    try { saveTraceToLocalStorage(); } catch(e) { console.warn(e); }
+  }, delay);
+}
+
+function attachWaypointPersistence() {
+  try {
+    if (typeof waypointLayerGroup === 'undefined' || !waypointLayerGroup || typeof waypointLayerGroup.on !== 'function') return;
+    waypointLayerGroup.off('layeradd', saveTraceDebounced);
+    waypointLayerGroup.off('layerremove', saveTraceDebounced);
+    waypointLayerGroup.on('layeradd', () => saveTraceDebounced());
+    waypointLayerGroup.on('layerremove', () => saveTraceDebounced());
+    // initial sync
+    saveTraceDebounced(10);
+  } catch (e) { console.warn('attachWaypointPersistence:', e); }
+}
+
 </script>
 
 </body>
