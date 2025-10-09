@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lecteur GPX - Carte OpenStreetMap</title>
+  <title>Bikepacking helper - Localisez les points d'intérêt dont vous avez besoin</title>
   <!-- Leaflet CSS -->
   <link
     rel="stylesheet"
@@ -1054,6 +1054,57 @@
     }
   
 /* === Layer indicators overrides merged === */
+
+/* === Waypoint Markers === */
+.waypoint-marker {
+  border: none !important;
+  background: transparent !important;
+}
+
+.waypoint-marker-inner {
+  width: 28px;
+  height: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
+}
+
+.waypoint-marker-pin {
+  width: 28px;
+  height: 28px;
+  background: #FF5722;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  border: 3px solid #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.waypoint-marker-icon {
+  transform: rotate(45deg);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.waypoint-marker:hover .waypoint-marker-inner {
+  transform: scale(1.15) translateY(-3px);
+  filter: drop-shadow(0 6px 12px rgba(255, 87, 34, 0.5));
+}
+
+@keyframes waypointAppear {
+  from { opacity: 0; transform: scale(0.3) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.waypoint-marker-inner {
+  animation: waypointAppear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 </style>
 
 <!-- Modern Compact UI Overrides -->
@@ -2026,7 +2077,7 @@ html, body {
   <div class="app-container">
     <aside class="tools-panel" id="tools-panel" role="complementary" aria-label="Panneau d'outils">
       <header class="panel-header">
-        <h1 class="panel-title">Lecteur GPX</h1>
+        <h1 class="panel-title">Bikepacking helper</h1>
         <button class="btn-close-panel" id="close-panel" aria-label="Fermer le panneau">✕</button>
       </header>
       <div class="panel-content">
@@ -4596,29 +4647,52 @@ html, body {
       }
     }
 
-    function createWaypointMarker(latlng, name = '') {
-      const trimmedName = name && name.trim() ? name.trim() : '';
-      const finalName = trimmedName || `Waypoint ${waypointCounter}`;
-      waypointCounter += 1;
+    
+function createWaypointMarker(latlng, name = '') {
+  const trimmedName = name && name.trim() ? name.trim() : '';
+  const finalName = trimmedName || `Waypoint ${waypointCounter}`;
+  waypointCounter += 1;
 
-      const marker = L.marker(latlng, { draggable: false, bubblingMouseEvents: false });
-      marker.waypointName = finalName;
-      marker.bindPopup(createWaypointPopupHtml(finalName));
-      marker.on('popupopen', (event) => {
-        attachWaypointPopupHandlers(marker, event.popup);
-      });
-      marker.bindTooltip(
-        () => marker.waypointName,
-        {
-          direction: 'top',
-          offset: [0, -12]
-        }
-      );
+  // Créer l'icône personnalisée
+  const icon = L.divIcon({
+    className: 'waypoint-marker',
+    html: `
+      <div class="waypoint-marker-inner">
+        <div class="waypoint-marker-pin">
+          <span class="waypoint-marker-icon">📍</span>
+        </div>
+      </div>
+    `,
+    iconSize: [28, 36],
+    iconAnchor: [14, 36],
+    popupAnchor: [0, -36]
+  });
 
-      waypointLayerGroup.addLayer(marker);
-      updateWaypointsList();
-      return marker;
+  const marker = L.marker(latlng, { 
+    icon: icon,
+    draggable: false, 
+    bubblingMouseEvents: false,
+    riseOnHover: true
+  });
+  
+  marker.waypointName = finalName;
+  marker.bindPopup(createWaypointPopupHtml(finalName));
+  marker.on('popupopen', (event) => {
+    attachWaypointPopupHandlers(marker, event.popup);
+  });
+  marker.bindTooltip(
+    () => marker.waypointName,
+    {
+      direction: 'top',
+      offset: [0, -36]
     }
+  );
+
+  waypointLayerGroup.addLayer(marker);
+  updateWaypointsList();
+  return marker;
+}
+
 
     function addWaypointsFromFeatures(features) {
       if (!Array.isArray(features)) {
