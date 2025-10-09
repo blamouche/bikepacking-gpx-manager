@@ -1,294 +1,501 @@
 # Lecteur GPX - Carte OpenStreetMap
 
-Application web interactive pour visualiser, éditer et enrichir vos traces GPX avec une interface intuitive basée sur OpenStreetMap.
+Application web moderne et complète pour visualiser, éditer et enrichir vos traces GPX avec une interface intuitive et des fonctionnalités avancées.
 
-## 📋 Sommaire
+## 📋 Table des matières
 
 - [Aperçu](#aperçu)
 - [Fonctionnalités](#fonctionnalités)
 - [Démarrage rapide](#démarrage-rapide)
 - [Guide d'utilisation](#guide-dutilisation)
-- [Technologies utilisées](#technologies-utilisées)
-- [Structure du code](#structure-du-code)
-- [Formats supportés](#formats-supportés)
-- [Limitations connues](#limitations-connues)
-- [Contribution](#contribution)
+- [Architecture technique](#architecture-technique)
+- [Personnalisation](#personnalisation)
+- [Contributions](#contributions)
+- [Licence](#licence)
 
 ## 🎯 Aperçu
 
-Cette application permet de visualiser des fichiers GPX (GPS Exchange Format) sur une carte interactive OpenStreetMap. Elle offre la possibilité d'ajouter, modifier et supprimer des waypoints (points d'intérêt) avant d'exporter une nouvelle version enrichie de votre trace GPX.
+Cette application est un lecteur GPX autonome qui fonctionne entièrement dans le navigateur, sans nécessiter de serveur backend. Idéale pour les cyclistes, randonneurs et amateurs d'activités outdoor, elle permet de visualiser des traces GPS, d'ajouter des waypoints personnalisés, et de découvrir les points d'intérêt le long de votre parcours.
 
-**Cas d'usage principaux :**
-- Visualiser des traces GPS de randonnées, cyclisme, course à pied
-- Ajouter des points d'intérêt le long d'un parcours
-- Annoter des traces GPX avec des waypoints personnalisés
-- Préparer des itinéraires avec des étapes identifiées
+### Caractéristiques principales
 
-## ✨ Fonctionnalités
+- ✅ **100% client-side** - Aucun serveur requis, fonctionne hors ligne (après premier chargement)
+- 🗺️ **Carte interactive** - Propulsée par Leaflet et OpenStreetMap
+- 📊 **Profil altimétrique** - Visualisation des dénivelés avec interactions
+- 📍 **Waypoints personnalisés** - Ajoutez vos propres points d'intérêt
+- 🏪 **POI OpenStreetMap** - Plus de 20 catégories de points d'intérêt
+- 📱 **Responsive** - Interface optimisée mobile et desktop
+- 🌍 **Géolocalisation** - Suivi de position en temps réel
+- 💾 **Import/Export** - Support complet du format GPX
 
-### Visualisation
-- 🗺️ **Carte interactive** basée sur OpenStreetMap avec zoom et déplacement
-- 📍 **Affichage des traces** (tracks) en rouge avec flèches directionnelles
-- 🛤️ **Support des routes GPX** avec rendu adapté
-- 📌 **Visualisation des waypoints** existants avec markers
+## 🚀 Fonctionnalités
 
-### Import
-- 📁 **Import par bouton** : sélection classique de fichier
-- 🎯 **Drag & drop** : glissez-déposez votre fichier GPX directement sur la carte
-- ✅ **Validation automatique** du format GPX
+### 1. Gestion des traces GPX
 
-### Édition de waypoints
-- ➕ **Ajout de waypoints** : cliquez sur la trace pour créer un nouveau point
-- ✏️ **Renommage** : éditez le nom des waypoints via popup interactive
-- 🗑️ **Suppression** : retirez les waypoints non désirés
-- 💬 **Tooltips** : affichage du nom au survol
+#### Import de traces
+- **Drag & drop** - Glissez-déposez votre fichier GPX n'importe où
+- **Sélection de fichier** - Bouton d'import classique
+- **Validation automatique** - Détection des fichiers invalides
+- **Extraction intelligente** - Récupération du nom de trace depuis les métadonnées GPX
 
-### Export
-- 💾 **Export GPX enrichi** : téléchargez votre trace avec les waypoints ajoutés/modifiés
-- 🏷️ **Nommage automatique** : fichier exporté avec suffixe `_with_waypoints.gpx`
-- 🔄 **Préservation des données** : les tracks et routes originaux sont conservés
+#### Export enrichi
+- **Ajout de waypoints** - Exportez votre trace avec les waypoints ajoutés
+- **Nom personnalisable** - Renommez votre fichier avant export
+- **Format standard** - Fichiers GPX compatibles avec tous les outils GPS
 
-### Interface
-- 🇫🇷 **Interface en français**
-- 🎨 **Design moderne** et épuré
-- 📱 **Responsive** : fonctionne sur desktop et mobile
-- ⚡ **Léger** : aucune dépendance serveur, 100% client-side
+### 2. Profil altimétrique interactif
 
-## 🚀 Démarrage rapide
+- **Graphique dynamique** - Visualisation canvas haute performance
+- **Statistiques complètes** :
+  - Distance totale
+  - Dénivelé positif (D+) et négatif (D-)
+  - Altitude min/max et moyenne
+  - Nombre de points
+- **Interaction souris** - Survol pour voir les détails à chaque point
+- **Marqueur synchronisé** - Position affichée sur la carte
+- **Réductible** - Maximisez l'espace carte si nécessaire
+
+### 3. Waypoints personnalisés
+
+#### Création
+- **Clic sur trace** - Ajoutez un waypoint en cliquant sur votre parcours
+- **Nommage personnalisé** - Donnez un nom significatif à chaque point
+- **Numérotation automatique** - "Waypoint 1, 2, 3..." par défaut
+
+#### Gestion
+- **Liste organisée** - Vue d'ensemble de tous vos waypoints
+- **Édition rapide** - Modifiez le nom via popup
+- **Centrage carte** - Naviguez rapidement vers chaque point
+- **Suppression** - Individuelle ou globale
+
+### 4. Calques POI OpenStreetMap
+
+#### Catégories disponibles (20+)
+
+**Services vélo** 🚴
+- Stations de réparation
+- Magasins de vélo
+
+**Ressources** 💧
+- Points d'eau potable
+
+**Hébergement outdoor** 🏕️
+- Campings
+- Bivouacs autorisés
+- Refuges
+- Refuges alpins
+
+**Hébergement classique** 🏨
+- Hôtels
+- Auberges de jeunesse
+- Chambres d'hôtes
+
+**Sanitaires** 🚻
+- Toilettes publiques
+- Douches
+
+**Alimentation** 🛒
+- Supermarchés
+- Épiceries
+
+**Restauration** 🍴
+- Restaurants
+- Cafés
+- Fast-foods
+
+**Santé** 💊
+- Pharmacies
+- Hôpitaux
+
+**Patrimoine** 🏛️
+- Cimetières
+
+#### Fonctionnalités POI
+
+- **Presets intelligents** - Profils prédéfinis ("J'ai besoin d'eau", "J'ai besoin de manger", etc.)
+- **Recherche en temps réel** - Chargement automatique selon la vue carte
+- **Limitation intelligente** - Évite la surcharge (500 POI max)
+- **Cache performant** - Réduit les requêtes réseau
+- **Popups détaillées** - Informations complètes (horaires, téléphone, site web, services)
+- **Icônes colorées** - Identification rapide par catégorie
+- **Filtrage par zoom** - Affichage progressif selon le niveau de zoom
+
+### 5. Géolocalisation en temps réel
+
+- **Position actuelle** - Marqueur animé avec cercle de précision
+- **Actualisation automatique** - Mise à jour toutes les 30 secondes
+- **Centrage automatique** - Suivi de votre déplacement
+- **Économie de batterie** - Pause automatique en arrière-plan
+- **Indicateur de précision** - Visual de la qualité du signal GPS
+
+### 6. Interface utilisateur
+
+#### Desktop
+- **Panneau latéral** - 460px de largeur, sections collapsibles
+- **Carte plein écran** - Maximum d'espace pour la visualisation
+- **Profil altimétrique** - Panneau inférieur réductible
+- **Indicateurs centrés** - Messages de statut non-intrusifs
+
+#### Mobile
+- **Panneau coulissant** - Accès via bouton hamburger
+- **Plein écran** - Optimisation pour petits écrans
+- **Tactile optimisé** - Boutons et zones de touch agrandis
+- **Orientation adaptative** - Support portrait et paysage
+
+## 🎬 Démarrage rapide
 
 ### Installation
 
-1. **Téléchargez le fichier HTML** ou clonez ce dépôt
-2. **Ouvrez le fichier** `index.html` dans votre navigateur web moderne
-3. **C'est tout !** Aucune installation ou serveur requis
+1. **Téléchargez le fichier HTML**
+   ```bash
+   wget https://[votre-repo]/index_mobile_portrait_ready.html
+   ```
+
+2. **Ouvrez dans votre navigateur**
+   ```bash
+   # Option 1 : Double-clic sur le fichier
+   
+   # Option 2 : Serveur local (recommandé pour développement)
+   python -m http.server 8000
+   # Puis ouvrez http://localhost:8000
+   ```
+
+3. **C'est tout !** L'application est prête à l'emploi.
 
 ### Première utilisation
 
-1. Cliquez sur **"Importer GPX"** ou glissez-déposez un fichier `.gpx` sur la carte
-2. La trace s'affiche automatiquement avec un zoom adapté
-3. Cliquez sur la trace pour ajouter des waypoints
-4. Cliquez sur **"Exporter GPX"** pour télécharger votre trace enrichie
+1. **Importez un fichier GPX**
+   - Cliquez sur "Importer GPX" ou glissez-déposez votre fichier
+   - La trace s'affiche automatiquement sur la carte
+
+2. **Explorez les POI**
+   - Activez les catégories qui vous intéressent
+   - Ou utilisez un preset : "J'ai besoin d'eau", etc.
+   - Zoomez pour voir apparaître les POI
+
+3. **Ajoutez des waypoints**
+   - Cliquez sur votre trace pour placer un waypoint
+   - Nommez-le et validez
+
+4. **Exportez**
+   - Cliquez sur "Exporter GPX"
+   - Votre fichier inclut maintenant vos waypoints
 
 ## 📖 Guide d'utilisation
 
-### Importer une trace GPX
+### Raccourcis clavier
 
-**Méthode 1 : Bouton d'import**
-1. Cliquez sur le bouton **"Importer GPX"** en haut à gauche
-2. Sélectionnez votre fichier `.gpx` dans l'explorateur de fichiers
-3. La trace s'affiche instantanément sur la carte
+| Touche | Action |
+|--------|--------|
+| `Échap` | Fermer le panneau latéral (mobile) |
 
-**Méthode 2 : Drag & drop**
-1. Glissez votre fichier `.gpx` depuis votre gestionnaire de fichiers
-2. Déposez-le n'importe où sur la carte
-3. Un contour bleu apparaît pour confirmer la zone de dépôt
+### Gestes tactiles (mobile)
 
-### Ajouter des waypoints
+| Geste | Action |
+|-------|--------|
+| Pincer | Zoomer/Dézoomer |
+| Glisser | Déplacer la carte |
+| Double-tap | Zoomer |
+| Tap sur trace | Ajouter waypoint |
 
-1. **Cliquez directement sur la trace** (ligne rouge)
-2. Une boîte de dialogue apparaît pour nommer le waypoint
-3. Entrez un nom ou validez le nom par défaut (ex: "Waypoint 1")
-4. Le waypoint apparaît avec un marker bleu standard
+### Optimisations de performance
 
-### Modifier un waypoint
+#### Cache POI
+- **TTL** : 10 minutes
+- **Limite** : 15 zones en cache
+- **Stratégie** : LRU (Least Recently Used)
 
-1. **Cliquez sur le marker** du waypoint
-2. Un popup s'ouvre avec un champ de texte
-3. Modifiez le nom et cliquez sur **"Enregistrer"**
-4. Ou appuyez sur **Entrée** pour valider rapidement
+#### Rendu
+- **Simplification** : Profil altimétrique limité à 1500 points
+- **Throttling** : Requêtes POI espacées de 1,5s minimum
+- **Debounce** : Rechargement POI après 2s de stabilité
 
-### Supprimer un waypoint
+#### Limites
+- **POI total** : 500 maximum affichés
+- **POI par catégorie** : 120 maximum
+- **Zone maximale** : 0,12° carrés (zoom minimum 11-13 selon catégorie)
 
-1. **Cliquez sur le marker** du waypoint
-2. Dans le popup, cliquez sur **"Supprimer"**
-3. Le waypoint disparaît immédiatement de la carte
+### Personnalisation des POI
 
-### Exporter la trace enrichie
+Vous pouvez facilement ajouter vos propres catégories de POI en modifiant l'objet `POI_CATEGORIES` dans le code :
 
-1. Cliquez sur **"Exporter GPX"** (actif uniquement après import)
-2. Le fichier est téléchargé automatiquement
-3. Nom du fichier : `[nom_original]_with_waypoints.gpx`
-4. Le fichier contient tous les waypoints visibles sur la carte
-
-### Navigation sur la carte
-
-- **Zoom** : molette de souris ou boutons +/- en haut à droite
-- **Déplacement** : cliquez et glissez la carte
-- **Recentrage** : importez une nouvelle trace pour un zoom automatique
-
-## 🛠️ Technologies utilisées
-
-### Bibliothèques JavaScript
-
-- **[Leaflet 1.9.4](https://leafletjs.com/)** : bibliothèque de cartographie interactive
-- **[Leaflet PolylineDecorator](https://github.com/bbecquet/Leaflet.PolylineDecorator)** : plugin pour les flèches directionnelles
-- **DOMParser API** : parsing natif des fichiers XML/GPX
-- **FileReader API** : lecture des fichiers locaux
-
-### Standards web
-
-- HTML5
-- CSS3 (Flexbox, Grid)
-- JavaScript ES6+ (async/await, arrow functions, modules)
-
-### Fonds de carte
-
-- **OpenStreetMap** : données cartographiques libres et collaboratives
-- Attribution obligatoire incluse conformément à la licence ODbL
-
-## 📂 Structure du code
-
-### Fonctions principales
-
-#### Conversion GPX → GeoJSON
 ```javascript
-convertGpxToGeoJSON(xml)
+my_custom_poi: {
+  id: 'my_custom_poi',
+  label: 'Mon POI personnalisé',
+  icon: '🏷️',
+  color: '#FF00FF',
+  group: 'heritage', // Groupe parent existant
+  tags: { amenity: 'my_tag' }, // Tags OSM
+  priority: 'medium',
+  minZoom: 12
+}
 ```
-Convertit un document XML GPX en collection de features GeoJSON
 
-#### Gestion des waypoints
+## 🏗️ Architecture technique
+
+### Technologies utilisées
+
+| Technologie | Version | Usage |
+|-------------|---------|-------|
+| [Leaflet](https://leafletjs.com/) | 1.9.4 | Cartographie interactive |
+| [OpenStreetMap](https://www.openstreetmap.org/) | - | Tuiles de carte |
+| [Overpass API](https://overpass-api.de/) | - | Requêtes POI |
+| Vanilla JavaScript | ES6+ | Logique applicative |
+| CSS3 | - | Styles et animations |
+
+### Structure du code
+
+```
+index_mobile_portrait_ready.html
+├── <head>
+│   ├── Leaflet CSS
+│   ├── Styles personnalisés
+│   │   ├── Variables CSS (couleurs, espacements)
+│   │   ├── Composants UI
+│   │   ├── Responsive breakpoints
+│   │   └── Animations
+│   └── Overrides compacts/modernes
+│
+├── <body>
+│   ├── Panneau latéral (.tools-panel)
+│   │   ├── En-tête
+│   │   ├── Section géolocalisation
+│   │   ├── Section fichier GPX
+│   │   ├── Section calques POI
+│   │   ├── Section waypoints
+│   │   └── Section informations
+│   │
+│   └── Conteneur carte (.map-container)
+│       ├── Carte Leaflet (#map)
+│       ├── Bouton refresh POI
+│       ├── Indicateurs overlay
+│       └── Profil altimétrique
+│
+└── <script>
+    ├── Conversion GPX ↔ GeoJSON
+    ├── Gestionnaire POI
+    │   ├── Configuration (catégories, presets)
+    │   ├── Cache et throttling
+    │   ├── Requêtes Overpass
+    │   └── Rendu marqueurs
+    ├── Gestionnaire waypoints
+    ├── Gestionnaire élévation
+    ├── Gestionnaire géolocalisation
+    └── Gestionnaire UI (panneau, drag&drop)
+```
+
+### Flux de données
+
+```mermaid
+graph TD
+    A[Fichier GPX] --> B[Parser XML]
+    B --> C[Conversion GeoJSON]
+    C --> D[Extraction données élévation]
+    C --> E[Rendu trace sur carte]
+    D --> F[Calcul statistiques]
+    F --> G[Profil altimétrique]
+    
+    H[Utilisateur] --> I[Active calques POI]
+    I --> J[Requête Overpass API]
+    J --> K[Cache]
+    K --> L[Affichage marqueurs]
+    
+    M[Clic sur trace] --> N[Création waypoint]
+    N --> O[Ajout à layer group]
+    O --> P[Mise à jour liste]
+    
+    Q[Export GPX] --> R[Clone XML original]
+    R --> S[Injection waypoints]
+    S --> T[Téléchargement fichier]
+```
+
+### API Overpass
+
+L'application utilise trois endpoints Overpass avec rotation automatique :
+
+1. `https://overpass-api.de/api/interpreter`
+2. `https://overpass.kumi.systems/api/interpreter`
+3. `https://overpass.openstreetmap.fr/api/interpreter`
+
+**Exemple de requête générée** :
+
+```overpass
+[out:json][timeout:25][bbox:48.8,2.3,48.9,2.4];
+(
+  node["amenity"="drinking_water"];
+  way["amenity"="drinking_water"];
+  relation["amenity"="drinking_water"];
+);
+out center;
+```
+
+## 🎨 Personnalisation
+
+### Thème de couleurs
+
+Modifiez les variables CSS dans la section `:root` :
+
+```css
+:root {
+  --color-primary: #0066FF;        /* Couleur principale */
+  --color-primary-hover: #0052CC;  /* Hover état */
+  --color-danger: #FF3B30;         /* Erreurs/suppressions */
+  --color-background: #FFFFFF;     /* Fond principal */
+  --color-text-primary: #1A1A1A;   /* Texte principal */
+  /* ... */
+}
+```
+
+### Ajout de presets POI
+
+Ajoutez vos propres presets dans `LAYER_PRESETS` :
+
 ```javascript
-createWaypointMarker(latlng, name)    // Crée un marker éditable
-addWaypointsFromFeatures(features)    // Import waypoints depuis GPX
-getWaypointMarkers()                  // Récupère tous les markers
+my_custom_preset: {
+  label: "Mon besoin personnalisé",
+  icon: '⭐',
+  categories: [
+    'drinking_water',
+    'toilets',
+    'bicycle_repair'
+  ]
+}
 ```
 
-#### Export
+### Configuration des limites
+
+Ajustez `POI_SETTINGS` selon vos besoins :
+
 ```javascript
-exportUpdatedGpx()                    // Génère et télécharge le GPX
+const POI_SETTINGS = {
+  debounceMs: 2000,           // Délai avant rechargement POI
+  maxTotalItems: 500,         // Limite globale POI
+  maxItemsPerCategory: 120,   // Limite par catégorie
+  cacheTtlMs: 10 * 60 * 1000, // Durée de vie cache
+  requestTimeoutMs: 12000     // Timeout requêtes
+};
 ```
 
-#### Affichage
-```javascript
-displayGeoJSON(geojsonData)           // Affiche les données sur la carte
-createArrowMarkers(layer)             // Génère les flèches directionnelles
-```
+## 🤝 Contributions
 
-### Architecture
+Les contributions sont les bienvenues ! Voici comment participer :
 
-```
-├── Initialisation carte (Leaflet)
-├── Gestionnaires d'événements
-│   ├── Import fichier (button + input)
-│   ├── Drag & drop
-│   └── Export GPX
-├── Parseur GPX → GeoJSON
-├── Moteur de rendu Leaflet
-├── Gestionnaire de waypoints
-└── Générateur GPX
-```
+### Rapporter un bug
 
-## 📝 Formats supportés
+Créez une issue avec :
+- Description détaillée du problème
+- Étapes de reproduction
+- Navigateur et version
+- Capture d'écran si pertinent
 
-### Éléments GPX reconnus
+### Proposer une fonctionnalité
 
-**Entièrement supportés :**
-- `<wpt>` : Waypoints (points d'intérêt)
-- `<trk>` : Tracks (traces GPS enregistrées)
-  - `<trkseg>` : Segments de track
-  - `<trkpt>` : Points de track
-- `<rte>` : Routes (itinéraires planifiés)
-  - `<rtept>` : Points de route
+Ouvrez une discussion avec :
+- Description de la fonctionnalité
+- Cas d'usage
+- Mockups si disponibles
 
-**Métadonnées extraites :**
-- `<name>` : Nom de l'élément
-- `<desc>` : Description
-- `<ele>` : Élévation (préservée mais non utilisée visuellement)
-- `<time>` : Horodatage (préservé mais non affiché)
-
-### Exemple de structure GPX compatible
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<gpx version="1.1" creator="Application">
-  <wpt lat="48.8566" lon="2.3522">
-    <name>Tour Eiffel</name>
-    <desc>Monument emblématique</desc>
-  </wpt>
-  <trk>
-    <name>Balade parisienne</name>
-    <trkseg>
-      <trkpt lat="48.8566" lon="2.3522">
-        <ele>35</ele>
-        <time>2025-01-15T10:00:00Z</time>
-      </trkpt>
-      <!-- Plus de points... -->
-    </trkseg>
-  </trk>
-</gpx>
-```
-
-## ⚠️ Limitations connues
-
-### Fonctionnelles
-- **Pas d'édition des traces** : seuls les waypoints sont modifiables
-- **Pas de fusion de traces** : un seul fichier GPX à la fois
-- **Pas de statistiques** : distance, dénivelé, durée non calculés
-- **Waypoints non déplaçables** : position fixée lors de la création
-
-### Techniques
-- **Navigateurs modernes uniquement** : IE11 non supporté
-- **Fichiers volumineux** : les très gros fichiers GPX (>5 MB) peuvent ralentir l'affichage
-- **Export limité** : seuls les waypoints sont modifiés, tracks/routes inchangés
-- **Pas de géocodage inversé** : pas de recherche d'adresse automatique
-
-### Sécurité
-- **Traitement client-side uniquement** : aucune donnée n'est envoyée à un serveur
-- **Validation XML basique** : fichiers malformés peuvent causer des erreurs
-
-## 🤝 Contribution
-
-### Améliorations possibles
-
-**Fonctionnalités :**
-- [ ] Édition des points de track (déplacement, suppression)
-- [ ] Calcul de statistiques (distance, dénivelé, vitesse moyenne)
-- [ ] Support du profil altimétrique
-- [ ] Export en d'autres formats (KML, KMZ, GeoJSON)
-- [ ] Import de plusieurs traces simultanées
-- [ ] Gestion de calques (afficher/masquer traces/waypoints)
-- [ ] Recherche de lieux (géocodage)
-- [ ] Mesure de distance interactive
-
-**Interface :**
-- [ ] Mode sombre
-- [ ] Sélection de fonds de carte (satellite, topo)
-- [ ] Panneau latéral avec liste des waypoints
-- [ ] Undo/Redo
-- [ ] Raccourcis clavier
-
-**Technique :**
-- [ ] Tests unitaires
-- [ ] Optimisation des performances (virtualisation des markers)
-- [ ] Progressive Web App (PWA)
-- [ ] Support hors-ligne avec Service Worker
-
-### Comment contribuer
+### Soumettre une Pull Request
 
 1. Forkez le projet
-2. Créez une branche de fonctionnalité (`git checkout -b feature/AmazingFeature`)
-3. Committez vos modifications (`git commit -m 'Add AmazingFeature'`)
+2. Créez une branche (`git checkout -b feature/AmazingFeature`)
+3. Committez vos changements (`git commit -m 'Add AmazingFeature'`)
 4. Pushez vers la branche (`git push origin feature/AmazingFeature`)
 5. Ouvrez une Pull Request
 
+### Guidelines de code
+
+- **JavaScript** : ES6+, préférer const/let, documenter les fonctions complexes
+- **CSS** : Utiliser les variables CSS, mobile-first approach
+- **Commits** : Messages clairs en français ou anglais
+
+## 📝 Crédits et attribution
+
+### Données cartographiques
+
+- **OpenStreetMap** © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright)
+- **Données POI** via [Overpass API](https://overpass-api.de/)
+
+### Bibliothèques
+
+- [Leaflet](https://leafletjs.com/) - BSD 2-Clause License
+- [Leaflet PolylineDecorator](https://github.com/bbecquet/Leaflet.PolylineDecorator) - MIT License
+
+### Icônes
+
+Emojis Unicode pour une compatibilité maximale
+
 ## 📄 Licence
 
-Ce projet utilise :
-- **Leaflet** : BSD-2-Clause License
-- **OpenStreetMap** : données sous ODbL
-- **Leaflet PolylineDecorator** : MIT License
+Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
-Le code source de cette application peut être utilisé librement pour des projets personnels ou commerciaux.
+```
+MIT License
 
-## 🙏 Remerciements
+Copyright (c) 2025
 
-- [Leaflet](https://leafletjs.com/) pour l'excellente bibliothèque de cartographie
-- [OpenStreetMap](https://www.openstreetmap.org/) et ses contributeurs pour les données cartographiques
-- La communauté open-source pour les plugins et outils
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## ❓ FAQ
+
+### L'application nécessite-t-elle une connexion internet ?
+
+Oui, pour :
+- Charger les tuiles de carte
+- Récupérer les POI OpenStreetMap
+- Géolocalisation (selon appareil)
+
+Non pour :
+- Afficher une trace déjà chargée
+- Manipuler les waypoints
+- Exporter le GPX
+
+### Mes données sont-elles envoyées à un serveur ?
+
+Non. Tout le traitement se fait localement dans votre navigateur. Seules les requêtes suivantes sont effectuées :
+- Chargement des tuiles OpenStreetMap
+- Requêtes Overpass API pour les POI
+- Géolocalisation HTML5 (selon paramètres appareil)
+
+### Puis-je utiliser l'application sur mobile ?
+
+Oui ! L'interface est entièrement responsive et optimisée pour mobile. Testée sur :
+- iOS Safari (iOS 14+)
+- Chrome Android (v90+)
+- Firefox Android (v90+)
+
+### Quelle taille de fichier GPX est supportée ?
+
+L'application peut théoriquement gérer des traces de plusieurs milliers de points, mais pour des performances optimales :
+- **Recommandé** : < 5000 points
+- **Maximum testé** : 15000 points
+
+Le profil altimétrique est automatiquement simplifié à 1500 points pour maintenir la fluidité.
+
+### Comment ajouter mes propres catégories de POI ?
+
+Consultez la section [Personnalisation des POI](#personnalisation-des-poi) dans ce README.
 
 ---
 
-**Version :** 1.0.0  
-**Dernière mise à jour :** Octobre 2025  
+**Développé avec ❤️ pour la communauté outdoor**
 
-Pour toute question ou suggestion, n'hésitez pas à ouvrir une issue sur le dépôt du projet.
+[⬆ Retour en haut](#lecteur-gpx---carte-openstreetmap)
