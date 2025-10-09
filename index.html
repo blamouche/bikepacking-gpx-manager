@@ -1105,6 +1105,171 @@
   animation: waypointAppear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+
+/* === Map Style Control === */
+
+/* Contrôle principal (positionné par Leaflet) */
+.leaflet-map-style-control {
+  position: absolute;
+  top: 90px; /* Sous les contrôles de zoom (80px) + marge */
+  right: 10px;
+  z-index: 1000;
+}
+
+/* Bouton toggle */
+.map-style-toggle {
+  width: 30px;
+  height: 30px;
+  background: #FFFFFF;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+.map-style-toggle:hover {
+  background: #F7F8FA;
+  border-color: rgba(0, 0, 0, 0.3);
+}
+
+.map-style-toggle:active {
+  transform: scale(0.95);
+}
+
+.map-style-toggle .map-style-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* Panel déroulant */
+.map-style-panel {
+  position: absolute;
+  top: 0;
+  right: 40px; /* Aligné à droite du bouton */
+  width: 200px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: mapStylePanelAppear 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--color-border-light, rgba(0,0,0,0.12));
+}
+
+@keyframes mapStylePanelAppear {
+  from { opacity: 0; transform: translateX(10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Header du panel */
+.map-style-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-background-alt, #FAFBFC);
+  border-bottom: 1px solid var(--color-border-light, rgba(0,0,0,0.08));
+}
+
+.map-style-header .map-style-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.map-style-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary, #111);
+}
+
+/* Sections */
+.map-style-section { padding: 0.5rem 0; }
+.map-style-section + .map-style-section { border-top: 1px solid var(--color-border-light, rgba(0,0,0,0.08)); }
+
+.map-style-section-title {
+  padding: 0.5rem 1rem 0.25rem;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted, #666);
+}
+
+/* Options de style */
+.map-style-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  text-align: left;
+}
+
+.map-style-option:hover { background: #F7F8FA; }
+.map-style-option:active { background: #E8EAED; }
+
+/* Checkmark (visible uniquement pour l'option active) */
+.map-style-check {
+  width: 16px;
+  font-size: 14px;
+  color: var(--color-primary, #0066FF);
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.map-style-option.active .map-style-check { opacity: 1; }
+
+/* Label */
+.map-style-label {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary, #111);
+}
+.map-style-option.active .map-style-label {
+  font-weight: 600;
+  color: var(--color-primary, #0066FF);
+}
+
+/* Badge recommandé */
+.map-style-badge { font-size: 12px; line-height: 1; }
+
+/* Responsive mobile */
+@media (max-width: 767px) {
+  .leaflet-map-style-control { top: auto; bottom: 1rem; right: 1rem; }
+  .map-style-panel { right: auto; left: 0; bottom: 45px; }
+  .map-style-panel::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.2s;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .map-style-toggle { background: #2C2C2E; border-color: rgba(255, 255, 255, 0.2); }
+  .map-style-toggle:hover { background: #3A3A3C; }
+  .map-style-panel { background: rgba(44, 44, 46, 0.98); border-color: rgba(255, 255, 255, 0.1); }
+  .map-style-header { background: #1C1C1E; border-bottom-color: rgba(255, 255, 255, 0.1); }
+  .map-style-title, .map-style-label { color: #FFFFFF; }
+  .map-style-section { border-top-color: rgba(255, 255, 255, 0.1); }
+  .map-style-option:hover { background: rgba(255, 255, 255, 0.1); }
+  .map-style-option:active { background: rgba(255, 255, 255, 0.15); }
+}
+
 </style>
 
 <!-- Modern Compact UI Overrides -->
@@ -1974,6 +2139,130 @@ html, body {
     init();
   }
 })();
+
+// === Map Style Control ===
+
+// Définitions des fonds de carte gratuits (100% sans clé API)
+const mapStyles = {
+  cyclosm: {
+    name: 'CyclOSM',
+    url: 'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png',
+    attribution: '&copy; OpenStreetMap | CyclOSM',
+    maxZoom: 20
+  },
+  osm: {
+    name: 'OpenStreetMap',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 19
+  },
+  topo: {
+    name: 'OpenTopoMap',
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; OpenStreetMap | OpenTopoMap',
+    maxZoom: 17
+  },
+  voyager: {
+    name: 'CARTO Voyager',
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; OpenStreetMap | CARTO',
+    maxZoom: 20
+  },  satellite: {
+    name: 'Esri Imagery',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, Maxar, Earthstar Geographics',
+    maxZoom: 19
+  },
+  hybrid: {
+    name: 'Esri Hybrid',
+    layers: [
+      { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', maxZoom: 19 },
+      { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', maxZoom: 19 }
+    ],
+    attribution: '&copy; Esri, Maxar, Earthstar Geographics',
+    maxZoom: 19
+  }
+};
+
+// État du contrôle
+const mapStyleControl = {
+  currentStyle: 'voyager',
+  tileLayers: [],
+  isOpen: false,
+  toggleButton: null,
+  panel: null,
+  options: []
+};
+
+function changeMapStyle(styleId) {
+  if (!mapStyles[styleId]) return;
+
+  // retirer anciennes couches
+  mapStyleControl.tileLayers.forEach(layer => { if (map.hasLayer(layer)) map.removeLayer(layer); });
+  mapStyleControl.tileLayers = [];
+
+  const style = mapStyles[styleId];
+  if (style.layers) {
+    style.layers.forEach(ld => {
+      const layer = L.tileLayer(ld.url, { maxZoom: ld.maxZoom, attribution: style.attribution || '' }).addTo(map);
+      mapStyleControl.tileLayers.push(layer);
+    });
+  } else {
+    const layer = L.tileLayer(style.url, { maxZoom: style.maxZoom, attribution: style.attribution }).addTo(map);
+    mapStyleControl.tileLayers.push(layer);
+  }
+
+  mapStyleControl.currentStyle = styleId;
+  updateMapStyleUI(styleId);
+  try { localStorage.setItem('gpx_map_style', styleId); } catch(_) {}
+}
+
+function updateMapStyleUI(active) {
+  mapStyleControl.options.forEach(btn => {
+    const id = btn.getAttribute('data-style');
+    if (id === active) btn.classList.add('active'); else btn.classList.remove('active');
+  });
+}
+
+function toggleMapStylePanel(forceState) {
+  const shouldOpen = forceState !== undefined ? forceState : !mapStyleControl.isOpen;
+  mapStyleControl.panel.style.display = shouldOpen ? 'block' : 'none';
+  mapStyleControl.toggleButton.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+  mapStyleControl.isOpen = shouldOpen;
+}
+
+function loadMapStylePreference() {
+  try { const v = localStorage.getItem('gpx_map_style'); return (v && mapStyles[v]) ? v : 'voyager'; } catch(_) { return 'cyclosm'; }
+}
+
+function initMapStyleControl() {
+  mapStyleControl.toggleButton = document.getElementById('map-style-toggle');
+  mapStyleControl.panel = document.getElementById('map-style-panel');
+  mapStyleControl.options = Array.from(document.querySelectorAll('.map-style-option'));
+
+  if (!mapStyleControl.toggleButton || !mapStyleControl.panel) return;
+
+  // appliquer préférence
+  changeMapStyle(loadMapStylePreference() || 'voyager');
+
+  // events
+  mapStyleControl.toggleButton.addEventListener('click', (e) => { e.stopPropagation(); toggleMapStylePanel(); });
+  mapStyleControl.options.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = btn.getAttribute('data-style');
+      if (id) { changeMapStyle(id); toggleMapStylePanel(false); }
+    });
+  });
+  document.addEventListener('click', (e) => {
+    if (mapStyleControl.isOpen) {
+      const inside = mapStyleControl.panel.contains(e.target) || mapStyleControl.toggleButton.contains(e.target);
+      if (!inside) toggleMapStylePanel(false);
+    }
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && mapStyleControl.isOpen) toggleMapStylePanel(false); });
+}
+
 </script>
 
 
@@ -2072,6 +2361,95 @@ html, body {
   }
 }
 </style>
+
+<script id="map-style-control-defs">
+// === Map Style Control (defs preloaded) ===
+(function(){
+  if (window.__MAP_STYLE_CONTROL_DEFINED__) return;
+  window.__MAP_STYLE_CONTROL_DEFINED__ = true;
+
+  window.mapStyles = {
+    cyclosm: { name:'CyclOSM', url:'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', attribution:'&copy; OpenStreetMap | CyclOSM', maxZoom:20 },
+    osm: { name:'OpenStreetMap', url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', attribution:'&copy; OpenStreetMap contributors', maxZoom:19 },
+    topo: { name:'OpenTopoMap', url:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', attribution:'&copy; OpenStreetMap | OpenTopoMap', maxZoom:17 },
+    voyager: { name:'CARTO Voyager', url:'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', attribution:'&copy; OpenStreetMap | CARTO', maxZoom:20 },
+    satellite: { name:'Esri Imagery', url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', attribution:'&copy; Esri, Maxar, Earthstar Geographics', maxZoom:19 },
+    hybrid: { name:'Esri Hybrid', layers:[
+      { url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', maxZoom:19 },
+      { url:'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', maxZoom:19 }
+    ], attribution:'&copy; Esri, Maxar, Earthstar Geographics', maxZoom:19 }
+  };
+
+  window.mapStyleControl = { currentStyle:'voyager', tileLayers:[], isOpen:false, toggleButton:null, panel:null, options:[] };
+
+  window.changeMapStyle = function(styleId){
+    if (!window.map || !window.mapStyles[styleId]) return;
+    // remove old
+    window.mapStyleControl.tileLayers.forEach(l => { if (window.map.hasLayer(l)) window.map.removeLayer(l); });
+    window.mapStyleControl.tileLayers = [];
+    const style = window.mapStyles[styleId];
+    if (style.layers) {
+      style.layers.forEach(ld => {
+        const layer = L.tileLayer(ld.url, { maxZoom: ld.maxZoom, attribution: style.attribution || '' }).addTo(window.map);
+        window.mapStyleControl.tileLayers.push(layer);
+      });
+    } else {
+      const layer = L.tileLayer(style.url, { maxZoom: style.maxZoom, attribution: style.attribution }).addTo(window.map);
+      window.mapStyleControl.tileLayers.push(layer);
+    }
+    window.mapStyleControl.currentStyle = styleId;
+    window.updateMapStyleUI(styleId);
+    try { localStorage.setItem('gpx_map_style', styleId); } catch(_) {}
+  };
+
+  window.updateMapStyleUI = function(active){
+    (window.mapStyleControl.options || []).forEach(btn => {
+      const id = btn.getAttribute('data-style');
+      if (id === active) btn.classList.add('active'); else btn.classList.remove('active');
+    });
+  };
+
+  window.toggleMapStylePanel = function(forceState){
+    const shouldOpen = forceState !== undefined ? forceState : !window.mapStyleControl.isOpen;
+    if (!window.mapStyleControl.panel || !window.mapStyleControl.toggleButton) return;
+    window.mapStyleControl.panel.style.display = shouldOpen ? 'block' : 'none';
+    window.mapStyleControl.toggleButton.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+    window.mapStyleControl.isOpen = shouldOpen;
+  };
+
+  window.loadMapStylePreference = function(){
+    try { const v = localStorage.getItem('gpx_map_style'); return (v && window.mapStyles[v]) ? v : 'voyager'; } catch(_) { return 'voyager'; }
+  };
+
+  window.initMapStyleControl = function(){
+    window.mapStyleControl.toggleButton = document.getElementById('map-style-toggle');
+    window.mapStyleControl.panel = document.getElementById('map-style-panel');
+    window.mapStyleControl.options = Array.from(document.querySelectorAll('.map-style-option'));
+    if (!window.mapStyleControl.toggleButton || !window.mapStyleControl.panel) return;
+
+    // appliquer préférence
+    window.changeMapStyle(window.loadMapStylePreference());
+
+    // events
+    window.mapStyleControl.toggleButton.addEventListener('click', (e) => { e.stopPropagation(); window.toggleMapStylePanel(); });
+    window.mapStyleControl.options.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.getAttribute('data-style');
+        if (id) { window.changeMapStyle(id); window.toggleMapStylePanel(false); }
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (window.mapStyleControl.isOpen) {
+        const inside = window.mapStyleControl.panel.contains(e.target) || window.mapStyleControl.toggleButton.contains(e.target);
+        if (!inside) window.toggleMapStylePanel(false);
+      }
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && window.mapStyleControl.isOpen) window.toggleMapStylePanel(false); });
+  };
+})();
+</script>
+
 </head>
 <body>
   <div class="app-container">
@@ -2180,6 +2558,51 @@ html, body {
     <main class="map-container">
       <div class="map-main">
         <div id="map"></div>
+
+<div class="leaflet-map-style-control leaflet-bar leaflet-control" id="map-style-control">
+  <button class="map-style-toggle" id="map-style-toggle" type="button" title="Changer le fond de carte" aria-label="Changer le fond de carte" aria-expanded="false">
+    <span class="map-style-icon">🗺️</span>
+  </button>
+  <div class="map-style-panel" id="map-style-panel" style="display: none;">
+    <div class="map-style-header">
+      <span class="map-style-icon">🗺️</span>
+      <span class="map-style-title">Fond de carte</span>
+    </div>
+    <div class="map-style-section">
+      <div class="map-style-section-title">Routes & Cyclisme</div>
+      <button class="map-style-option" data-style="cyclosm" type="button">
+        <span class="map-style-check">✓</span>
+        <span class="map-style-label">CyclOSM</span>
+        <span class="map-style-badge">⭐</span>
+      </button>
+      <button class="map-style-option" data-style="osm" type="button">
+        <span class="map-style-check">✓</span>
+        <span class="map-style-label">OpenStreetMap</span>
+      </button>
+      <button class="map-style-option" data-style="topo" type="button">
+        <span class="map-style-check">✓</span>
+        <span class="map-style-label">OpenTopoMap</span>
+      </button>
+      <button class="map-style-option" data-style="voyager" type="button">
+        <span class="map-style-check">✓</span>
+        <span class="map-style-label">CARTO Voyager</span>
+      </button>
+    </div>
+    <div class="map-style-section">
+      <div class="map-style-section-title">🛰️ Satellite</div>
+      <button class="map-style-option" data-style="satellite" type="button">
+        <span class="map-style-check">✓</span>
+        <span class="map-style-label">Esri Imagery</span>
+      </button>
+      <button class="map-style-option" data-style="hybrid" type="button">
+        <span class="map-style-check">✓</span>
+        <span class="map-style-label">Esri Hybrid</span>
+        <span class="map-style-badge">⭐</span>
+      </button>
+    </div>
+  </div>
+</div>
+
         <button class="poi-refresh-button" id="poi-refresh-button" type="button" aria-label="Recharger les points d'intérêt">
           <span aria-hidden="true">🔄</span>
           Recharger les POI
@@ -3778,14 +4201,16 @@ html, body {
     }
 
     const map = L.map('map').setView([48.8566, 2.3522], 12);
+  // Expose Leaflet map globally for style control
+  window.map = map;
+
+
+  // Initialiser le contrôle de style AVANT POI/GPX
+  requestAnimationFrame(()=>{ if (window.initMapStyleControl) window.initMapStyleControl(); });
+
     map.zoomControl.setPosition('topright');
 
     // Couche de tuiles OpenStreetMap avec attribution obligatoire
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
     const fileInput = document.getElementById('file-input');
     const importButton = document.getElementById('import-button');
     const exportButton = document.getElementById('export-button');
