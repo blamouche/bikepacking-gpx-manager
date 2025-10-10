@@ -1710,6 +1710,72 @@ html, body {
   background: var(--color-text-muted);
 }
 </style>
+<style>
+/* === Collapsible Sections === */
+.collapsible-section .section-header-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s ease;
+}
+
+.collapsible-section .section-header-toggle:hover {
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: var(--radius-md);
+}
+
+.collapsible-section .section-header-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.collapsible-section .section-title {
+  margin: 0;
+  flex: 1;
+  text-align: left;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.collapsible-section .section-header-chevron {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collapsible-section.expanded .section-header-chevron {
+  transform: rotate(180deg);
+}
+
+.section-collapsible-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.3s ease;
+  opacity: 0;
+  padding: 0;
+}
+
+.collapsible-section.expanded .section-collapsible-content {
+  max-height: 2000px;
+  opacity: 1;
+  padding: 0.5rem 0 0 0;
+}
+
+.collapsible-section .section-header-toggle:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+</style>
 <!-- Layer Indicators on Map Overrides -->
 <style>
 /* 1) Container des indicateurs - arraché du panneau et centré en haut de la carte */
@@ -2694,8 +2760,13 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 <p>Ou glissez-déposez un fichier .gpx ici</p>
 </div>
 </section>
-<section class="panel-section map-style-section" id="map-style-section">
+<section class="panel-section map-style-section collapsible-section" id="map-style-section">
+<button aria-controls="map-style-content" aria-expanded="false" class="section-header-toggle" type="button">
+<span class="section-header-icon">🗺️</span>
 <h3 class="section-title">Style de carte</h3>
+<span class="section-header-chevron">▼</span>
+</button>
+<div class="section-collapsible-content" id="map-style-content">
 <div class="map-style-options">
 <button class="map-style-option" data-style="voyager" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-voyager"></div></div><span class="map-style-label-text">🗺️ Voyager</span></button>
 <button class="map-style-option" data-style="cyclosm" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-cyclosm"></div></div><span class="map-style-label-text">🚴 CyclOSM</span></button>
@@ -2703,6 +2774,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 <button class="map-style-option" data-style="topo" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-topo"></div></div><span class="map-style-label-text">⛰️ OpenTopoMap</span></button>
 <button class="map-style-option" data-style="satellite" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-satellite"></div></div><span class="map-style-label-text">🛰️ Esri Imagery</span></button>
 <button class="map-style-option" data-style="hybrid" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-hybrid"></div></div><span class="map-style-label-text">🛰️+🏙️ Esri Hybrid</span></button>
+</div>
 </div>
 </section>
 <section class="panel-section" id="layers-section-placeholder"></section>
@@ -7059,6 +7131,97 @@ function removeTraceEndpointMarkers() {
     console.warn('removeTraceEndpointMarkers error:', e);
   }
 }
+</script>
+<script>
+// === Gestion collapsible de la section Style de carte ===
+const mapStyleSectionCollapsible = {
+  section: null,
+  toggle: null,
+  content: null,
+  isExpanded: false,
+  storageKey: 'gpx_map_style_section_expanded'
+};
+
+function saveMapStyleSectionState(expanded) {
+  try {
+    localStorage.setItem(mapStyleSectionCollapsible.storageKey, JSON.stringify(expanded));
+  } catch (error) {
+    console.warn("Impossible de sauvegarder l'état de la section style:", error);
+  }
+}
+
+function loadMapStyleSectionState() {
+  try {
+    const saved = localStorage.getItem(mapStyleSectionCollapsible.storageKey);
+    return saved ? JSON.parse(saved) : false;
+  } catch (error) {
+    return false;
+  }
+}
+
+function setMapStyleSectionExpanded(expanded, animate = true) {
+  const { section, toggle, content } = mapStyleSectionCollapsible;
+  if (!section || !toggle || !content) {
+    return;
+  }
+
+  mapStyleSectionCollapsible.isExpanded = expanded;
+
+  if (!animate) {
+    const previousTransition = content.style.transition;
+    content.style.transition = 'none';
+    section.classList.toggle('expanded', expanded);
+    toggle.setAttribute('aria-expanded', String(expanded));
+    requestAnimationFrame(() => {
+      content.style.transition = previousTransition || '';
+      if (expanded && typeof window.__mapStylePreviews?.refresh === 'function') {
+        window.__mapStylePreviews.refresh();
+      }
+    });
+    return;
+  }
+
+  section.classList.toggle('expanded', expanded);
+  toggle.setAttribute('aria-expanded', String(expanded));
+
+  if (expanded) {
+    const triggerRefresh = () => {
+      if (typeof window.__mapStylePreviews?.refresh === 'function') {
+        window.__mapStylePreviews.refresh();
+      }
+    };
+    setTimeout(triggerRefresh, 350);
+  }
+}
+
+function toggleMapStyleSection() {
+  const newState = !mapStyleSectionCollapsible.isExpanded;
+  setMapStyleSectionExpanded(newState, true);
+  saveMapStyleSectionState(newState);
+}
+
+function initMapStyleCollapsible() {
+  mapStyleSectionCollapsible.section = document.getElementById('map-style-section');
+  if (!mapStyleSectionCollapsible.section) {
+    return;
+  }
+
+  mapStyleSectionCollapsible.toggle = mapStyleSectionCollapsible.section.querySelector('.section-header-toggle');
+  mapStyleSectionCollapsible.content = document.getElementById('map-style-content');
+
+  if (!mapStyleSectionCollapsible.toggle || !mapStyleSectionCollapsible.content) {
+    console.warn('Map style collapsible: éléments manquants');
+    return;
+  }
+
+  mapStyleSectionCollapsible.isExpanded = loadMapStyleSectionState();
+  setMapStyleSectionExpanded(mapStyleSectionCollapsible.isExpanded, false);
+  mapStyleSectionCollapsible.toggle.setAttribute('aria-expanded', String(mapStyleSectionCollapsible.isExpanded));
+
+  mapStyleSectionCollapsible.toggle.addEventListener('click', toggleMapStyleSection);
+}
+
+document.addEventListener('DOMContentLoaded', initMapStyleCollapsible);
 </script>
 <script>
 (function(){
