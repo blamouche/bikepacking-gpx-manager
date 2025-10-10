@@ -286,8 +286,7 @@
 
     .layer-loading,
     .layer-error,
-    .layer-info,
-    .layer-total {
+    .layer-info {
       padding: 0.6rem 0.75rem;
       border-radius: 6px;
       font-size: 0.9rem;
@@ -297,7 +296,6 @@
     .layer-loading {
       background: #e3f2fd;
       color: #1976d2;
-      display: flex;
       align-items: center;
       gap: 0.5rem;
     }
@@ -312,20 +310,6 @@
       background: #fff8e1;
       color: #f57f17;
       border: 1px solid rgba(245, 127, 23, 0.2);
-    }
-
-    .layer-total {
-      background: var(--color-background-alt);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.9rem;
-    }
-
-    .layer-count-value {
-      color: var(--color-primary);
-      font-weight: 700;
-      font-size: 1rem;
     }
 
     .layer-loading .loading-spinner {
@@ -935,9 +919,8 @@
     }
 
     .poi-refresh-button {
-      position: absolute;
+      position: fixed;
       z-index: 900;
-      top: 3.25rem;
       display: none;
       align-items: center;
       gap: 0.4rem;
@@ -951,9 +934,11 @@
       box-shadow: var(--shadow-md);
       cursor: pointer;
       transition: background 0.2s ease, transform 0.1s ease;
-    
-      left: 50%;
-      transform: translateX(-50%);}
+      top: 90% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      width: min(90vw, 1000px);}
+
 
     .poi-refresh-button:hover,
     .poi-refresh-button:focus {
@@ -963,7 +948,8 @@
     }
 
     .poi-refresh-button span {
-      display: inline-flex;
+      /*display: inline-flex;*/
+      display:block;
       align-items: center;
       justify-content: center;
     }
@@ -1594,7 +1580,7 @@ html, body {
 /* 11. Bouton POI refresh modernisé */
 .poi-refresh-button {
   left: 50%;
-  top: 1rem;
+  top:5rem;
   transform: translateX(-50%);
   padding: 0.5rem 0.875rem;
   background: rgba(0, 102, 255, 0.95);
@@ -1613,8 +1599,7 @@ html, body {
 /* 12. Indicateurs et messages compacts */
 .layer-loading,
 .layer-error,
-.layer-info,
-.layer-total {
+.layer-info {
   padding: 0.5rem 0.625rem;
   border-radius: var(--radius-md);
   font-size: 0.8125rem;
@@ -1838,225 +1823,155 @@ html, body {
   }
 }
 </style>
-<!-- Layer Indicators on Map Overrides -->
-<style>
-/* 1) Container des indicateurs - arraché du panneau et centré en haut de la carte */
-.panel-section .layer-indicators {
-  /* Retirer du flux normal du panneau */
-  position: absolute;
+<!-- Layer Indicators - unified styles (replaced multiple conflicting blocks) -->
+<style id="layer-indicators-unified">
+/* === LAYER INDICATORS - Position & Visibilité (UNIFIÉ) === */
 
-  /* Positionnement centré en haut de la carte */
-  left: 50%;
-  top: 1rem;
-  transform: translateX(-50%);
-
-  /* Z-index supérieur au bouton POI (900) mais inférieur aux popups */
-  z-index: 950;
-
-  /* Largeur adaptative */
+/* Container des indicateurs - toujours au-dessus de tout */
+.layer-indicators {
+  position: fixed !important;
+  z-index: 1100 !important; /* Au-dessus de tout (POI button = 900, panel = 1000) */
+  
+  /* Centré horizontalement */
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  top: 50% !important;
+  
+  /* Dimensions */
   max-width: 500px;
-  width: calc(100vw - 2rem);
-
-  /* Espacement entre les indicateurs */
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  /* Permettre le clic à travers si vide */
-  pointer-events: none;
+  width: auto;
+  
+  /* Layout vertical */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  
+  /* Pas de pointer-events sur le container, seulement sur les enfants */
+  pointer-events: none !important;
 }
 
-/* Restaurer pointer-events sur les éléments visibles */
-.layer-loading,
-.layer-error,
-.layer-info,
-.layer-zoom-info,
-.layer-total {
-  pointer-events: auto;
+/* Tous les messages individuels sont interactifs */
+.layer-indicators > * {
+  pointer-events: auto !important;
+  width: 100%;
+  text-align: center;
 }
 
-/* 2) Styles modernisés des indicateurs */
+/* === STYLES DES INDICATEURS INDIVIDUELS === */
+
+/* Loading - TOUJOURS VISIBLE quand display:flex est appliqué par JS */
 .layer-loading {
-  display: none; /* caché par défaut */
-  align-items: center;
+  display: none; /* Caché par défaut, JS met display:flex */
+  /* Positionnée FIXED au centre de l'écran, au-dessus de tout */
+  position: fixed !important;
+  z-index: 1200 !important; /* Au-dessus du reste */
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  align-items: center !important;
+  justify-content: center !important;
   gap: 0.5rem;
-  padding: 0.625rem 1rem;
-  border-radius: var(--radius-md);
-  font-size: 0.875rem;
-  font-weight: 500;
-
-  /* Glassmorphism */
-  background: rgba(0, 102, 255, 0.95);
-  color: #FFFFFF;
-  backdrop-filter: blur(10px);
-
-  /* Ombre */
-  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
-
-  /* Animation */
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md, 8px);
+  font-size: 0.95rem;
+  font-weight: 600;
+  width: min(90vw, 1000px);
+  /*width: auto;*/
+  /* Glassmorphism - bien visible */
+  background: rgba(0, 102, 255, 0.95) !important;
+  color: #FFFFFF !important;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* Ombre forte pour contraste */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45) !important;
+  /* Permettre les interactions avec le chargement */
+  pointer-events: auto !important;
+  /* Animation d'apparition */
   animation: slideDown 0.3s ease-out;
 }
 
-/* keyframes communs */
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* S'assurer que le loading est visible même avec des conflits de style */
+.layer-loading[style*="display: flex"],
+.layer-loading[style*="display:flex"] {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: fixed !important;
+  z-index: 1200 !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  pointer-events: auto !important;
 }
 
-@keyframes slideUp {
-  from { opacity: 1; transform: translateY(0); }
-  to   { opacity: 0; transform: translateY(-10px); }
-}
-
+/* Error */
 .layer-error {
   display: none;
   padding: 0.625rem 1rem;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-md, 8px);
   font-size: 0.875rem;
   font-weight: 500;
-  background: rgba(255, 59, 48, 0.95);
-  color: #FFFFFF;
+  background: rgba(255, 59, 48, 0.95) !important;
+  color: #FFFFFF !important;
   border: 1px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3);
   animation: slideDown 0.3s ease-out;
+  position: fixed !important;
+  z-index: 1200 !important; /* Au-dessus du reste */
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: min(90vw, 1000px);
+
 }
 
+/* Info */
 .layer-info {
   display: none;
   padding: 0.625rem 1rem;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-md, 8px);
   font-size: 0.875rem;
   font-weight: 500;
-  background: rgba(255, 149, 0, 0.95);
-  color: #FFFFFF;
+  background: rgba(255, 149, 0, 0.95) !important;
+  color: #FFFFFF !important;
   border: 1px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 12px rgba(255, 149, 0, 0.3);
   animation: slideDown 0.3s ease-out;
+  position: fixed !important;
+  z-index: 1200 !important; /* Au-dessus du reste */
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  align-items: center !important;
+  justify-content: center !important;
+    width: min(90vw, 1000px);
+
 }
 
-/* Le HTML existant utilise id="layers-zoom-info" avec la classe .layer-info.
-   On applique donc le style "zoom-info" sur cet id pour respecter la spec,
-   sans modifier le JS/HTML. */
-#layers-zoom-info {
+/* Zoom info */
+#layers-zoom-info,
+.layer-zoom-info {
   display: none;
   padding: 0.625rem 1rem;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-md, 8px);
   font-size: 0.875rem;
   font-weight: 500;
-  background: rgba(255, 204, 0, 0.95);
-  color: #1A1A1A;
+  background: rgba(255, 204, 0, 0.95) !important;
+  color: #1A1A1A !important;
   border: 1px solid rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 12px rgba(255, 204, 0, 0.3);
   animation: slideDown 0.3s ease-out;
+  width: min(90vw, 1000px);
+
 }
 
-/* 3) Bouton POI : déjà centré. On confirme la hiérarchie (z-index: 900) */
-.poi-refresh-button {
-  position: absolute;
-  z-index: 900; /* Inférieur aux indicateurs */
-  left: 50%;
-  top: 1rem;
-  transform: translateX(-50%);
-  transition: transform 0.3s ease, top 0.3s ease;
-}
-
-/* 4) Compteur total POI : overlay sous les indicateurs */
-.layer-total {
-  display: none; /* caché par défaut */
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.625rem 1rem;
-  border-radius: var(--radius-md);
-  font-size: 0.875rem;
-  font-weight: 500;
-  background: rgba(255, 255, 255, 0.95);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border-light);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  animation: slideDown 0.3s ease-out;
-
-  /* Position fixe pour apparaître sur la carte, sous les indicateurs */
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 950;
-  top: 4.25rem; /* espace sous la ligne des indicateurs */
-}
-
-.layer-count-value {
-  color: var(--color-primary);
-  font-weight: 700;
-  font-size: 1.125rem;
-}
-
-/* 5) Responsive mobile */
-@media (max-width: 767px) {
-  .panel-section .layer-indicators {
-    top: 4.5rem; /* sous le bouton menu mobile */
-    left: 1rem;
-    right: 1rem;
-    transform: none;
-    width: auto;
-    max-width: none;
-  }
-
-  .layer-loading,
-  .layer-error,
-  .layer-info,
-  #layers-zoom-info,
-  .layer-total {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8125rem;
-  }
-
-  .poi-refresh-button {
-    top: 1rem;
-  }
-
-  .layer-total {
-    left: 1rem;
-    right: 1rem;
-    transform: none;
-    top: 7.25rem; /* sous la zone d'indicateurs sur mobile */
-  }
-}
-
-/* 6) Gestion du panneau ouvert sur mobile : éviter chevauchement */
-@media (max-width: 767px) {
-  .tools-panel.open ~ .map-container .map-main::after {
-    /* pseudo repère (aucun rendu) */
-    content: '';
-  }
-  /* Les indicateurs étant positionnés fixed depuis le panneau, on ajuste avec l'état du panneau */
-  .tools-panel.open .panel-section .layer-indicators {
-    left: calc(85vw + 1rem);
-    right: 1rem;
-    width: auto;
-    transform: none;
-  }
-
-  @media (max-width: 480px) {
-    .tools-panel.open .panel-section .layer-indicators {
-      opacity: 0;
-      pointer-events: none;
-    }
-  }
-}
-
-/* 7) Animations d'apparition lorsqu'ils passent à display: ... */
-.layer-loading[style*="display: flex"],
-.layer-error[style*="display: block"],
-.layer-info[style*="display: block"],
-#layers-zoom-info[style*="display: block"],
-.layer-total[style*="display: flex"] {
-  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 8) Spinner de chargement */
+/* Spinner animation */
 .layer-loading .loading-spinner {
   display: inline-block;
   animation: spin 1s linear infinite;
@@ -2065,177 +1980,51 @@ html, body {
 
 @keyframes spin {
   from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  to { transform: rotate(360deg); }
 }
 
-/* 9) Icônes/visuels via pseudo-éléments */
-.layer-error::before { content: "⚠️ "; }
-.layer-info::before { content: "ℹ️ "; }
-/* zoom-info déjà traité via #layers-zoom-info ; ajout d'icône via ::before */
-#layers-zoom-info::before { content: "🔍 "; }
-
-/* 10) Accessibilité (focus visible) */
-.layer-error:focus-within,
-.layer-info:focus-within,
-#layers-zoom-info:focus-within {
-  outline: 2px solid rgba(255, 255, 255, 0.5);
-  outline-offset: 2px;
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* 11) Dark mode */
-@media (prefers-color-scheme: dark) {
-  .layer-loading { background: rgba(10, 132, 255, 0.95); }
-  .layer-error { background: rgba(255, 69, 58, 0.95); }
-  .layer-info { background: rgba(255, 159, 10, 0.95); }
-  #layers-zoom-info { background: rgba(255, 214, 10, 0.95); color: #1A1A1A; }
-  .layer-total {
-    background: rgba(28, 28, 30, 0.95);
-    color: #FFFFFF;
-    border-color: rgba(255, 255, 255, 0.15);
-  }
-}
-</style>
-<!-- Center & Stack Indicators Override -->
-<style>
-/* Center the indicators container (relative to viewport for consistency) */
-.panel-section .layer-indicators {
-  position: fixed !important;       /* ensure not relative to panel */
-  left: 50% !important;
-  top: 1rem !important;
-  transform: translateX(-50%) !important;
-  max-width: 500px !important;
-  width: auto !important;           /* shrink to content */
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;   /* center children horizontally */
-  gap: 0.5rem !important;
-  pointer-events: none !important;
-}
-
-/* Make each message box intrinsically sized and centered */
-.layer-loading,
-.layer-error,
-.layer-info,
-#layers-zoom-info,
-.layer-total {
-  width: max-content;               /* fit content width */
-  max-width: 90vw;                  /* avoid overflow */
-  text-align: center;
-  pointer-events: auto;
-}
-
-/* Ensure the total counter stacks with others (not absolutely positioned) */
-.layer-total {
-  position: static !important;
-  left: auto !important;
-  top: auto !important;
-  transform: none !important;
-}
-
-/* Give the POI refresh button room below stacked indicators */
-.poi-refresh-button {
-  top: 3.75rem !important;          /* slightly lower to clear stacked messages */
-}
-
-@media (max-width: 767px) {
-  .panel-section .layer-indicators {
-    top: 4.5rem !important;
-  }
-  .poi-refresh-button {
-    top: 1rem !important;
-  }
-}
-</style>
-<!-- === Empilement vertical des indicateurs & bouton POI (CSS + JS) === -->
-<style>
-/* 1) Pile virtuelle centrée : on utilise .layer-indicators comme pile fixe */
-.layer-indicators {
-  position: fixed !important;
-  top: 1rem !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  z-index: 950 !important;
-  max-width: 500px !important;
-  width: min(500px, calc(100vw - 2rem)) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  gap: 0.5rem !important;
-  pointer-events: none !important;
-}
-
-/* Les enfants redeviennent interactifs et prennent la largeur de la pile */
-.layer-indicators > .layer-loading,
-.layer-indicators > .layer-error,
-.layer-indicators > .layer-info,
-.layer-indicators > #layers-zoom-info,
-.layer-indicators > .layer-zoom-info,
-.layer-indicators > .layer-total {
-  pointer-events: auto;
-  width: 100%;
-  text-align: center;
-}
-
-/* 3) Styles communs (au cas où non appliqués ailleurs) */
-.layer-loading,
-.layer-error,
-.layer-info,
-.layer-zoom-info,
-#layers-zoom-info,
-.layer-total {
-  border-radius: var(--radius-md);
-  font-size: 0.875rem;
-  font-weight: 500;
-  animation: slideDown 0.3s cubic-bezier(0.4,0,0.2,1);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-/* Variantes couleurs (rappel) */
-.layer-loading { background: rgba(0,102,255,0.95); color:#fff; border:1px solid rgba(255,255,255,0.2); }
-.layer-error   { background: rgba(255,59,48,0.95); color:#fff; border:1px solid rgba(255,255,255,0.2); }
-.layer-info    { background: rgba(255,149,0,0.95); color:#fff; border:1px solid rgba(255,255,255,0.2); }
-.layer-zoom-info, #layers-zoom-info { background: rgba(255,204,0,0.95); color:#1A1A1A; border:1px solid rgba(255,255,255,0.3); }
-.layer-total   { background: rgba(255,255,255,0.95); color: var(--color-text-primary, #1A1A1A); border:1px solid var(--color-border-light, rgba(0,0,0,0.08)); }
-
-/* Padding standard des boîtes */
-.layer-loading, .layer-error, .layer-info, .layer-zoom-info, #layers-zoom-info, .layer-total {
-  padding: 0.625rem 1rem;
-}
-
-/* 5) Bouton POI : centré et positionné sous la pile dynamique */
-.poi-refresh-button {
-  position: fixed !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  z-index: 949 !important; /* juste sous les boîtes */
-  transition: top 0.25s cubic-bezier(0.4,0,0.2,1);
-  white-space: nowrap;
-}
-
-/* 7) Responsive */
+/* === RESPONSIVE MOBILE === */
 @media (max-width: 767px) {
   .layer-indicators {
-    top: 4.5rem !important;
+    top: 4.5rem !important; /* Sous le bouton menu */
     left: 1rem !important;
     right: 1rem !important;
     transform: none !important;
     max-width: none !important;
     width: auto !important;
-    align-items: stretch !important;
   }
-  .poi-refresh-button {
-    /* Le JS ajustera top; on garde centré par défaut si assez de place */
-  }
-  .layer-loading, .layer-error, .layer-info, .layer-zoom-info, #layers-zoom-info, .layer-total {
+  
+  .layer-loading,
+  .layer-error,
+  .layer-info,
+  #layers-zoom-info,
+  .layer-zoom-info {
     padding: 0.5rem 0.75rem;
     font-size: 0.8125rem;
   }
 }
 
-/* Animations */
-@keyframes slideDown {
-  from { opacity:0; transform: translateY(-10px); }
-  to   { opacity:1; transform: translateY(0); }
+/* === DARK MODE === */
+@media (prefers-color-scheme: dark) {
+  .layer-loading { 
+    background: rgba(10, 132, 255, 0.95) !important; 
+  }
+  .layer-error { 
+    background: rgba(255, 69, 58, 0.95) !important; 
+  }
+  .layer-info { 
+    background: rgba(255, 159, 10, 0.95) !important; 
+  }
+  #layers-zoom-info,
+  .layer-zoom-info { 
+    background: rgba(255, 214, 10, 0.95) !important; 
+    color: #1A1A1A !important; 
+  }
 }
 </style>
 <script>
@@ -3484,8 +3273,6 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     let layersErrorElement = null;
     let layersInfoElement = null;
     let layersZoomInfoElement = null;
-    let layersTotalElement = null;
-    let layersTotalCountElement = null;
     let presetSelectElement = null;
     let isApplyingPreset = false;
 
@@ -3536,6 +3323,24 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
         console.warn('Impossible de sauvegarder les préférences:', error);
       }
     }
+
+    function relocateLayerIndicators() {
+      try {
+        const mapContainer = document.querySelector('.map-container');
+        if (!mapContainer) {
+          return;
+        }
+        const indicators = document.querySelector('.layer-indicators');
+        if (indicators) {
+          if (!mapContainer.contains(indicators)) {
+            mapContainer.appendChild(indicators);
+          }
+        }
+      } catch (error) {
+        console.warn('relocateLayerIndicators:', error);
+      }
+    }
+    document.addEventListener('DOMContentLoaded', relocateLayerIndicators);
 
     function generateLayersHTML() {
       const groups = Object.values(POI_GROUPS).sort((a, b) => a.order - b.order);
@@ -3603,7 +3408,8 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
             </div>`;
       });
       html += `
-            <div class="layer-indicators">
+          </div>
+          <div class="layer-indicators">
               <div class="layer-loading" id="layers-loading" style="display: none;">
                 <span class="loading-spinner" aria-hidden="true">⏳</span>
                 Chargement des POI...
@@ -3612,11 +3418,6 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
               <div class="layer-info" id="layers-info" style="display: none;"></div>
               <div class="layer-info" id="layers-zoom-info" style="display: none;"></div>
             </div>
-            <div class="layer-total" id="layers-total" style="display: none;">
-              <strong>Total POI affichés :</strong>
-              <span class="layer-count-value" id="layers-total-count">0</span>
-            </div>
-          </div>
         </section>
 `;
       return html;
@@ -3656,17 +3457,15 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       layersErrorElement = document.getElementById('layers-error');
       layersInfoElement = document.getElementById('layers-info');
       layersZoomInfoElement = document.getElementById('layers-zoom-info');
-      layersTotalElement = document.getElementById('layers-total');
-      layersTotalCountElement = document.getElementById('layers-total-count');
       presetSelectElement = document.getElementById('preset-select');
       attachLayerEventHandlers();
       hideLayersIndicators();
       updateAllPOICounts();
-      updateTotalPOICount(0);
       updatePresetSelection();
       if (window.collapsibleSectionsAPI?.init) {
         window.collapsibleSectionsAPI.init('layers');
       }
+      relocateLayerIndicators();
     }
 
     function ensureLayerGroup(categoryId) {
@@ -3701,19 +3500,6 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
         const count = poiManager.counts.get(categoryId) || 0;
         updateCategoryCountUI(categoryId, count);
       });
-    }
-
-    function updateTotalPOICount(total) {
-      if (!layersTotalElement || !layersTotalCountElement) {
-        return;
-      }
-      if (total > 0) {
-        layersTotalElement.style.display = 'flex';
-        layersTotalCountElement.textContent = String(total);
-      } else {
-        layersTotalElement.style.display = 'none';
-        layersTotalCountElement.textContent = '0';
-      }
     }
 
     function hideLayersIndicators() {
@@ -3764,10 +3550,23 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     }
 
     function showLayersZoomInfo(minZoom) {
-      if (layersZoomInfoElement) {
-        layersZoomInfoElement.textContent = `ℹ️ Zoomez davantage pour voir les POI (zoom ≥ ${minZoom})`;
-        layersZoomInfoElement.style.display = 'block';
+      if (!layersZoomInfoElement) return;
+      // Si le zoom actuel est >= 13, masquer l'info même si appelée
+      try {
+        if (typeof map !== 'undefined' && map && typeof map.getZoom === 'function') {
+          const currentZoom = map.getZoom();
+          if (currentZoom >= 13) {
+            // s'assurer que l'élément est caché
+            layersZoomInfoElement.style.display = 'none';
+            layersZoomInfoElement.textContent = '';
+            return;
+          }
+        }
+      } catch (e) {
+        // ignore errors reading map zoom
       }
+      layersZoomInfoElement.textContent = `ℹ️ Zoomez davantage pour voir les POI (zoom ≥ ${minZoom})`;
+      layersZoomInfoElement.style.display = 'block';
     }
 
     function hideLayersZoomInfo() {
@@ -3781,7 +3580,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       if (!poiRefreshButton) {
         return;
       }
-      poiRefreshButton.style.display = 'inline-flex';
+      poiRefreshButton.style.display = 'block';
       poiRefreshButton.setAttribute('aria-hidden', 'false');
     }
 
@@ -3948,7 +3747,6 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       });
       poiManager.counts.clear();
       updateAllPOICounts();
-      updateTotalPOICount(0);
     }
 
     function cancelPendingPOILoad() {
@@ -3988,6 +3786,16 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     function handlePOIViewportChange() {
       if (!poiManager.enabled) {
         return;
+      }
+      // If user zoomed sufficiently, hide the zoom-info alert immediately
+      try {
+        if (typeof map !== 'undefined' && map && typeof map.getZoom === 'function') {
+          if (map.getZoom() >= 13) {
+            hideLayersZoomInfo();
+          }
+        }
+      } catch (e) {
+        // ignore
       }
       if (poiManager.suppressRefreshPrompt) {
         poiManager.suppressRefreshPrompt = false;
@@ -4414,7 +4222,6 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       });
       if (!Array.isArray(pois) || pois.length === 0) {
         updateAllPOICounts();
-        updateTotalPOICount(0);
         hideLayersInfo();
         return;
       }
@@ -4463,7 +4270,6 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
         total += limitedItems.length;
       });
       updateAllPOICounts();
-      updateTotalPOICount(total);
       if (total === 0) {
         hideLayersInfo();
       } else if (totalLimited) {
