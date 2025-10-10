@@ -120,6 +120,8 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      /* Espacement vertical : marge au-dessus et au-dessous du bloc */
+      margin: 0.75rem 0;
     }
 
     .layer-presets label {
@@ -3549,6 +3551,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
               <button type="button" class="btn btn-secondary btn-small" id="layers-enable-all">Activer tout</button>
               <button type="button" class="btn btn-secondary btn-small" id="layers-disable-all">Désactiver tout</button>
             </div>
+            
             <div class="layer-presets">
               <label for="preset-select">Profil :</label>
               <select id="preset-select" class="preset-select">
@@ -3559,6 +3562,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       });
       html += `
               </select>
+
             </div>`;
       groups.forEach((group) => {
         const categories = Object.values(POI_CATEGORIES).filter((category) => category.group === group.id);
