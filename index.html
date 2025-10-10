@@ -6397,7 +6397,7 @@ function loadTraceFromLocalStorage() {
 
     // Convert GPX to GeoJSON
     const geojson = (typeof convertGpxToGeoJSON === 'function') ? convertGpxToGeoJSON(xml) : null;
-    const hasStoredWaypoints = Array.isArray(traceData.waypoints) && traceData.waypoints.length > 0;
+    const hasStoredWaypoints = Array.isArray(traceData.waypoints); // accept [] as authoritative
     if (hasStoredWaypoints && geojson && Array.isArray(geojson.features)) {
       geojson.features = geojson.features.filter(f => {
         const t = f && f.geometry && f.geometry.type;
@@ -6806,5 +6806,22 @@ function attachWaypointPersistence() {
 
 </script>
 
+<script>
+// --- Hotfix: éviter la récursion de __lsSetItem en fixant la méthode native ---
+(function(){
+  try {
+    var __nativeSetItem = (Storage && Storage.prototype && Storage.prototype.setItem)
+      ? Storage.prototype.setItem.bind(localStorage)
+      : function(k,v){ localStorage.setItem(k, v); };
+    // Version sûre : n'appelle jamais localStorage.setItem directement (qui pourrait être surchargé)
+    window.__lsSetItem = function(key, value){
+      try { __nativeSetItem(key, value); return true; }
+      catch(e){ console.warn('Erreur setItem localStorage (safe):', e); return false; }
+    };
+  } catch(e){
+    console.warn('Hotfix __lsSetItem init failed:', e);
+  }
+})();
+</script>
 </body>
 </html>
