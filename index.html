@@ -1106,168 +1106,210 @@
 }
 
 
-/* === Map Style Control === */
 
-/* Contrôle principal (positionné par Leaflet) */
-.leaflet-map-style-control {
-  position: absolute;
-  top: 90px; /* Sous les contrôles de zoom (80px) + marge */
-  right: 10px;
-  z-index: 1000;
+/* === Mini-cartes d'aperçu pour styles === */
+.map-style-section .map-style-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
 }
-
-/* Bouton toggle */
-.map-style-toggle {
-  width: 30px;
-  height: 30px;
-  background: #FFFFFF;
-  border: 2px solid rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
+.map-style-section .map-style-option {
+  display: grid;
+  grid-template-columns: 120px 1fr;
   align-items: center;
-  justify-content: center;
-  padding: 0;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+  column-gap: 0.75rem;
+  padding: 0.5rem;
 }
-
-.map-style-toggle:hover {
-  background: #F7F8FA;
-  border-color: rgba(0, 0, 0, 0.3);
-}
-
-.map-style-toggle:active {
-  transform: scale(0.95);
-}
-
-.map-style-toggle .map-style-icon {
-  font-size: 16px;
-  line-height: 1;
-}
-
-/* Panel déroulant */
-.map-style-panel {
-  position: absolute;
-  top: 0;
-  right: 40px; /* Aligné à droite du bouton */
-  width: 200px;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(10px);
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+.map-style-thumb {
+  width: 120px;
+  height: 80px;
+  border-radius: var(--radius-md, 8px);
   overflow: hidden;
-  animation: mapStylePanelAppear 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid var(--color-border-light, rgba(0,0,0,0.12));
+  border: 1px solid var(--color-border-light, #E5E5EA);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.04));
 }
-
-@keyframes mapStylePanelAppear {
-  from { opacity: 0; transform: translateX(10px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-/* Header du panel */
-.map-style-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  background: var(--color-background-alt, #FAFBFC);
-  border-bottom: 1px solid var(--color-border-light, rgba(0,0,0,0.08));
-}
-
-.map-style-header .map-style-icon {
-  font-size: 18px;
-  line-height: 1;
-}
-
-.map-style-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text-primary, #111);
-}
-
-/* Sections */
-.map-style-section { padding: 0.5rem 0; }
-.map-style-section + .map-style-section { border-top: 1px solid var(--color-border-light, rgba(0,0,0,0.08)); }
-
-.map-style-section-title {
-  padding: 0.5rem 1rem 0.25rem;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--color-text-muted, #666);
-}
-
-/* Options de style */
-.map-style-option {
+.map-style-thumb-inner {
   width: 100%;
+  height: 100%;
+  pointer-events: none; /* clics passent au bouton */
+}
+.map-style-label-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.map-style-option.active .map-style-thumb {
+  outline: 2px solid var(--color-primary, #0066FF);
+  outline-offset: -2px;
+}
+@media (max-width: 480px) {
+  .map-style-section .map-style-option {
+    grid-template-columns: 100px 1fr;
+  }
+  .map-style-thumb { width: 100px; height: 66px; }
+}
+
+
+/* === Vignettes pleine largeur & responsives === */
+.map-style-section .map-style-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.map-style-section .map-style-option {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+.map-style-thumb {
+  width: 100%;
+  height: 160px;
+  border-radius: var(--radius-md, 8px);
+  overflow: hidden;
+  border: 1px solid var(--color-border-light, #E5E5EA);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.04));
+}
+.map-style-thumb-inner {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+@media (min-width: 1024px) {
+  .map-style-thumb { height: 180px; }
+}
+@media (max-width: 480px) {
+  .map-style-thumb { height: 140px; }
+}
+
+
+/* === Map Style Options: Look & Feel aligned with app === */
+.map-style-section .map-style-option {
+  position: relative;
+  background: var(--color-background-elevated, #FFFFFF);
+  border: 1px solid var(--color-border-light, #F2F2F7);
+  border-radius: var(--radius-lg, 12px);
+  padding: 0.625rem;
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.04));
+  transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.map-style-section .map-style-option:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(0,0,0,0.08));
+  border-color: var(--color-border, #E5E5EA);
+  background: var(--color-background, #FFFFFF);
+}
+
+.map-style-section .map-style-option:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.04));
+}
+
+.map-style-section .map-style-option:focus-visible {
+  outline: 2px solid var(--color-primary, #0066FF);
+  outline-offset: 2px;
+}
+
+/* label zone */
+.map-style-section .map-style-label-text {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1rem;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: background 0.15s ease;
-  text-align: left;
-}
-
-.map-style-option:hover { background: #F7F8FA; }
-.map-style-option:active { background: #E8EAED; }
-
-/* Checkmark (visible uniquement pour l'option active) */
-.map-style-check {
-  width: 16px;
-  font-size: 14px;
-  color: var(--color-primary, #0066FF);
-  font-weight: 700;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.map-style-option.active .map-style-check { opacity: 1; }
-
-/* Label */
-.map-style-label {
-  flex: 1;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text-primary, #111);
-}
-.map-style-option.active .map-style-label {
+  justify-content: space-between;
+  font-size: 0.93rem;
   font-weight: 600;
+  color: var(--color-text-primary, #1A1A1A);
+}
+
+/* Tag "par défaut" sur Voyager */
+#map-style-section .map-style-option[data-style="voyager"] .map-style-label-text::after {
+  content: "Par défaut";
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-primary, #0066FF);
+  background: var(--color-primary-light, #E6F0FF);
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0,102,255,0.25);
+}
+
+/* Active card state: subtle elevation + border accent + thumb outline already present */
+.map-style-section .map-style-option.active {
+  border-color: rgba(0, 102, 255, 0.35);
+  box-shadow: 0 6px 16px rgba(0, 102, 255, 0.12);
+  background: linear-gradient(0deg, rgba(0,102,255,0.022), rgba(0,102,255,0.022)), var(--color-background-elevated, #FFFFFF);
+}
+
+.map-style-section .map-style-option.active .map-style-label-text {
   color: var(--color-primary, #0066FF);
 }
 
-/* Badge recommandé */
-.map-style-badge { font-size: 12px; line-height: 1; }
+/* Thumb polish */
+.map-style-thumb {
+  border-radius: var(--radius-md, 8px);
+  overflow: hidden;
+  border: 1px solid var(--color-border-light, #E5E5EA);
+  background: var(--color-background, #FFFFFF);
+}
 
-/* Responsive mobile */
-@media (max-width: 767px) {
-  .leaflet-map-style-control { top: auto; bottom: 1rem; right: 1rem; }
-  .map-style-panel { right: auto; left: 0; bottom: 45px; }
-  .map-style-panel::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background: rgba(0, 0, 0, 0.2);
-    animation: fadeIn 0.2s;
+.map-style-option.active .map-style-thumb {
+  border-color: rgba(0, 102, 255, 0.35);
+  box-shadow: 0 2px 10px rgba(0,102,255,0.15);
+}
+
+/* Small "chevron" affordance */
+.map-style-section .map-style-option::after {
+  content: "›";
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.5rem;
+  font-size: 1rem;
+  color: var(--color-text-muted, #8E8E93);
+  opacity: 0.6;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.map-style-section .map-style-option:hover::after {
+  transform: translateX(2px);
+  opacity: 0.9;
+}
+
+/* Compact spacing on narrow screens */
+@media (max-width: 480px) {
+  .map-style-section .map-style-option {
+    padding: 0.5rem;
+    border-radius: var(--radius-md, 8px);
+  }
+  .map-style-section .map-style-label-text {
+    font-size: 0.9rem;
   }
 }
 
-/* Dark mode support */
+/* Dark mode refinement */
 @media (prefers-color-scheme: dark) {
-  .map-style-toggle { background: #2C2C2E; border-color: rgba(255, 255, 255, 0.2); }
-  .map-style-toggle:hover { background: #3A3A3C; }
-  .map-style-panel { background: rgba(44, 44, 46, 0.98); border-color: rgba(255, 255, 255, 0.1); }
-  .map-style-header { background: #1C1C1E; border-bottom-color: rgba(255, 255, 255, 0.1); }
-  .map-style-title, .map-style-label { color: #FFFFFF; }
-  .map-style-section { border-top-color: rgba(255, 255, 255, 0.1); }
-  .map-style-option:hover { background: rgba(255, 255, 255, 0.1); }
-  .map-style-option:active { background: rgba(255, 255, 255, 0.15); }
+  .map-style-section .map-style-option {
+    background: rgba(44,44,46,0.9);
+    border-color: rgba(255,255,255,0.08);
+    box-shadow: none;
+  }
+  .map-style-section .map-style-option:hover {
+    background: rgba(44,44,46,1);
+    border-color: rgba(255,255,255,0.14);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.45);
+  }
+  .map-style-section .map-style-option.active {
+    border-color: rgba(10,132,255,0.45);
+    background: linear-gradient(0deg, rgba(10,132,255,0.08), rgba(10,132,255,0.08)), rgba(44,44,46,1);
+    box-shadow: 0 8px 20px rgba(10,132,255,0.25);
+  }
+  .map-style-section .map-style-option::after {
+    color: rgba(235,235,245,0.6);
+  }
+  #map-style-section .map-style-option[data-style="voyager"] .map-style-label-text::after {
+    color: #0A84FF;
+    background: rgba(10,132,255,0.15);
+    border-color: rgba(10,132,255,0.35);
+  }
 }
 
 </style>
@@ -2232,7 +2274,7 @@ function toggleMapStylePanel(forceState) {
 }
 
 function loadMapStylePreference() {
-  try { const v = localStorage.getItem('gpx_map_style'); return (v && mapStyles[v]) ? v : 'voyager'; } catch(_) { return 'cyclosm'; }
+  try { const v = localStorage.getItem('gpx_map_style'); return (v && mapStyles[v]) ? v : 'voyager'; } catch(_) { return 'voyager'; }
 }
 
 function initMapStyleControl() {
@@ -2381,7 +2423,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     ], attribution:'&copy; Esri, Maxar, Earthstar Geographics', maxZoom:19 }
   };
 
-  window.mapStyleControl = { currentStyle:'voyager', tileLayers:[], isOpen:false, toggleButton:null, panel:null, options:[] };
+  window.mapStyleControl = { currentStyle: 'voyager', tileLayers:[], isOpen:false, toggleButton:null, panel:null, options:[] };
 
   window.changeMapStyle = function(styleId){
     if (!window.map || !window.mapStyles[styleId]) return;
@@ -2642,6 +2684,20 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
           </div>
         </section>
 
+
+<section class="panel-section map-style-section" id="map-style-section">
+  <h3 class="section-title">Style de carte</h3>
+  <div class="map-style-options">
+    <button class="map-style-option" data-style="voyager" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-voyager"></div></div><span class="map-style-label-text">🗺️ Voyager</span></button>
+    <button class="map-style-option" data-style="cyclosm" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-cyclosm"></div></div><span class="map-style-label-text">🚴 CyclOSM</span></button>
+    <button class="map-style-option" data-style="osm" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-osm"></div></div><span class="map-style-label-text">🌍 OpenStreetMap</span></button>
+    <button class="map-style-option" data-style="topo" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-topo"></div></div><span class="map-style-label-text">⛰️ OpenTopoMap</span></button>
+    <button class="map-style-option" data-style="satellite" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-satellite"></div></div><span class="map-style-label-text">🛰️ Esri Imagery</span></button>
+    <button class="map-style-option" data-style="hybrid" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-hybrid"></div></div><span class="map-style-label-text">🛰️+🏙️ Esri Hybrid</span></button>
+  </div>
+</section>
+
+
   <section class="panel-section" id="layers-section-placeholder"></section>
 
   <section class="panel-section" id="waypoints-section" style="display: none;">
@@ -2694,46 +2750,25 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       <div class="map-main">
         <div id="map"></div>
 
-<div class="leaflet-map-style-control leaflet-bar leaflet-control" id="map-style-control">
-  <button class="map-style-toggle" id="map-style-toggle" type="button" title="Changer le fond de carte" aria-label="Changer le fond de carte" aria-expanded="false">
-    <span class="map-style-icon">🗺️</span>
-  </button>
-  <div class="map-style-panel" id="map-style-panel" style="display: none;">
-    <div class="map-style-header">
-      <span class="map-style-icon">🗺️</span>
-      <span class="map-style-title">Fond de carte</span>
-    </div>
-    <div class="map-style-section">
+<div class="map-style-section">
       <div class="map-style-section-title">Routes & Cyclisme</div>
-      <button class="map-style-option" data-style="cyclosm" type="button">
-        <span class="map-style-check">✓</span>
+      <button class="map-style-option" data-style="cyclosm" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-cyclosm"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
         <span class="map-style-label">CyclOSM</span>
-        <span class="map-style-badge">⭐</span>
-      </button>
-      <button class="map-style-option" data-style="osm" type="button">
-        <span class="map-style-check">✓</span>
-        <span class="map-style-label">OpenStreetMap</span>
-      </button>
-      <button class="map-style-option" data-style="topo" type="button">
-        <span class="map-style-check">✓</span>
-        <span class="map-style-label">OpenTopoMap</span>
-      </button>
-      <button class="map-style-option" data-style="voyager" type="button">
-        <span class="map-style-check">✓</span>
-        <span class="map-style-label">CARTO Voyager</span>
-      </button>
+        <span class="map-style-badge">⭐</span></span></button>
+      <button class="map-style-option" data-style="osm" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-osm"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
+        <span class="map-style-label">OpenStreetMap</span></span></button>
+      <button class="map-style-option" data-style="topo" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-topo"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
+        <span class="map-style-label">OpenTopoMap</span></span></button>
+      <button class="map-style-option" data-style="voyager" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-voyager"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
+        <span class="map-style-label">CARTO Voyager</span></span></button>
     </div>
     <div class="map-style-section">
       <div class="map-style-section-title">🛰️ Satellite</div>
-      <button class="map-style-option" data-style="satellite" type="button">
-        <span class="map-style-check">✓</span>
-        <span class="map-style-label">Esri Imagery</span>
-      </button>
-      <button class="map-style-option" data-style="hybrid" type="button">
-        <span class="map-style-check">✓</span>
+      <button class="map-style-option" data-style="satellite" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-satellite"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
+        <span class="map-style-label">Esri Imagery</span></span></button>
+      <button class="map-style-option" data-style="hybrid" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-hybrid"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
         <span class="map-style-label">Esri Hybrid</span>
-        <span class="map-style-badge">⭐</span>
-      </button>
+        <span class="map-style-badge">⭐</span></span></button>
     </div>
   </div>
 </div>
@@ -7043,5 +7078,197 @@ function removeTraceEndpointMarkers() {
   }
 }
 </script>
+
+<script>
+(function(){
+  function initSidebarMapStyleSection(){
+    var container = document.getElementById('map-style-section');
+    if (!container) return;
+    var buttons = Array.prototype.slice.call(container.querySelectorAll('.map-style-option'));
+    if (!buttons.length) return;
+
+    function setActive(id){
+      buttons.forEach(function(b){
+        if (b.getAttribute('data-style') === id) b.classList.add('active');
+        else b.classList.remove('active');
+      });
+    }
+
+    // Determine saved or default style
+    var saved = null;
+    try { saved = localStorage.getItem('gpx_map_style'); } catch(e) {}
+    var styleId = (saved && saved.trim()) ? saved : 'voyager';
+
+    // Apply on map immediately
+    if (typeof changeMapStyle === 'function') {
+      changeMapStyle(styleId);
+    }
+    // Reflect active button
+    setActive(styleId);
+
+    // Wire clicks
+    buttons.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-style');
+        if (!id) return;
+        if (typeof changeMapStyle === 'function'){ changeMapStyle(id); }
+        setActive(id);
+        try { localStorage.setItem('gpx_map_style', id); } catch(_) {}
+      });
+    });
+  }
+
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initSidebarMapStyleSection);
+  } else {
+    initSidebarMapStyleSection();
+  }
+})();
+</script>
+
+
+
+<script>
+// === Previews for map styles in sidebar (full-width + synced to main map) ===
+(function(){
+  var __previewMaps = {}; // styleId -> Leaflet map
+  var __previewLayers = {}; // styleId -> array of tile layers
+
+  function buildLayersFor(styleId){
+    if (!window.mapStyles || !mapStyles[styleId]) return [];
+    var style = mapStyles[styleId];
+    if (style.layers) {
+      return style.layers.map(function(ld){
+        return L.tileLayer(ld.url, { maxZoom: ld.maxZoom, attribution: style.attribution || '' });
+      });
+    } else {
+      return [ L.tileLayer(style.url, { maxZoom: style.maxZoom, attribution: style.attribution || '' }) ];
+    }
+  }
+
+  function ensurePreview(styleId){
+    var el = document.getElementById('map-thumb-' + styleId);
+    if (!el || !window.L) return null;
+    if (__previewMaps[styleId]) return __previewMaps[styleId];
+
+    var mapPrev = L.map(el, {
+      attributionControl: false,
+      zoomControl: false,
+      dragging: false,
+      scrollWheelZoom: false,
+      doubleClickZoom: false,
+      boxZoom: false,
+      keyboard: false,
+      tap: false,
+      touchZoom: false,
+      inertia: false
+    });
+
+    var layers = buildLayersFor(styleId);
+    __previewLayers[styleId] = layers;
+    layers.forEach(function(ly){ ly.addTo(mapPrev); });
+
+    // Default view will be adjusted by sync
+    __previewMaps[styleId] = mapPrev;
+    // Store a flag to avoid re-init
+    el.dataset.inited = '1';
+    return mapPrev;
+  }
+
+  function initPreviews(){
+    var container = document.getElementById('map-style-section');
+    if (!container) return;
+    var thumbs = Array.prototype.slice.call(container.querySelectorAll('.map-style-thumb-inner'));
+    thumbs.forEach(function(div){
+      var id = div.id.replace('map-thumb-', '');
+      if (!id) return;
+      ensurePreview(id);
+    });
+
+    // Initial sync once main map exists
+    if (window.map) {
+      syncPreviewsToMain();
+      // Listen to move/zoom to update previews
+      map.on('moveend zoomend', syncPreviewsToMain);
+    }
+
+    // Invalidate size on resize to avoid clipped tiles
+    window.addEventListener('resize', function(){
+      Object.keys(__previewMaps).forEach(function(k){
+        __previewMaps[k].invalidateSize();
+      });
+    });
+  }
+
+  function syncPreviewsToMain(){
+    if (!window.map) return;
+    var center = map.getCenter();
+    var zoom = map.getZoom();
+    Object.keys(__previewMaps).forEach(function(k){
+      var m = __previewMaps[k];
+      // Keep it snappy; avoid animation to not feel laggy
+      m.setView(center, zoom, { animate: false });
+      m.invalidateSize();
+    });
+  }
+
+  // If the user switches panel visibility or styles, refresh sizes
+  function refreshPreviewsLayout(){
+    Object.keys(__previewMaps).forEach(function(k){
+      __previewMaps[k].invalidateSize();
+    });
+    syncPreviewsToMain();
+  }
+
+  // Rebuild layers for a preview if needed (e.g., style definitions changed)
+  function refreshPreviewLayers(styleId){
+    var m = __previewMaps[styleId];
+    if (!m) return;
+    // remove old layers
+    if (__previewLayers[styleId]) {
+      __previewLayers[styleId].forEach(function(ly){ m.removeLayer(ly); });
+    }
+    var layers = buildLayersFor(styleId);
+    __previewLayers[styleId] = layers;
+    layers.forEach(function(ly){ ly.addTo(m); });
+    m.invalidateSize();
+  }
+
+  // Hook into sidebar’s button clicks to refresh highlight and previews layout
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest && e.target.closest('#map-style-section .map-style-option');
+    if (!btn) return;
+    setTimeout(refreshPreviewsLayout, 0);
+  });
+
+  // Observe DOM changes inside map-style-section (accordion toggles etc.)
+  var obs;
+  function observeSection(){
+    var sec = document.getElementById('map-style-section');
+    if (!sec) return;
+    if (obs) { try { obs.disconnect(); } catch(_){} }
+    obs = new MutationObserver(function(){ setTimeout(refreshPreviewsLayout, 0); });
+    obs.observe(sec, { childList: true, subtree: true, attributes: true });
+  }
+
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){
+      initPreviews();
+      observeSection();
+    });
+  } else {
+    initPreviews();
+    observeSection();
+  }
+
+  // Expose minimal API if needed
+  window.__mapStylePreviews = {
+    refresh: refreshPreviewsLayout,
+    refreshLayers: refreshPreviewLayers
+  };
+})();
+</script>
+
+
 </body>
 </html>
