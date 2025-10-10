@@ -1712,6 +1712,10 @@ html, body {
 </style>
 <style>
 /* === Collapsible Sections === */
+.collapsible-section {
+  position: relative;
+}
+
 .collapsible-section .section-header-toggle {
   width: 100%;
   display: flex;
@@ -1723,6 +1727,7 @@ html, body {
   cursor: pointer;
   user-select: none;
   transition: background 0.2s ease;
+  text-align: left;
 }
 
 .collapsible-section .section-header-toggle:hover {
@@ -1730,26 +1735,41 @@ html, body {
   border-radius: var(--radius-md);
 }
 
+.collapsible-section .section-header-toggle:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
 .collapsible-section .section-header-icon {
   font-size: 1.1rem;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .collapsible-section .section-title {
   margin: 0;
   flex: 1;
-  text-align: left;
   font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: -0.01em;
   text-transform: uppercase;
   color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.collapsible-section .section-title .badge {
+  font-size: 0.75rem;
+  margin-left: 0.25rem;
 }
 
 .collapsible-section .section-header-chevron {
   font-size: 0.8rem;
   color: var(--color-text-muted);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
 }
 
 .collapsible-section.expanded .section-header-chevron {
@@ -1759,21 +1779,61 @@ html, body {
 .section-collapsible-content {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.3s ease;
   opacity: 0;
-  padding: 0;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  will-change: max-height;
 }
 
 .collapsible-section.expanded .section-collapsible-content {
-  max-height: 2000px;
+  max-height: 5000px;
   opacity: 1;
-  padding: 0.5rem 0 0 0;
 }
 
-.collapsible-section .section-header-toggle:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-  border-radius: var(--radius-md);
+#layers-section .section-collapsible-content {
+  padding-top: 0;
+}
+
+#layers-section.expanded .section-collapsible-content {
+  max-height: 6000px;
+  padding-top: 0.5rem;
+}
+
+#waypoints-section .section-collapsible-content {
+  padding-top: 0;
+}
+
+#map-style-section .section-collapsible-content {
+  padding-top: 0;
+}
+
+#map-style-section.expanded .section-collapsible-content {
+  padding-top: 0.5rem;
+}
+
+#waypoints-section.expanded .section-collapsible-content {
+  max-height: 2000px;
+  padding-top: 0.5rem;
+}
+
+.collapsible-section.expanded .section-collapsible-content > * {
+  animation: slideInContent 0.3s ease-out;
+}
+
+@keyframes slideInContent {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .collapsible-section .section-header-toggle:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
 }
 </style>
 <!-- Layer Indicators on Map Overrides -->
@@ -2778,13 +2838,16 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 </div>
 </section>
 <section class="panel-section" id="layers-section-placeholder"></section>
-<section class="panel-section" id="waypoints-section" style="display: none;">
-<h3 class="section-title">
-            Waypoints
-            <span class="badge" id="waypoint-count">0</span>
-</h3>
+<section class="panel-section collapsible-section expanded" id="waypoints-section" style="display: none;">
+<button aria-controls="waypoints-content" aria-expanded="true" class="section-header-toggle" type="button">
+<span class="section-header-icon">📍</span>
+<h3 class="section-title">Waypoints <span class="badge" id="waypoint-count">0</span></h3>
+<span class="section-header-chevron">▼</span>
+</button>
+<div class="section-collapsible-content" id="waypoints-content">
 <div class="waypoints-list" id="waypoints-list"></div>
 <button class="btn btn-secondary btn-small" id="clear-waypoints">Effacer tous les waypoints</button>
+</div>
 </section>
 <section class="panel-section" id="trace-info-section" style="display: none;">
 <h3 class="section-title">Informations</h3>
@@ -3475,23 +3538,28 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     function generateLayersHTML() {
       const groups = Object.values(POI_GROUPS).sort((a, b) => a.order - b.order);
       let html = `
-        <section class="panel-section layer-section" id="layers-section">
-          <h3 class="section-title">Calques et affichage</h3>
-          <div class="layer-global-actions">
-            <button type="button" class="btn btn-secondary btn-small" id="layers-enable-all">Activer tout</button>
-            <button type="button" class="btn btn-secondary btn-small" id="layers-disable-all">Désactiver tout</button>
-          </div>
-          <div class="layer-presets">
-            <label for="preset-select">Profil :</label>
-            <select id="preset-select" class="preset-select">
-              <option value="">Personnalisé</option>`;
+        <section class="panel-section layer-section collapsible-section expanded" id="layers-section">
+          <button class="section-header-toggle" type="button" aria-expanded="true" aria-controls="layers-content">
+            <span class="section-header-icon">🗂️</span>
+            <h3 class="section-title">Calques et affichage</h3>
+            <span class="section-header-chevron">▼</span>
+          </button>
+          <div class="section-collapsible-content" id="layers-content">
+            <div class="layer-global-actions">
+              <button type="button" class="btn btn-secondary btn-small" id="layers-enable-all">Activer tout</button>
+              <button type="button" class="btn btn-secondary btn-small" id="layers-disable-all">Désactiver tout</button>
+            </div>
+            <div class="layer-presets">
+              <label for="preset-select">Profil :</label>
+              <select id="preset-select" class="preset-select">
+                <option value="">Personnalisé</option>`;
       Object.entries(LAYER_PRESETS).forEach(([presetId, preset]) => {
         html += `
-              <option value="${presetId}">${preset.icon} ${preset.label}</option>`;
+                <option value="${presetId}">${preset.icon} ${preset.label}</option>`;
       });
       html += `
-            </select>
-          </div>`;
+              </select>
+            </div>`;
       groups.forEach((group) => {
         const categories = Object.values(POI_CATEGORIES).filter((category) => category.group === group.id);
         if (categories.length === 0) {
@@ -3499,54 +3567,53 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
         }
         const isExpanded = poiManager.expandedGroups.has(group.id);
         html += `
-          <div class="layer-group ${isExpanded ? 'expanded' : ''}" data-group="${group.id}">
-            <button class="layer-group-header" type="button" data-group="${group.id}" aria-expanded="${isExpanded ? 'true' : 'false'}">
-              <span class="layer-group-icon">${group.icon}</span>
-              <span class="layer-group-label">${group.label}</span>
-              <span class="layer-group-count">(${categories.length})</span>
-              <span class="layer-group-chevron">▼</span>
-            </button>
-            <div class="layer-group-content">`;
+            <div class="layer-group ${isExpanded ? 'expanded' : ''}" data-group="${group.id}">
+              <button class="layer-group-header" type="button" data-group="${group.id}" aria-expanded="${isExpanded ? 'true' : 'false'}">
+                <span class="layer-group-icon">${group.icon}</span>
+                <span class="layer-group-label">${group.label}</span>
+                <span class="layer-group-count">(${categories.length})</span>
+                <span class="layer-group-chevron">▼</span>
+              </button>
+              <div class="layer-group-content">`;
         categories.forEach((category) => {
           const isChecked = poiManager.activeCategories.has(category.id) ? 'checked' : '';
           html += `
-              <label class="layer-toggle" data-category="${category.id}">
-                <input
-                  type="checkbox"
-                  id="layer-${category.id}"
-                  class="toggle-input layer-checkbox"
-                  data-category="${category.id}"
-                  ${isChecked}
-                />
-                <span class="toggle-switch"></span>
-                <span class="toggle-text">
-                  <span class="toggle-icon" aria-hidden="true">${category.icon}</span>
-                  ${category.label}
-                </span>
-                <span class="toggle-count" id="count-${category.id}" style="display: none;">(0)</span>
-              </label>`;
+                <label class="layer-toggle" data-category="${category.id}">
+                  <input
+                    type="checkbox"
+                    id="layer-${category.id}"
+                    class="toggle-input layer-checkbox"
+                    data-category="${category.id}"
+                    ${isChecked}
+                  />
+                  <span class="toggle-switch"></span>
+                  <span class="toggle-text">
+                    <span class="toggle-icon" aria-hidden="true">${category.icon}</span>
+                    ${category.label}
+                  </span>
+                  <span class="toggle-count" id="count-${category.id}" style="display: none;">(0)</span>
+                </label>`;
         });
         html += `
-            </div>
-          </div>`;
+              </div>
+            </div>`;
       });
       html += `
-          <div class="layer-indicators">
-            <div class="layer-loading" id="layers-loading" style="display: none;">
-              <span class="loading-spinner" aria-hidden="true">⏳</span>
-              Chargement des POI...
+            <div class="layer-indicators">
+              <div class="layer-loading" id="layers-loading" style="display: none;">
+                <span class="loading-spinner" aria-hidden="true">⏳</span>
+                Chargement des POI...
+              </div>
+              <div class="layer-error" id="layers-error" style="display: none;" role="alert"></div>
+              <div class="layer-info" id="layers-info" style="display: none;"></div>
+              <div class="layer-info" id="layers-zoom-info" style="display: none;"></div>
             </div>
-            <div class="layer-error" id="layers-error" style="display: none;" role="alert"></div>
-            <div class="layer-info" id="layers-info" style="display: none;"></div>
-            <div class="layer-info" id="layers-zoom-info" style="display: none;"></div>
-          </div>
-          <div class="layer-total" id="layers-total" style="display: none;">
-            <strong>Total POI affichés :</strong>
-            <span class="layer-count-value" id="layers-total-count">0</span>
+            <div class="layer-total" id="layers-total" style="display: none;">
+              <strong>Total POI affichés :</strong>
+              <span class="layer-count-value" id="layers-total-count">0</span>
+            </div>
           </div>
         </section>
-
-
 `;
       return html;
     }
@@ -3593,6 +3660,9 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       updateAllPOICounts();
       updateTotalPOICount(0);
       updatePresetSelection();
+      if (window.collapsibleSectionsAPI?.init) {
+        window.collapsibleSectionsAPI.init('layers');
+      }
     }
 
     function ensureLayerGroup(categoryId) {
@@ -5444,13 +5514,32 @@ function createWaypointMarker(latlng, name = '') {
     }
 
     function updateWaypointsList() {
-if (!waypointsList || !waypointCountLabel || !waypointsSection) {
+      if (!waypointsList || !waypointCountLabel || !waypointsSection) {
         return;
       }
 
       const markers = getWaypointMarkers();
       waypointCountLabel.textContent = markers.length;
-      waypointsSection.style.display = markers.length > 0 ? 'block' : 'none';
+
+      const hasWaypoints = markers.length > 0;
+      waypointsSection.style.display = hasWaypoints ? 'block' : 'none';
+
+      if (hasWaypoints) {
+        const configBefore = window.collapsibleSections?.waypoints;
+        if (window.collapsibleSectionsAPI?.init && (!configBefore || !configBefore.initialized)) {
+          window.collapsibleSectionsAPI.init('waypoints');
+        }
+        const config = window.collapsibleSections?.waypoints;
+        if (config && !config.isExpanded) {
+          if (typeof setSectionExpanded === 'function') {
+            setSectionExpanded('waypoints', true, true);
+          }
+          if (typeof saveSectionState === 'function') {
+            saveSectionState('waypoints', true);
+          }
+        }
+      }
+
       waypointsList.innerHTML = '';
 
       markers.forEach((marker) => {
@@ -5479,20 +5568,20 @@ if (!waypointsList || !waypointCountLabel || !waypointsSection) {
           deleteButton.addEventListener('click', () => {
             waypointLayerGroup.removeLayer(marker);
             updateWaypointsList();
-          
-        
-    
-        // Persist deletion (debounced + immediate safeguard)
-        if (typeof saveTraceDebounced === 'function') saveTraceDebounced(60);
-        if (typeof saveTraceToLocalStorage === 'function') { try { saveTraceToLocalStorage(); } catch(e) { console.warn(e); } }
-if (typeof saveTraceDebounced === 'function') saveTraceDebounced(50);
-// Persist deletion
-        if (typeof saveTraceDebounced === 'function') saveTraceDebounced(50);
-    });
+            if (typeof saveTraceDebounced === 'function') {
+              saveTraceDebounced(50);
+            }
+            if (typeof saveTraceToLocalStorage === 'function') {
+              try {
+                saveTraceToLocalStorage();
+              } catch (error) {
+                console.warn(error);
+              }
+            }
+          });
         }
 
-        
-waypointsList.appendChild(item);
+        waypointsList.appendChild(item);
       });
     }
 
@@ -7133,95 +7222,188 @@ function removeTraceEndpointMarkers() {
 }
 </script>
 <script>
-// === Gestion collapsible de la section Style de carte ===
-const mapStyleSectionCollapsible = {
-  section: null,
-  toggle: null,
-  content: null,
-  isExpanded: false,
-  storageKey: 'gpx_map_style_section_expanded'
-};
-
-function saveMapStyleSectionState(expanded) {
-  try {
-    localStorage.setItem(mapStyleSectionCollapsible.storageKey, JSON.stringify(expanded));
-  } catch (error) {
-    console.warn("Impossible de sauvegarder l'état de la section style:", error);
+// === Système générique de sections collapsibles ===
+window.collapsibleSections = window.collapsibleSections || {};
+const collapsibleSections = Object.assign(window.collapsibleSections, {
+  mapStyle: {
+    id: 'map-style-section',
+    storageKey: 'gpx_map_style_section_expanded',
+    defaultExpanded: false,
+    section: null,
+    toggle: null,
+    content: null,
+    isExpanded: false,
+    boundToggleHandler: null,
+    initialized: false
+  },
+  layers: {
+    id: 'layers-section',
+    storageKey: 'gpx_layers_section_expanded',
+    defaultExpanded: true,
+    section: null,
+    toggle: null,
+    content: null,
+    isExpanded: true,
+    boundToggleHandler: null,
+    initialized: false
+  },
+  waypoints: {
+    id: 'waypoints-section',
+    storageKey: 'gpx_waypoints_section_expanded',
+    defaultExpanded: true,
+    section: null,
+    toggle: null,
+    content: null,
+    isExpanded: true,
+    boundToggleHandler: null,
+    initialized: false
   }
-}
+});
 
-function loadMapStyleSectionState() {
-  try {
-    const saved = localStorage.getItem(mapStyleSectionCollapsible.storageKey);
-    return saved ? JSON.parse(saved) : false;
-  } catch (error) {
+function ensureSectionElements(config) {
+  if (config.section && config.toggle && config.content) {
+    return true;
+  }
+  config.section = document.getElementById(config.id);
+  if (!config.section) {
     return false;
   }
+  config.toggle = config.section.querySelector('.section-header-toggle');
+  config.content = config.section.querySelector('.section-collapsible-content');
+  return Boolean(config.toggle && config.content);
 }
 
-function setMapStyleSectionExpanded(expanded, animate = true) {
-  const { section, toggle, content } = mapStyleSectionCollapsible;
-  if (!section || !toggle || !content) {
+function saveSectionState(sectionKey, expanded) {
+  const config = collapsibleSections[sectionKey];
+  if (!config || !config.storageKey) {
+    return;
+  }
+  try {
+    localStorage.setItem(config.storageKey, JSON.stringify(expanded));
+  } catch (error) {
+    console.warn(`Impossible de sauvegarder l'état de "${sectionKey}":`, error);
+  }
+}
+
+function loadSectionState(sectionKey) {
+  const config = collapsibleSections[sectionKey];
+  if (!config) {
+    return false;
+  }
+  try {
+    const saved = localStorage.getItem(config.storageKey);
+    if (saved === null) {
+      return config.defaultExpanded;
+    }
+    return JSON.parse(saved);
+  } catch (error) {
+    console.warn(`Erreur lors du chargement de l'état de "${sectionKey}":`, error);
+    return config.defaultExpanded;
+  }
+}
+
+function handleSectionOpened(sectionKey) {
+  if (sectionKey === 'mapStyle') {
+    const refreshPreviews = window.__mapStylePreviews?.refresh;
+    if (typeof refreshPreviews === 'function') {
+      refreshPreviews();
+    }
+  }
+}
+
+function setSectionExpanded(sectionKey, expanded, animate = true) {
+  const config = collapsibleSections[sectionKey];
+  if (!config) {
+    return;
+  }
+  if (!ensureSectionElements(config)) {
     return;
   }
 
-  mapStyleSectionCollapsible.isExpanded = expanded;
+  config.isExpanded = expanded;
+
+  const applyState = () => {
+    config.section.classList.toggle('expanded', expanded);
+    config.toggle.setAttribute('aria-expanded', String(expanded));
+  };
 
   if (!animate) {
-    const previousTransition = content.style.transition;
-    content.style.transition = 'none';
-    section.classList.toggle('expanded', expanded);
-    toggle.setAttribute('aria-expanded', String(expanded));
+    const previousTransition = config.content.style.transition;
+    config.content.style.transition = 'none';
+    applyState();
     requestAnimationFrame(() => {
-      content.style.transition = previousTransition || '';
-      if (expanded && typeof window.__mapStylePreviews?.refresh === 'function') {
-        window.__mapStylePreviews.refresh();
+      config.content.style.transition = previousTransition || '';
+      if (expanded) {
+        handleSectionOpened(sectionKey);
       }
     });
     return;
   }
 
-  section.classList.toggle('expanded', expanded);
-  toggle.setAttribute('aria-expanded', String(expanded));
+  applyState();
 
   if (expanded) {
-    const triggerRefresh = () => {
-      if (typeof window.__mapStylePreviews?.refresh === 'function') {
-        window.__mapStylePreviews.refresh();
-      }
-    };
-    setTimeout(triggerRefresh, 350);
+    setTimeout(() => handleSectionOpened(sectionKey), 350);
   }
 }
 
-function toggleMapStyleSection() {
-  const newState = !mapStyleSectionCollapsible.isExpanded;
-  setMapStyleSectionExpanded(newState, true);
-  saveMapStyleSectionState(newState);
+function toggleSection(sectionKey) {
+  const config = collapsibleSections[sectionKey];
+  if (!config) {
+    return;
+  }
+  const newState = !config.isExpanded;
+  setSectionExpanded(sectionKey, newState, true);
+  saveSectionState(sectionKey, newState);
 }
 
-function initMapStyleCollapsible() {
-  mapStyleSectionCollapsible.section = document.getElementById('map-style-section');
-  if (!mapStyleSectionCollapsible.section) {
+function initCollapsibleSection(sectionKey) {
+  const config = collapsibleSections[sectionKey];
+  if (!config) {
     return;
   }
 
-  mapStyleSectionCollapsible.toggle = mapStyleSectionCollapsible.section.querySelector('.section-header-toggle');
-  mapStyleSectionCollapsible.content = document.getElementById('map-style-content');
-
-  if (!mapStyleSectionCollapsible.toggle || !mapStyleSectionCollapsible.content) {
-    console.warn('Map style collapsible: éléments manquants');
+  if (!ensureSectionElements(config)) {
+    config.initialized = false;
     return;
   }
 
-  mapStyleSectionCollapsible.isExpanded = loadMapStyleSectionState();
-  setMapStyleSectionExpanded(mapStyleSectionCollapsible.isExpanded, false);
-  mapStyleSectionCollapsible.toggle.setAttribute('aria-expanded', String(mapStyleSectionCollapsible.isExpanded));
+  if (config.boundToggleHandler) {
+    config.toggle.removeEventListener('click', config.boundToggleHandler);
+  }
 
-  mapStyleSectionCollapsible.toggle.addEventListener('click', toggleMapStyleSection);
+  config.isExpanded = loadSectionState(sectionKey);
+  setSectionExpanded(sectionKey, config.isExpanded, false);
+
+  config.boundToggleHandler = () => toggleSection(sectionKey);
+  config.toggle.addEventListener('click', config.boundToggleHandler);
+  config.initialized = true;
 }
 
-document.addEventListener('DOMContentLoaded', initMapStyleCollapsible);
+function initCollapsibleSections() {
+  Object.keys(collapsibleSections).forEach((sectionKey) => {
+    initCollapsibleSection(sectionKey);
+  });
+}
+
+window.collapsibleSectionsAPI = {
+  expand: (sectionKey) => {
+    setSectionExpanded(sectionKey, true, true);
+    saveSectionState(sectionKey, true);
+  },
+  collapse: (sectionKey) => {
+    setSectionExpanded(sectionKey, false, true);
+    saveSectionState(sectionKey, false);
+  },
+  toggle: (sectionKey) => toggleSection(sectionKey),
+  isExpanded: (sectionKey) => {
+    const config = collapsibleSections[sectionKey];
+    return config ? Boolean(config.isExpanded) : false;
+  },
+  init: (sectionKey) => initCollapsibleSection(sectionKey)
+};
+
+document.addEventListener('DOMContentLoaded', initCollapsibleSections);
 </script>
 <script>
 (function(){
