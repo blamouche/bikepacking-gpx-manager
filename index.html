@@ -1,18 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bikepacking helper - Localisez les points d'intérêt dont vous avez besoin</title>
-  <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""
-  />
-  <style>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bikepacking helper - Localisez les points d'intérêt dont vous avez besoin</title>
+<!-- Leaflet CSS -->
+<link crossorigin="" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" rel="stylesheet"/>
+<style>
     :root {
       --color-primary: #1976d2;
       --color-primary-hover: #1565c0;
@@ -1313,7 +1309,6 @@
 }
 
 </style>
-
 <!-- Modern Compact UI Overrides -->
 <style>
 :root {
@@ -1715,7 +1710,6 @@ html, body {
   background: var(--color-text-muted);
 }
 </style>
-
 <!-- Layer Indicators on Map Overrides -->
 <style>
 /* 1) Container des indicateurs - arraché du panneau et centré en haut de la carte */
@@ -1973,8 +1967,6 @@ html, body {
   }
 }
 </style>
-
-
 <!-- Center & Stack Indicators Override -->
 <style>
 /* Center the indicators container (relative to viewport for consistency) */
@@ -2026,8 +2018,6 @@ html, body {
   }
 }
 </style>
-
-
 <!-- === Empilement vertical des indicateurs & bouton POI (CSS + JS) === -->
 <style>
 /* 1) Pile virtuelle centrée : on utilise .layer-indicators comme pile fixe */
@@ -2120,7 +2110,6 @@ html, body {
   to   { opacity:1; transform: translateY(0); }
 }
 </style>
-
 <script>
 // === Empilement dynamique : calcule la hauteur totale des indicateurs visibles
 (function() {
@@ -2307,8 +2296,6 @@ function initMapStyleControl() {
 
 document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersistence(); } catch(e){} });
 </script>
-
-
 <style>
 /* === Géolocalisation : styles === */
 .geolocation-toggle { padding: 0.5rem 0; }
@@ -2338,8 +2325,6 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 @keyframes locationPulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.1);opacity:.8;} }
 .user-location-accuracy { fill: rgba(66,133,244,0.15); stroke: rgba(66,133,244,0.3); stroke-width: 2; }
 </style>
-
-
 <style>
 /* Sidebar widening & preset select layout overrides */
 .tools-panel { width: 460px !important; min-width: 460px !important; }
@@ -2354,7 +2339,6 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 .layer-presets label { flex: 0 0 auto; margin-right: 0.25rem; }
 .preset-select { flex: 1 1 auto; width: 100%; }
 </style>
-
 <style>
 /* ===== Mobile Portrait Sidebar Compatibility (overrides) ===== */
 @media (max-width: 600px) and (orientation: portrait) {
@@ -2404,7 +2388,6 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
   }
 }
 </style>
-
 <script id="map-style-control-defs">
 // === Map Style Control (defs preloaded) ===
 (function(){
@@ -2492,8 +2475,6 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
   };
 })();
 </script>
-
-
 <style>
 /* Bouton "Effacer la trace" */
 #clear-trace-button {
@@ -2505,8 +2486,6 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
   color: white;
 }
 </style>
-
-
 <style>
   /* Ensure elevation canvas has a minimum render size after reload */
   #elevation-canvas {
@@ -2515,8 +2494,6 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     display: block;
   }
 </style>
-
-
 <style>
   /* Elevation panel responsive sizing */
   #elevation-profile {
@@ -2529,15 +2506,11 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     max-height: 40vh;
   }
 </style>
-
-
 <style>
   /* Viewport-aware elevation sizing */
   #elevation-profile { overflow: hidden; }
   #elevation-canvas { width: 100%; display: block; }
 </style>
-
-
 <style>
   /* Elevation container should auto-size to its content */
   #elevation-profile { overflow: visible; }
@@ -2547,8 +2520,6 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     overflow: visible !important;
   }
 </style>
-
-
 <style>
   /* Canvas fills its parent container */
   #elevation-canvas {
@@ -2562,7 +2533,6 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     height: var(--elev-content-height);
   }
 </style>
-
 <style>
 /* === Trace Start/End Markers === */
 .trace-start-marker,
@@ -2619,230 +2589,244 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 .trace-marker-popup-value { color:var(--color-text-primary); font-weight:500; }
 .trace-marker-popup-button { width:100%; margin-top:.5rem; }
 </style>
+
+
+<style id="map-topbar-styles">
+.map-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+.map-topbar {
+  height: 48px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--color-border, #E5E5EA);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-text-primary, #1A1A1A);
+  flex-shrink: 0;
+  z-index: 10;
+}
+#map {
+  flex: 1;
+  height: auto;
+  position: relative;
+}
+/* Controls slight offset */
+#map .leaflet-top { top: 8px; }
+@media (max-width: 767px) {
+  .map-topbar { height: 56px; }
+}
+</style>
+
+<style>
+@media (max-width: 767px) {
+  /* Positionne le bouton menu sous la barre horizontale */
+  .btn-menu {
+    top: 4.5rem !important; /* ajuste selon la hauteur de ta topbar */
+    z-index: 1200 !important; /* s’assure qu’il reste cliquable */
+  }
+}
+</style>
+
 </head>
 <body>
-  <div class="app-container">
-    <aside class="tools-panel" id="tools-panel" role="complementary" aria-label="Panneau d'outils">
-      <header class="panel-header">
-        <h1 class="panel-title">Bikepacking helper</h1>
-        <button class="btn-close-panel" id="close-panel" aria-label="Fermer le panneau">✕</button>
-      </header>
-      <div class="panel-content">
-  <section class="panel-section geolocation-section" id="geolocation-section">
-  <h3 class="section-title">Ma position</h3>
-  <label class="layer-toggle geolocation-toggle">
-    <input type="checkbox" id="geolocation-toggle" class="toggle-input" aria-label="Activer la géolocalisation en temps réel"/>
-    <span class="toggle-switch"></span>
-    <span class="toggle-text">
-      <span class="toggle-icon" aria-hidden="true">📍</span>
+<div class="app-container">
+<aside aria-label="Panneau d'outils" class="tools-panel" id="tools-panel" role="complementary">
+<header class="panel-header">
+<h2 class="panel-title">Outils</h2>
+<button aria-label="Fermer le panneau" class="btn-close-panel" id="close-panel">✕</button>
+</header>
+<div class="panel-content">
+<section class="panel-section geolocation-section" id="geolocation-section">
+<h3 class="section-title">Ma position</h3>
+<label class="layer-toggle geolocation-toggle">
+<input aria-label="Activer la géolocalisation en temps réel" class="toggle-input" id="geolocation-toggle" type="checkbox"/>
+<span class="toggle-switch"></span>
+<span class="toggle-text">
+<span aria-hidden="true" class="toggle-icon">📍</span>
       Activer la localisation
     </span>
-  </label>
-  <div class="geolocation-info" id="geolocation-info" style="display: none;">
-    <div class="geolocation-status" id="geolocation-status">
-      <span class="status-icon">🔄</span>
-      <span class="status-text">Recherche de position...</span>
-    </div>
-    <button type="button" class="btn btn-secondary btn-small" id="center-on-position" style="margin-top: 0.5rem;" disabled>
-      <span aria-hidden="true">🎯</span>
+</label>
+<div class="geolocation-info" id="geolocation-info" style="display: none;">
+<div class="geolocation-status" id="geolocation-status">
+<span class="status-icon">🔄</span>
+<span class="status-text">Recherche de position...</span>
+</div>
+<button class="btn btn-secondary btn-small" disabled="" id="center-on-position" style="margin-top: 0.5rem;" type="button">
+<span aria-hidden="true">🎯</span>
       Centrer sur ma position
     </button>
-  </div>
-  <div class="geolocation-error" id="geolocation-error" style="display: none;"></div>
+</div>
+<div class="geolocation-error" id="geolocation-error" style="display: none;"></div>
 </section>
-
-  <section class="panel-section">
-          <h3 class="section-title">Fichier GPX</h3>
-          <div class="import-actions">
-            <button class="btn btn-primary" id="import-button">
-              <span aria-hidden="true">📁</span>
+<section class="panel-section">
+<h3 class="section-title">Fichier GPX</h3>
+<div class="import-actions">
+<button class="btn btn-primary" id="import-button">
+<span aria-hidden="true">📁</span>
               Importer GPX
             </button>
-
 <!-- Après le bouton "Exporter GPX" -->
 <button class="btn btn-secondary" id="clear-trace-button" style="display: none;">
-  <span aria-hidden="true">🗑️</span>
+<span aria-hidden="true">🗑️</span>
   Effacer la trace
 </button>
-
-
-            <button class="btn btn-primary" id="export-button" disabled>
-              <span aria-hidden="true">💾</span>
+<button class="btn btn-primary" disabled="" id="export-button">
+<span aria-hidden="true">💾</span>
               Exporter GPX
             </button>
-          </div>
-          <div class="file-info" id="file-info" style="display: none;">
-            <small class="text-muted">Fichier actuel :</small>
-            <p class="filename" id="current-filename">—</p>
-            <label for="gpx-name-input" style="display:block; font-size:0.85rem; color:var(--color-text-muted); margin-top:0.75rem;">
+</div>
+<div class="file-info" id="file-info" style="display: none;">
+<small class="text-muted">Fichier actuel :</small>
+<p class="filename" id="current-filename">—</p>
+<label for="gpx-name-input" style="display:block; font-size:0.85rem; color:var(--color-text-muted); margin-top:0.75rem;">
               Nom d'export
             </label>
-            <input id="gpx-name-input" class="file-name-input" type="text" placeholder="Nom du fichier" autocomplete="off" />
-          </div>
-          <div class="drop-zone" id="panel-drop-zone">
-            <p>Ou glissez-déposez un fichier .gpx ici</p>
-          </div>
-        </section>
-
-
-<section class="panel-section map-style-section" id="map-style-section">
-  <h3 class="section-title">Style de carte</h3>
-  <div class="map-style-options">
-    <button class="map-style-option" data-style="voyager" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-voyager"></div></div><span class="map-style-label-text">🗺️ Voyager</span></button>
-    <button class="map-style-option" data-style="cyclosm" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-cyclosm"></div></div><span class="map-style-label-text">🚴 CyclOSM</span></button>
-    <button class="map-style-option" data-style="osm" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-osm"></div></div><span class="map-style-label-text">🌍 OpenStreetMap</span></button>
-    <button class="map-style-option" data-style="topo" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-topo"></div></div><span class="map-style-label-text">⛰️ OpenTopoMap</span></button>
-    <button class="map-style-option" data-style="satellite" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-satellite"></div></div><span class="map-style-label-text">🛰️ Esri Imagery</span></button>
-    <button class="map-style-option" data-style="hybrid" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-hybrid"></div></div><span class="map-style-label-text">🛰️+🏙️ Esri Hybrid</span></button>
-  </div>
+<input autocomplete="off" class="file-name-input" id="gpx-name-input" placeholder="Nom du fichier" type="text"/>
+</div>
+<div class="drop-zone" id="panel-drop-zone">
+<p>Ou glissez-déposez un fichier .gpx ici</p>
+</div>
 </section>
-
-
-  <section class="panel-section" id="layers-section-placeholder"></section>
-
-  <section class="panel-section" id="waypoints-section" style="display: none;">
-          <h3 class="section-title">
+<section class="panel-section map-style-section" id="map-style-section">
+<h3 class="section-title">Style de carte</h3>
+<div class="map-style-options">
+<button class="map-style-option" data-style="voyager" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-voyager"></div></div><span class="map-style-label-text">🗺️ Voyager</span></button>
+<button class="map-style-option" data-style="cyclosm" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-cyclosm"></div></div><span class="map-style-label-text">🚴 CyclOSM</span></button>
+<button class="map-style-option" data-style="osm" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-osm"></div></div><span class="map-style-label-text">🌍 OpenStreetMap</span></button>
+<button class="map-style-option" data-style="topo" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-topo"></div></div><span class="map-style-label-text">⛰️ OpenTopoMap</span></button>
+<button class="map-style-option" data-style="satellite" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-satellite"></div></div><span class="map-style-label-text">🛰️ Esri Imagery</span></button>
+<button class="map-style-option" data-style="hybrid" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-hybrid"></div></div><span class="map-style-label-text">🛰️+🏙️ Esri Hybrid</span></button>
+</div>
+</section>
+<section class="panel-section" id="layers-section-placeholder"></section>
+<section class="panel-section" id="waypoints-section" style="display: none;">
+<h3 class="section-title">
             Waypoints
             <span class="badge" id="waypoint-count">0</span>
-          </h3>
-          <div class="waypoints-list" id="waypoints-list"></div>
-          <button class="btn btn-secondary btn-small" id="clear-waypoints">Effacer tous les waypoints</button>
-        </section>
-
-  <section class="panel-section" id="trace-info-section" style="display: none;">
-          <h3 class="section-title">Informations</h3>
-          <dl class="info-list">
-            <dt>Nom de la trace</dt>
-            <dd>
-              <span id="trace-name" class="trace-name">—</span>
-              <span
-                class="trace-name-help"
-                title="Le nom provient d'abord du fichier GPX, puis du nom de fichier, ou d'un nom par défaut."
-                aria-hidden="true"
-              >
+</h3>
+<div class="waypoints-list" id="waypoints-list"></div>
+<button class="btn btn-secondary btn-small" id="clear-waypoints">Effacer tous les waypoints</button>
+</section>
+<section class="panel-section" id="trace-info-section" style="display: none;">
+<h3 class="section-title">Informations</h3>
+<dl class="info-list">
+<dt>Nom de la trace</dt>
+<dd>
+<span class="trace-name" id="trace-name">—</span>
+<span aria-hidden="true" class="trace-name-help" title="Le nom provient d'abord du fichier GPX, puis du nom de fichier, ou d'un nom par défaut.">
                 ℹ️
               </span>
-            </dd>
-            <dt>Nom du fichier</dt>
-            <dd id="file-name" class="file-name">—</dd>
-            <dt>Distance totale</dt>
-            <dd id="trace-distance" class="stat-highlight">—</dd>
-            <dt>Dénivelé positif (D+)</dt>
-            <dd id="trace-elevation-gain" class="stat-highlight">—</dd>
-            <dt>Dénivelé négatif (D-)</dt>
-            <dd id="trace-elevation-loss" class="stat-highlight">—</dd>
-            <dt>Altitude</dt>
-            <dd id="trace-altitude-range">—</dd>
-            <dt>Nombre de points</dt>
-            <dd id="point-count">—</dd>
-            <dt>Type</dt>
-            <dd id="trace-type">—</dd>
-          </dl>
-        </section>
-
-  <section class="panel-section panel-messages">
-          <div id="message" class="message hidden" role="status" aria-live="polite"></div>
-        </section>
+</dd>
+<dt>Nom du fichier</dt>
+<dd class="file-name" id="file-name">—</dd>
+<dt>Distance totale</dt>
+<dd class="stat-highlight" id="trace-distance">—</dd>
+<dt>Dénivelé positif (D+)</dt>
+<dd class="stat-highlight" id="trace-elevation-gain">—</dd>
+<dt>Dénivelé négatif (D-)</dt>
+<dd class="stat-highlight" id="trace-elevation-loss">—</dd>
+<dt>Altitude</dt>
+<dd id="trace-altitude-range">—</dd>
+<dt>Nombre de points</dt>
+<dd id="point-count">—</dd>
+<dt>Type</dt>
+<dd id="trace-type">—</dd>
+</dl>
+</section>
+<section class="panel-section panel-messages">
+<div aria-live="polite" class="message hidden" id="message" role="status"></div>
+</section>
 </div>
-    </aside>
-
-    <main class="map-container">
-      <div class="map-main">
-        <div id="map"></div>
-
+</aside>
+<main class="map-container">
+<div class="map-main">
+<div class="map-wrapper"><div class="map-topbar">
+<span class="map-topbar-title"><h1>Bikepacking helper</h1></span>
+</div><div id="map"></div></div>
 <div class="map-style-section">
-      <div class="map-style-section-title">Routes & Cyclisme</div>
-      <button class="map-style-option" data-style="cyclosm" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-cyclosm"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
-        <span class="map-style-label">CyclOSM</span>
-        <span class="map-style-badge">⭐</span></span></button>
-      <button class="map-style-option" data-style="osm" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-osm"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
-        <span class="map-style-label">OpenStreetMap</span></span></button>
-      <button class="map-style-option" data-style="topo" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-topo"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
-        <span class="map-style-label">OpenTopoMap</span></span></button>
-      <button class="map-style-option" data-style="voyager" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-voyager"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
-        <span class="map-style-label">CARTO Voyager</span></span></button>
-    </div>
-    <div class="map-style-section">
-      <div class="map-style-section-title">🛰️ Satellite</div>
-      <button class="map-style-option" data-style="satellite" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-satellite"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
-        <span class="map-style-label">Esri Imagery</span></span></button>
-      <button class="map-style-option" data-style="hybrid" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-hybrid"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
-        <span class="map-style-label">Esri Hybrid</span>
-        <span class="map-style-badge">⭐</span></span></button>
-    </div>
-  </div>
+<div class="map-style-section-title">Routes &amp; Cyclisme</div>
+<button class="map-style-option" data-style="cyclosm" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-cyclosm"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
+<span class="map-style-label">CyclOSM</span>
+<span class="map-style-badge">⭐</span></span></button>
+<button class="map-style-option" data-style="osm" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-osm"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
+<span class="map-style-label">OpenStreetMap</span></span></button>
+<button class="map-style-option" data-style="topo" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-topo"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
+<span class="map-style-label">OpenTopoMap</span></span></button>
+<button class="map-style-option" data-style="voyager" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-voyager"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
+<span class="map-style-label">CARTO Voyager</span></span></button>
 </div>
-
-        <button class="poi-refresh-button" id="poi-refresh-button" type="button" aria-label="Recharger les points d'intérêt">
-          <span aria-hidden="true">🔄</span>
+<div class="map-style-section">
+<div class="map-style-section-title">🛰️ Satellite</div>
+<button class="map-style-option" data-style="satellite" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-satellite"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
+<span class="map-style-label">Esri Imagery</span></span></button>
+<button class="map-style-option" data-style="hybrid" type="button"><div class="map-style-thumb"><div class="map-style-thumb-inner" id="map-thumb-hybrid"></div></div><span class="map-style-label-text"><span class="map-style-check">✓</span>
+<span class="map-style-label">Esri Hybrid</span>
+<span class="map-style-badge">⭐</span></span></button>
+</div>
+</div>
+</main></div>
+<button aria-label="Recharger les points d'intérêt" class="poi-refresh-button" id="poi-refresh-button" type="button">
+<span aria-hidden="true">🔄</span>
           Recharger les POI
         </button>
-        <button class="btn-menu" id="menu-toggle" aria-label="Ouvrir le panneau" aria-expanded="false">☰</button>
-      </div>
-      <div class="elevation-profile" id="elevation-profile" aria-hidden="true">
-        <div class="elevation-header" id="elevation-header">
-          <div class="elevation-title" title="Profil altimétrique">
-            <span class="elevation-icon" aria-hidden="true">📊</span>
-            <h3>Profil altimétrique</h3>
-          </div>
-          <div class="elevation-stats-quick">
-            <span class="stat-item">
-              <span class="stat-label">Distance :</span>
-              <span class="stat-value" id="profile-distance">—</span>
-            </span>
-            <span class="stat-item">
-              <span class="stat-label">D+ :</span>
-              <span class="stat-value" id="profile-elevation-gain">—</span>
-            </span>
-            <span class="stat-item">
-              <span class="stat-label">D- :</span>
-              <span class="stat-value" id="profile-elevation-loss">—</span>
-            </span>
-          </div>
-          <button class="btn-collapse" id="elevation-collapse" type="button" aria-expanded="true" aria-label="Réduire le profil">
-            <span aria-hidden="true">▼</span>
-          </button>
-        </div>
-        <div class="elevation-content" id="elevation-content">
-          <canvas
-            id="elevation-canvas"
-            role="img"
-            aria-label="Graphique du profil altimétrique de la trace"
-            aria-describedby="elevation-description"
-            tabindex="0"
-          ></canvas>
-          <div id="elevation-description" class="sr-only">
+<button aria-expanded="false" aria-label="Ouvrir le panneau" class="btn-menu" id="menu-toggle">☰</button>
+<div aria-hidden="true" class="elevation-profile" id="elevation-profile">
+<div class="elevation-header" id="elevation-header">
+<div class="elevation-title" title="Profil altimétrique">
+<span aria-hidden="true" class="elevation-icon">📊</span>
+<h3>Profil altimétrique</h3>
+</div>
+<div class="elevation-stats-quick">
+<span class="stat-item">
+<span class="stat-label">Distance :</span>
+<span class="stat-value" id="profile-distance">—</span>
+</span>
+<span class="stat-item">
+<span class="stat-label">D+ :</span>
+<span class="stat-value" id="profile-elevation-gain">—</span>
+</span>
+<span class="stat-item">
+<span class="stat-label">D- :</span>
+<span class="stat-value" id="profile-elevation-loss">—</span>
+</span>
+</div>
+<button aria-expanded="true" aria-label="Réduire le profil" class="btn-collapse" id="elevation-collapse" type="button">
+<span aria-hidden="true">▼</span>
+</button>
+</div>
+<div class="elevation-content" id="elevation-content">
+<canvas aria-describedby="elevation-description" aria-label="Graphique du profil altimétrique de la trace" id="elevation-canvas" role="img" tabindex="0"></canvas>
+<div class="sr-only" id="elevation-description">
             Le graphique montre l'élévation en mètres en fonction de la distance parcourue en kilomètres.
             Distance totale : <span id="aria-distance">—</span>.
             Dénivelé positif : <span id="aria-d-plus">—</span>.
             Altitude minimum : <span id="aria-min">—</span>.
             Altitude maximum : <span id="aria-max">—</span>.
           </div>
-          <div class="elevation-tooltip" id="elevation-tooltip" style="display: none;">
-            <div class="tooltip-row">
-              <span class="tooltip-label">Distance :</span>
-              <span class="tooltip-value" id="tooltip-distance">—</span>
-            </div>
-            <div class="tooltip-row">
-              <span class="tooltip-label">Altitude :</span>
-              <span class="tooltip-value" id="tooltip-elevation">—</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
-
-  <input id="file-input" type="file" accept=".gpx" hidden />
-
-  <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""
-  ></script>
-  <script src="https://unpkg.com/leaflet-polylinedecorator@1.7.0/dist/leaflet.polylineDecorator.min.js"></script>
-  <script>
+<div class="elevation-tooltip" id="elevation-tooltip" style="display: none;">
+<div class="tooltip-row">
+<span class="tooltip-label">Distance :</span>
+<span class="tooltip-value" id="tooltip-distance">—</span>
+</div>
+<div class="tooltip-row">
+<span class="tooltip-label">Altitude :</span>
+<span class="tooltip-value" id="tooltip-elevation">—</span>
+</div>
+</div>
+</div>
+</div>
+<input accept=".gpx" hidden="" id="file-input" type="file"/>
+<!-- Leaflet JS -->
+<script crossorigin="" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-polylinedecorator@1.7.0/dist/leaflet.polylineDecorator.min.js"></script>
+<script>
     /**
      * Convertit un élément XML GPX en GeoJSON Feature.
      * @param {Element} element
@@ -6152,7 +6136,6 @@ setTimeout(() => { if (typeof saveTraceToLocalStorage === 'function') saveTraceT
       }
     });
   </script>
-
 <script>
 // === Géolocalisation : manager & fonctions ===
 const geolocationManager = {
@@ -6899,7 +6882,6 @@ function attachWaypointPersistence() {
 }
 
 </script>
-
 <script>
 // --- Hotfix: éviter la récursion de __lsSetItem en fixant la méthode native ---
 (function(){
@@ -7078,7 +7060,6 @@ function removeTraceEndpointMarkers() {
   }
 }
 </script>
-
 <script>
 (function(){
   function initSidebarMapStyleSection(){
@@ -7125,9 +7106,6 @@ function removeTraceEndpointMarkers() {
   }
 })();
 </script>
-
-
-
 <script>
 // === Previews for map styles in sidebar (full-width + synced to main map) ===
 (function(){
@@ -7268,7 +7246,5 @@ function removeTraceEndpointMarkers() {
   };
 })();
 </script>
-
-
 </body>
 </html>
