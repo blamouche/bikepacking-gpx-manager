@@ -2521,6 +2521,62 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
   }
 </style>
 
+<style>
+/* === Trace Start/End Markers === */
+.trace-start-marker,
+.trace-end-marker,
+.trace-combined-marker { border: none !important; background: transparent !important; }
+
+.trace-start-marker-inner,
+.trace-end-marker-inner,
+.trace-combined-marker-inner {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 3px 8px rgba(0,0,0,.12);
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1);
+  animation: markerAppear .4s cubic-bezier(.34,1.56,.64,1);
+}
+
+.trace-start-marker-inner { background: #4CAF50; box-shadow: 0 3px 8px rgba(76,175,80,0.4); }
+.trace-end-marker-inner   { background: #FF5722; box-shadow: 0 3px 8px rgba(255,87,34,0.4); }
+.trace-combined-marker-inner {
+  background: linear-gradient(135deg, #4CAF50 0%, #FF5722 100%);
+}
+
+.trace-start-marker-icon,
+.trace-end-marker-icon,
+.trace-combined-marker-icon {
+  font-size: 18px; line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.3));
+}
+
+/* Hover */
+.trace-start-marker:hover .trace-start-marker-inner,
+.trace-end-marker:hover .trace-end-marker-inner,
+.trace-combined-marker:hover .trace-combined-marker-inner {
+  transform: scale(1.15);
+}
+
+/* Apparition */
+@keyframes markerAppear {
+  from { opacity: 0; transform: scale(0.3); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Popup */
+.trace-marker-popup { min-width: 200px; }
+.trace-marker-popup-header {
+  display:flex; align-items:center; gap:.5rem; padding-bottom:.5rem;
+  border-bottom:1px solid var(--color-border); margin-bottom:.5rem;
+}
+.trace-marker-popup-title { font-size:1rem; font-weight:600; color:var(--color-text-primary); }
+.trace-marker-popup-details { display:flex; flex-direction:column; gap:.375rem; margin-bottom:.5rem; }
+.trace-marker-popup-row { display:flex; gap:.5rem; font-size:.875rem; }
+.trace-marker-popup-label { color:var(--color-text-muted); min-width:70px; }
+.trace-marker-popup-value { color:var(--color-text-primary); font-weight:500; }
+.trace-marker-popup-button { width:100%; margin-top:.5rem; }
+</style>
 </head>
 <body>
   <div class="app-container">
@@ -4418,7 +4474,8 @@ let elevationMouseLeaveHandler = null;
     /**
      * Efface les couches GPX précédemment ajoutées.
      */
-    function clearPreviousLayers() {
+    function clearPreviousLayers() {  try { removeTraceEndpointMarkers(); } catch(e) { console.warn('removeTraceEndpointMarkers:', e); }
+
       if (gpxLayerGroup) {
         map.removeLayer(gpxLayerGroup);
         gpxLayerGroup = null;
@@ -5635,7 +5692,9 @@ waypointsList.appendChild(item);
 
       updateTraceInfo(computeTraceInfo(lineFeatures, geojsonData));
       currentGeojson = geojsonData;
-    }
+    
+    try { addTraceEndpointMarkers(geojsonData); } catch(e){ console.warn('addTraceEndpointMarkers: ', e); }
+}
 
     /**
      * Traite le fichier GPX sélectionné.
@@ -6822,6 +6881,167 @@ function attachWaypointPersistence() {
     console.warn('Hotfix __lsSetItem init failed:', e);
   }
 })();
+</script>
+<script>
+// === Start/End markers for GPX trace ===
+window.__TRACE_MARKERS__ = true; // guard flag
+let startMarker = null;
+let endMarker = null;
+
+/** Centre la carte sur un point */
+function centerOnPoint(lat, lng) {
+  if (typeof map !== 'undefined' && map && map.setView) {
+    map.setView([lat, lng], Math.max(map.getZoom(), 15));
+  }
+}
+
+/** HTML du popup pour start/end */
+function createTraceMarkerPopup(latlng, type, elevation) {
+  const isStart = type === 'start';
+  const icon = isStart ? '🟢' : '🏁';
+  const title = isStart ? 'Départ' : 'Arrivée';
+  const eleRow = (elevation !== null && Number.isFinite(elevation))
+    ? `<div class="trace-marker-popup-row">
+         <span class="trace-marker-popup-label">Altitude :</span>
+         <span class="trace-marker-popup-value">${Math.round(elevation)} m</span>
+       </div>` : '';
+  return `
+    <div class="trace-marker-popup">
+      <div class="trace-marker-popup-header">
+        <span style="font-size:1.5rem;">${icon}</span>
+        <strong class="trace-marker-popup-title">${title}</strong>
+      </div>
+      <div class="trace-marker-popup-details">
+        <div class="trace-marker-popup-row">
+          <span class="trace-marker-popup-label">Latitude :</span>
+          <span class="trace-marker-popup-value">${latlng.lat.toFixed(6)}°</span>
+        </div>
+        <div class="trace-marker-popup-row">
+          <span class="trace-marker-popup-label">Longitude :</span>
+          <span class="trace-marker-popup-value">${latlng.lng.toFixed(6)}°</span>
+        </div>
+        ${eleRow}
+      </div>
+      <button class="btn btn-primary btn-small trace-marker-popup-button"
+              onclick="centerOnPoint(${latlng.lat}, ${latlng.lng})">
+        <span aria-hidden="true">🎯</span> Centrer sur ce point
+      </button>
+    </div>`;
+}
+
+/** Crée un divIcon + marker (start/end) */
+function createTraceMarker(latlng, type, elevation = null) {
+  const isStart = type === 'start';
+  const className = isStart ? 'trace-start-marker' : 'trace-end-marker';
+  const label = isStart ? '🟢 Départ de la trace' : '🏁 Arrivée de la trace';
+  const inner = `<div class="${className}-inner"><span class="${className}-icon">${isStart ? '🟢' : '🏁'}</span></div>`;
+  const icon = L.divIcon({
+    className, html: inner, iconSize: [32,32], iconAnchor: [16,16], popupAnchor: [0,-16]
+  });
+  const marker = L.marker(latlng, {
+    icon, zIndexOffset: 2000, title: label, riseOnHover: true
+  });
+  marker.bindTooltip(label, { direction: 'top', offset: [0, -16] });
+  marker.bindPopup(createTraceMarkerPopup(latlng, type, elevation), { maxWidth: 250, className: 'trace-marker-popup-container' });
+  return marker;
+}
+
+/** Marqueur combiné pour boucle (départ = arrivée) */
+function createCombinedMarker(latlng, elevation = null) {
+  const icon = L.divIcon({
+    className: 'trace-combined-marker',
+    html: `<div class="trace-combined-marker-inner"><span class="trace-combined-marker-icon">🔄</span></div>`,
+    iconSize: [32,32], iconAnchor: [16,16], popupAnchor: [0,-16]
+  });
+  const marker = L.marker(latlng, { icon, zIndexOffset: 2000, title: 'Départ/Arrivée (trace circulaire)', riseOnHover: true });
+  marker.bindTooltip('🔄 Départ/Arrivée', { direction: 'top', offset: [0, -16] });
+  const html = `
+    <div class="trace-marker-popup">
+      <div class="trace-marker-popup-header">
+        <span style="font-size:1.5rem;">🔄</span>
+        <strong class="trace-marker-popup-title">Départ/Arrivée</strong>
+      </div>
+      <div class="trace-marker-popup-details">
+        <div class="trace-marker-popup-row"><span class="trace-marker-popup-label">Type :</span><span class="trace-marker-popup-value">Trace circulaire</span></div>
+        <div class="trace-marker-popup-row"><span class="trace-marker-popup-label">Latitude :</span><span class="trace-marker-popup-value">${latlng.lat.toFixed(6)}°</span></div>
+        <div class="trace-marker-popup-row"><span class="trace-marker-popup-label">Longitude :</span><span class="trace-marker-popup-value">${latlng.lng.toFixed(6)}°</span></div>
+        ${Number.isFinite(elevation) ? `<div class="trace-marker-popup-row"><span class="trace-marker-popup-label">Altitude :</span><span class="trace-marker-popup-value">${Math.round(elevation)} m</span></div>` : ''}
+      </div>
+      <button class="btn btn-primary btn-small trace-marker-popup-button" onclick="centerOnPoint(${latlng.lat}, ${latlng.lng})">
+        <span aria-hidden="true">🎯</span> Centrer sur ce point
+      </button>
+    </div>`;
+  marker.bindPopup(html, { maxWidth: 250, className: 'trace-marker-popup-container' });
+  return marker;
+}
+
+/** Extrait start/end (LineString ou MultiLineString) + alt */
+function extractTraceEndpoints(geojson) {
+  if (!geojson || !Array.isArray(geojson.features)) return null;
+  const lineFeatures = geojson.features.filter(f => {
+    const t = f?.geometry?.type;
+    return t === 'LineString' || t === 'MultiLineString';
+  });
+  if (lineFeatures.length === 0) return null;
+
+  let firstCoord = null, lastCoord = null;
+  lineFeatures.forEach((feature) => {
+    const g = feature.geometry, coords = g.coordinates;
+    if (g.type === 'LineString') {
+      if (!firstCoord && coords.length) firstCoord = coords[0];
+      if (coords.length) lastCoord = coords[coords.length - 1];
+    } else if (g.type === 'MultiLineString') {
+      (coords || []).forEach(seg => {
+        if (!firstCoord && seg.length) firstCoord = seg[0];
+        if (seg.length) lastCoord = seg[seg.length - 1];
+      });
+    }
+  });
+
+  if (!firstCoord || !lastCoord) return null;
+  const start = L.latLng(firstCoord[1], firstCoord[0]);
+  const end   = L.latLng(lastCoord[1],  lastCoord[0]);
+  const startEle = firstCoord.length > 2 ? firstCoord[2] : null;
+  const endEle   = lastCoord.length  > 2 ? lastCoord[2]  : null;
+  return { start, end, startEle, endEle };
+}
+
+/** Ajoute les marqueurs de départ/arrivée (ou combiné) */
+function addTraceEndpointMarkers(geojson) {
+  try {
+    removeTraceEndpointMarkers();
+    const endpoints = extractTraceEndpoints(geojson);
+    if (!endpoints) return;
+    const { start, end, startEle, endEle } = endpoints;
+    if (typeof map === 'undefined' || !map) return;
+    const isSamePoint = map.distance(start, end) < 10; // < 10 m => boucle
+    if (isSamePoint) {
+      startMarker = createCombinedMarker(start, startEle ?? endEle ?? null);
+      startMarker.addTo(map);
+    } else {
+      startMarker = createTraceMarker(start, 'start', startEle);
+      endMarker   = createTraceMarker(end,   'end',   endEle);
+      startMarker.addTo(map);
+      endMarker.addTo(map);
+    }
+  } catch(e) {
+    console.warn('addTraceEndpointMarkers error:', e);
+  }
+}
+
+/** Supprime les marqueurs s'ils existent */
+function removeTraceEndpointMarkers() {
+  try {
+    if (typeof map !== 'undefined' && map) {
+      if (startMarker) { map.removeLayer(startMarker); startMarker = null; }
+      if (endMarker)   { map.removeLayer(endMarker);   endMarker   = null; }
+    } else {
+      startMarker = null; endMarker = null;
+    }
+  } catch(e) {
+    console.warn('removeTraceEndpointMarkers error:', e);
+  }
+}
 </script>
 </body>
 </html>
