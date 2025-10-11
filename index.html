@@ -2778,15 +2778,15 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
   window.__MAP_STYLE_CONTROL_DEFINED__ = true;
 
   window.mapStyles = {
-    cyclosm: { name:'CyclOSM', url:'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', attribution:'&copy; OpenStreetMap | CyclOSM', maxZoom:20 },
-    osm: { name:'OpenStreetMap', url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', attribution:'&copy; OpenStreetMap contributors', maxZoom:19 },
-    topo: { name:'OpenTopoMap', url:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', attribution:'&copy; OpenStreetMap | OpenTopoMap', maxZoom:17 },
-    voyager: { name:'CARTO Voyager', url:'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', attribution:'&copy; OpenStreetMap | CARTO', maxZoom:20 },
-    satellite: { name:'Esri Imagery', url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', attribution:'&copy; Esri, Maxar, Earthstar Geographics', maxZoom:19 },
+    cyclosm: { name:'CyclOSM', url:'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', attribution:'&copy; OpenStreetMap | CyclOSM | <a href="https://lamouche.fr" target="_blank" rel="noopener noreferrer">Benoit Lamouche</a>', maxZoom:20 },
+    osm: { name:'OpenStreetMap', url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', attribution:'&copy; OpenStreetMap contributors | <a href="https://lamouche.fr" target="_blank" rel="noopener noreferrer">Benoit Lamouche</a>', maxZoom:19 },
+    topo: { name:'OpenTopoMap', url:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', attribution:'&copy; OpenStreetMap | OpenTopoMap | <a href="https://lamouche.fr" target="_blank" rel="noopener noreferrer">Benoit Lamouche</a>', maxZoom:17 },
+    voyager: { name:'CARTO Voyager', url:'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', attribution:'&copy; OpenStreetMap | CARTO | <a href="https://lamouche.fr" target="_blank" rel="noopener noreferrer">Benoit Lamouche</a>', maxZoom:20 },
+    satellite: { name:'Esri Imagery', url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', attribution:'&copy; Esri, Maxar, Earthstar Geographics | <a href="https://lamouche.fr" target="_blank" rel="noopener noreferrer">Benoit Lamouche</a>', maxZoom:19 },
     hybrid: { name:'Esri Hybrid', layers:[
       { url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', maxZoom:19 },
       { url:'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', maxZoom:19 }
-    ], attribution:'&copy; Esri, Maxar, Earthstar Geographics', maxZoom:19 }
+    ], attribution:'&copy; Esri, Maxar, Earthstar Geographics | <a href="https://lamouche.fr" target="_blank" rel="noopener noreferrer">Benoit Lamouche</a>', maxZoom:19 }
   };
 
   window.mapStyleControl = { currentStyle: 'voyager', tileLayers:[], isOpen:false, toggleButton:null, panel:null, options:[] };
@@ -6339,7 +6339,8 @@ function createWaypointMarker(latlng, name = '') {
           distance: 0,
           segmentDistance: 0,
           remainingDistance: Math.max(0, totalDistance),
-          elevation: Number.isFinite(startPoint.elevation) ? startPoint.elevation : null
+          elevation: Number.isFinite(startPoint.elevation) ? startPoint.elevation : null,
+          pointIndex: Number.isFinite(startPoint.index) ? startPoint.index : null
         });
       }
 
@@ -6363,6 +6364,7 @@ function createWaypointMarker(latlng, name = '') {
             elevation: closestPoint && Number.isFinite(closestPoint.elevation)
               ? closestPoint.elevation
               : null,
+            pointIndex: closestPoint && Number.isFinite(closestPoint.index) ? closestPoint.index : null,
             marker
           };
         })
@@ -6388,8 +6390,33 @@ function createWaypointMarker(latlng, name = '') {
           distance: Math.max(0, totalDistance),
           segmentDistance: Math.max(0, totalDistance - previousDistance),
           remainingDistance: 0,
-          elevation: Number.isFinite(endPoint.elevation) ? endPoint.elevation : null
+          elevation: Number.isFinite(endPoint.elevation) ? endPoint.elevation : null,
+          pointIndex: Number.isFinite(endPoint.index) ? endPoint.index : null
         });
+      }
+
+      // Calculate remaining elevation gain (D+ restant) for each step
+      try {
+        const findRemainingGainFromIndex = (startIdx) => {
+          if (!Number.isFinite(startIdx) || startIdx < 0 || startIdx >= elevationPoints.length) return 0;
+          let gain = 0;
+          for (let i = startIdx + 1; i < elevationPoints.length; i++) {
+            const diff = elevationPoints[i].elevation - elevationPoints[i - 1].elevation;
+            if (diff > 0) gain += diff;
+          }
+          return Math.round(gain);
+        };
+
+        steps.forEach((s) => {
+          if (Number.isFinite(s.pointIndex)) {
+            s.remainingElevationGain = findRemainingGainFromIndex(s.pointIndex);
+          } else {
+            s.remainingElevationGain = null;
+          }
+        });
+      } catch (e) {
+        // if something goes wrong, don't block the roadbook
+        steps.forEach((s) => { s.remainingElevationGain = null; });
       }
 
       return steps;
@@ -6472,6 +6499,8 @@ function createWaypointMarker(latlng, name = '') {
       const showRemaining = step.type !== 'end' && this.steps.length > 1;
       const showElevation =
         step.elevation !== null && Number.isFinite(step.elevation);
+      const showRemainingElevation =
+        step.remainingElevationGain !== null && Number.isFinite(step.remainingElevationGain);
 
       return `
         <div class="roadbook-step" data-type="${step.type}" data-index="${index}">
@@ -6502,10 +6531,16 @@ function createWaypointMarker(latlng, name = '') {
                 </div>
               ` : ''}
             </div>
-            ${showElevation ? `
+            ${showElevation || showRemainingElevation ? `
               <div class="roadbook-step-elevation">
-                <span class="roadbook-elevation-label">Altitude :</span>
-                <span class="roadbook-elevation-value">${Math.round(step.elevation)} m</span>
+                ${showElevation ? `
+                  <span class="roadbook-elevation-label">Altitude :</span>
+                  <span class="roadbook-elevation-value">${Math.round(step.elevation)} m</span>
+                ` : ''}
+                ${showRemainingElevation ? `
+                  <span class="roadbook-elevation-label">D+ restant :</span>
+                  <span class="roadbook-elevation-value">${step.remainingElevationGain} m</span>
+                ` : ''}
               </div>
             ` : ''}
           </div>
