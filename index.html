@@ -4721,6 +4721,25 @@ let elevationMouseLeaveHandler = null;
     updateWaypointsList();
     updateTraceInfo(null);
 
+    // Debounced refresh of elevation profiles when waypoints change
+    if (typeof window.__refreshProfileTimer === 'undefined') window.__refreshProfileTimer = null;
+    function refreshElevationProfiles(delay = 120) {
+      clearTimeout(window.__refreshProfileTimer);
+      window.__refreshProfileTimer = setTimeout(() => {
+        try {
+          // redraw main profile and mini profile
+          if (typeof renderElevationProfile === 'function') {
+            renderElevationProfile();
+          }
+          if (typeof updateMiniElevationProfile === 'function') {
+            updateMiniElevationProfile();
+          }
+        } catch (e) {
+          console.warn('refreshElevationProfiles:', e);
+        }
+      }, delay);
+    }
+
     /**
      * Affiche un message utilisateur discret.
      * @param {string} text
@@ -5313,6 +5332,70 @@ let elevationMouseLeaveHandler = null;
       ctx.lineWidth = 2;
       ctx.stroke();
 
+      // --- Draw waypoints on profile ---
+      try {
+        if (typeof getWaypointMarkers === 'function') {
+          const markers = getWaypointMarkers() || [];
+          if (Array.isArray(markers) && markers.length > 0) {
+            markers.forEach((marker, mi) => {
+              try {
+                const latlng = marker.getLatLng ? marker.getLatLng() : null;
+                if (!latlng) return;
+
+                // find the closest elevation point by geographic distance
+                let closest = null;
+                let closestDist = Infinity;
+                for (let i = 0; i < points.length; i++) {
+                  const p = points[i];
+                  const d = haversineDistance({ lat: p.lat, lng: p.lng }, { lat: latlng.lat, lng: latlng.lng });
+                  if (d < closestDist) {
+                    closestDist = d;
+                    closest = p;
+                  }
+                }
+                if (!closest) return;
+
+                const x = xScale(closest.distance);
+                const y = yScale(closest.elevation);
+
+                // vertical tick
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(255,87,34,0.9)';
+                ctx.lineWidth = 1;
+                ctx.moveTo(x, margin.top);
+                ctx.lineTo(x, height - margin.bottom);
+                ctx.stroke();
+
+                // small circle marker on the profile line
+                ctx.beginPath();
+                ctx.fillStyle = '#FF5722';
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // label (waypoint name or index)
+                const label = marker.waypointName || `WP ${mi + 1}`;
+                ctx.fillStyle = '#212121';
+                ctx.font = '11px sans-serif';
+                ctx.textAlign = 'center';
+                // draw background for readability
+                const textWidth = ctx.measureText(label).width;
+                ctx.fillStyle = 'rgba(255,255,255,0.85)';
+                ctx.fillRect(x - textWidth / 2 - 6, margin.top + 4, textWidth + 12, 18);
+                ctx.fillStyle = '#212121';
+                ctx.fillText(label, x, margin.top + 16);
+              } catch (e) {
+                // ignore marker-specific errors
+              }
+            });
+          }
+        }
+      } catch (e) {
+        // ignore rendering errors so profile still draws
+      }
+
       ctx.fillStyle = '#424242';
       ctx.font = 'bold 12px sans-serif';
       ctx.textAlign = 'center';
@@ -5422,6 +5505,44 @@ let elevationMouseLeaveHandler = null;
       ctx.strokeStyle = '#1976d2';
       ctx.lineWidth = 1.5;
       ctx.stroke();
+
+      // Draw compact waypoint markers on mini profile
+      try {
+        if (typeof getWaypointMarkers === 'function') {
+          const markers = getWaypointMarkers() || [];
+          markers.forEach((marker) => {
+            try {
+              const latlng = marker.getLatLng ? marker.getLatLng() : null;
+              if (!latlng) return;
+              let closest = null;
+              let closestDist = Infinity;
+              for (let i = 0; i < points.length; i++) {
+                const p = points[i];
+                const d = haversineDistance({ lat: p.lat, lng: p.lng }, { lat: latlng.lat, lng: latlng.lng });
+                if (d < closestDist) {
+                  closestDist = d;
+                  closest = p;
+                }
+              }
+              if (!closest) return;
+              const x = xScale(closest.distance);
+              const y = yScale(closest.elevation);
+              // tiny tick
+              ctx.beginPath();
+              ctx.strokeStyle = 'rgba(255,87,34,0.9)';
+              ctx.lineWidth = 1;
+              ctx.moveTo(x, y - 6);
+              ctx.lineTo(x, y + 6);
+              ctx.stroke();
+              // small dot
+              ctx.beginPath();
+              ctx.fillStyle = '#FF5722';
+              ctx.arc(x, y, 3, 0, Math.PI * 2);
+              ctx.fill();
+            } catch (e) {}
+          });
+        }
+      } catch (e) {}
 
       ctx.restore();
     }
@@ -5655,12 +5776,14 @@ let elevationMouseLeaveHandler = null;
         marker.setPopupContent(createWaypointPopupHtml(marker.waypointName));
         marker.openPopup();
         updateWaypointsList();
+        try { if (typeof refreshElevationProfiles === 'function') refreshElevationProfiles(80); } catch (e) {}
       };
 
       const deleteAction = () => {
         waypointLayerGroup.removeLayer(marker);
         map.closePopup(popup);
         updateWaypointsList();
+        try { if (typeof refreshElevationProfiles === 'function') refreshElevationProfiles(80); } catch (e) {}
       
         // Sauvegarde immédiate (sans debounce) pour figer l’état
         if (typeof saveTraceToLocalStorage === 'function') {
@@ -5731,6 +5854,7 @@ function createWaypointMarker(latlng, name = '') {
 
   waypointLayerGroup.addLayer(marker);
   updateWaypointsList();
+  try { if (typeof refreshElevationProfiles === 'function') refreshElevationProfiles(80); } catch (e) {}
   
   if (typeof marker.on === 'function') {
     marker.on('remove', () => { if (typeof saveTraceDebounced === 'function') saveTraceDebounced(50); });
@@ -5853,6 +5977,7 @@ function createWaypointMarker(latlng, name = '') {
           deleteButton.addEventListener('click', () => {
             waypointLayerGroup.removeLayer(marker);
             updateWaypointsList();
+            try { if (typeof refreshElevationProfiles === 'function') refreshElevationProfiles(80); } catch (e) {}
             if (typeof saveTraceDebounced === 'function') {
               saveTraceDebounced(50);
             }
@@ -6716,7 +6841,7 @@ setTimeout(() => { if (typeof saveTraceToLocalStorage === 'function') saveTraceT
       clearWaypointsButton.addEventListener('click', () => {
         waypointLayerGroup.clearLayers();
         updateWaypointsList();
-      
+        try { if (typeof refreshElevationProfiles === 'function') refreshElevationProfiles(80); } catch (e) {}
       if (typeof saveTraceDebounced === 'function') saveTraceDebounced(60);
       if (typeof saveTraceToLocalStorage === 'function') { try { saveTraceToLocalStorage(); } catch(e) {} }
   // FINAL SAFETY: persist the current state after any list refresh
