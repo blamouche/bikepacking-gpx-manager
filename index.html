@@ -1526,6 +1526,7 @@
 }
 
 /* Dark mode refinement */
+/*
 @media (prefers-color-scheme: dark) {
   .map-style-section .map-style-option {
     background: rgba(44,44,46,0.9);
@@ -1551,6 +1552,7 @@
     border-color: rgba(10,132,255,0.35);
   }
 }
+*/
 
 </style>
 <!-- Modern Compact UI Overrides -->
@@ -1959,6 +1961,16 @@ html, body {
   position: relative;
 }
 
+.collapsible-section .section-header-with-action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.collapsible-section .section-header-with-action .section-header-toggle {
+  flex: 1;
+}
+
 .collapsible-section .section-header-toggle {
   width: 100%;
   display: flex;
@@ -2076,6 +2088,253 @@ html, body {
 @media (prefers-color-scheme: dark) {
   .collapsible-section .section-header-toggle:hover {
     background: rgba(255, 255, 255, 0.05);
+  }
+}
+</style>
+<style>
+/* === ROADBOOK SECTION === */
+
+.roadbook-export-btn {
+  margin-left: auto;
+  margin-right: 0.5rem;
+  opacity: 0.7;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.roadbook-export-btn:hover,
+.roadbook-export-btn:focus-visible {
+  opacity: 1;
+  transform: scale(1.05);
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.roadbook-export-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.roadbook-export-btn.copied {
+  animation: copySuccess 0.6s ease;
+}
+
+@keyframes copySuccess {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+    background: var(--color-primary-light);
+  }
+}
+
+.roadbook-empty {
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.roadbook-empty-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.roadbook-empty-icon {
+  font-size: 2.5rem;
+  opacity: 0.5;
+}
+
+.roadbook-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.roadbook-step {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--color-background-elevated, #fff);
+  border: 1px solid var(--color-border-light, #E5E5EA);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.roadbook-step:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.roadbook-step[data-type="start"] {
+  border-left: 3px solid #4CAF50;
+  background: linear-gradient(90deg, rgba(76, 175, 80, 0.05) 0%, var(--color-background-elevated, #fff) 10%);
+}
+
+.roadbook-step[data-type="waypoint"] {
+  border-left: 3px solid #FF5722;
+}
+
+.roadbook-step[data-type="end"] {
+  border-left: 3px solid #FF5722;
+  background: linear-gradient(90deg, rgba(255, 87, 34, 0.05) 0%, var(--color-background-elevated, #fff) 10%);
+}
+
+.roadbook-step-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.roadbook-step-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.roadbook-step-number {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  background: var(--color-background-alt);
+  padding: 0.125rem 0.375rem;
+  border-radius: 999px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.roadbook-step-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.roadbook-step-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.roadbook-step-name {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roadbook-step-center-btn {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.roadbook-step:hover .roadbook-step-center-btn {
+  opacity: 1;
+}
+
+.roadbook-step-center-btn:hover {
+  background: var(--color-primary-light);
+  transform: scale(1.1);
+}
+
+.roadbook-step-distances {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.roadbook-distance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.roadbook-distance-label {
+  color: var(--color-text-muted);
+}
+
+.roadbook-distance-value {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.roadbook-distance-cumul .roadbook-distance-value {
+  color: var(--color-primary);
+  font-size: 0.95rem;
+}
+
+.roadbook-distance-segment {
+  padding-left: 0.5rem;
+  border-left: 2px solid var(--color-border-light);
+}
+
+.roadbook-distance-segment .roadbook-distance-label {
+  font-size: 0.8rem;
+}
+
+.roadbook-distance-segment .roadbook-distance-value {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+}
+
+.roadbook-step-elevation {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding-top: 0.375rem;
+  border-top: 1px dashed var(--color-border-light);
+  font-size: 0.85rem;
+}
+
+.roadbook-elevation-label {
+  color: var(--color-text-muted);
+}
+
+.roadbook-elevation-value {
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 480px) {
+  .roadbook-step {
+    grid-template-columns: 40px 1fr;
+    gap: 0.5rem;
+    padding: 0.625rem;
+  }
+
+  .roadbook-step-icon {
+    font-size: 1.5rem;
+  }
+
+  .roadbook-distance-item {
+    font-size: 0.8rem;
+  }
+
+  .roadbook-distance-cumul .roadbook-distance-value {
+    font-size: 0.9rem;
   }
 }
 </style>
@@ -2568,15 +2827,15 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
   window.__MAP_STYLE_CONTROL_DEFINED__ = true;
 
   window.mapStyles = {
-    cyclosm: { name:'CyclOSM', url:'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', attribution:'&copy; OpenStreetMap | CyclOSM', maxZoom:20 },
-    osm: { name:'OpenStreetMap', url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', attribution:'&copy; OpenStreetMap contributors', maxZoom:19 },
-    topo: { name:'OpenTopoMap', url:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', attribution:'&copy; OpenStreetMap | OpenTopoMap', maxZoom:17 },
-    voyager: { name:'CARTO Voyager', url:'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', attribution:'&copy; OpenStreetMap | CARTO', maxZoom:20 },
-    satellite: { name:'Esri Imagery', url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', attribution:'&copy; Esri, Maxar, Earthstar Geographics', maxZoom:19 },
+    cyclosm: { name:'CyclOSM', url:'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', attribution:'&copy; OpenStreetMap | CyclOSM | <a href="https://lamouche.fr" target="_blank" rel="noopener noreferrer">Benoit Lamouche</a>', maxZoom:20 },
+    osm: { name:'OpenStreetMap', url:'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', attribution:'&copy; OpenStreetMap contributors | <a href="https://lamouche.fr" target="_blank" rel="noopener noreferrer">Benoit Lamouche</a>', maxZoom:19 },
+    topo: { name:'OpenTopoMap', url:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', attribution:'&copy; OpenStreetMap | OpenTopoMap | <a href="https://lamouche.fr" target="_blank" rel="noopener noreferrer">Benoit Lamouche</a>', maxZoom:17 },
+    voyager: { name:'CARTO Voyager', url:'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', attribution:'&copy; OpenStreetMap | CARTO | <a href="https://lamouche.fr" target="_blank" rel="noopener noreferrer">Benoit Lamouche</a>', maxZoom:20 },
+    satellite: { name:'Esri Imagery', url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', attribution:'&copy; Esri, Maxar, Earthstar Geographics | <a href="https://lamouche.fr" target="_blank" rel="noopener noreferrer">Benoit Lamouche</a>', maxZoom:19 },
     hybrid: { name:'Esri Hybrid', layers:[
       { url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', maxZoom:19 },
       { url:'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', maxZoom:19 }
-    ], attribution:'&copy; Esri, Maxar, Earthstar Geographics', maxZoom:19 }
+    ], attribution:'&copy; Esri, Maxar, Earthstar Geographics | <a href="https://lamouche.fr" target="_blank" rel="noopener noreferrer">Benoit Lamouche</a>', maxZoom:19 }
   };
 
   window.mapStyleControl = { currentStyle: 'voyager', tileLayers:[], isOpen:false, toggleButton:null, panel:null, options:[] };
@@ -2883,8 +3142,8 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 </div>
 </section>
 <section class="panel-section" id="layers-section-placeholder"></section>
-<section class="panel-section collapsible-section expanded" id="waypoints-section" style="display: none;">
-<button aria-controls="waypoints-content" aria-expanded="true" class="section-header-toggle" type="button">
+<section class="panel-section collapsible-section" id="waypoints-section" style="display: none;">
+<button aria-controls="waypoints-content" aria-expanded="false" class="section-header-toggle" type="button">
 <span class="section-header-icon">📍</span>
 <h3 class="section-title">Waypoints <span class="badge" id="waypoint-count">0</span></h3>
 <span class="section-header-chevron">▼</span>
@@ -2892,6 +3151,26 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 <div class="section-collapsible-content" id="waypoints-content">
 <div class="waypoints-list" id="waypoints-list"></div>
 <button class="btn btn-secondary btn-small" id="clear-waypoints">Effacer tous les waypoints</button>
+</div>
+</section>
+<section class="panel-section collapsible-section" id="roadbook-section" style="display: none;">
+<div class="section-header-with-action">
+<button aria-controls="roadbook-content" aria-expanded="false" class="section-header-toggle" type="button">
+<span class="section-header-icon">📋</span>
+<h3 class="section-title">Roadbook <span class="badge" id="roadbook-step-count">0</span></h3>
+<span class="section-header-chevron">▼</span>
+</button>
+<button class="btn-icon-small roadbook-export-btn" id="roadbook-export-text" type="button" title="Copier le roadbook en texte" aria-label="Copier le roadbook au format texte" disabled>📋</button>
+</div>
+<div class="section-collapsible-content" id="roadbook-content">
+<div class="roadbook-empty" id="roadbook-empty">
+<p class="roadbook-empty-text">
+<span class="roadbook-empty-icon">🗺️</span>
+        Aucun waypoint sur le parcours
+      </p>
+</div>
+<div class="roadbook-list" id="roadbook-list">
+</div>
 </div>
 </section>
 <section class="panel-section" id="trace-info-section" style="display: none;">
@@ -2938,7 +3217,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 <main class="map-container">
 <div class="map-main">
 <div class="map-wrapper"><div class="map-topbar">
-<span class="map-topbar-title"><h1>Bikepacking helper</h1></span>
+<span class="map-topbar-title"><h1>Cycling Companion</h1></span>
 </div><div id="map"></div></div>
 <div class="map-style-section">
 <div class="map-style-section-title">Routes &amp; Cyclisme</div>
@@ -5237,6 +5516,9 @@ let elevationMouseLeaveHandler = null;
         elevationCollapseButton.setAttribute('aria-label', 'Réduire le profil');
       }
       map.invalidateSize();
+      if (window.roadbookManager && typeof window.roadbookManager.update === 'function') {
+        window.roadbookManager.update();
+      }
     }
 
     function drawElevationProfile(canvas, points, stats) {
@@ -5993,6 +6275,10 @@ function createWaypointMarker(latlng, name = '') {
 
         waypointsList.appendChild(item);
       });
+
+      if (window.roadbookManager && typeof window.roadbookManager.update === 'function') {
+        window.roadbookManager.update();
+      }
     }
 
     function updateTraceInfo(info) {
@@ -6018,15 +6304,556 @@ function createWaypointMarker(latlng, name = '') {
       displayTraceName(currentTraceName || info.name || '—', traceNameSource || 'default');
       pointCountLabel.textContent = Number.isFinite(info.pointCount) ? info.pointCount : '—';
       traceTypeLabel.textContent = info.type || '—';
-      if (traceFileNameLabel) {
-        traceFileNameLabel.textContent = currentGpxFileName || '—';
+    if (traceFileNameLabel) {
+      traceFileNameLabel.textContent = currentGpxFileName || '—';
+    }
+    if (gpxTraceFilename) {
+      gpxTraceFilename.textContent = currentGpxFileName || info.name || 'Trace GPX';
+    }
+  }
+
+  const roadbookManager = {
+    section: null,
+    listContainer: null,
+    emptyState: null,
+    stepCount: null,
+    exportButton: null,
+    exportClickHandler: null,
+    steps: [],
+    waypointListener: null,
+
+    init() {
+      this.section = document.getElementById('roadbook-section');
+      this.listContainer = document.getElementById('roadbook-list');
+      this.emptyState = document.getElementById('roadbook-empty');
+      this.stepCount = document.getElementById('roadbook-step-count');
+      const exportButtonElement = document.getElementById('roadbook-export-text');
+
+      if (this.exportButton && this.exportClickHandler) {
+        this.exportButton.removeEventListener('click', this.exportClickHandler);
       }
-      if (gpxTraceFilename) {
-        gpxTraceFilename.textContent = currentGpxFileName || info.name || 'Trace GPX';
+
+      this.exportButton = exportButtonElement || null;
+
+      if (this.exportButton) {
+        this.exportClickHandler = (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          exportRoadbookToText();
+        };
+        this.exportButton.addEventListener('click', this.exportClickHandler);
+      } else {
+        this.exportClickHandler = null;
+      }
+
+      if (!this.section || !this.listContainer) {
+        return;
+      }
+
+      if (window.collapsibleSectionsAPI?.init) {
+        window.collapsibleSectionsAPI.init('roadbook');
+        if (typeof window.collapsibleSectionsAPI.collapse === 'function') {
+          window.collapsibleSectionsAPI.collapse('roadbook');
+        }
+      }
+
+      this.attachListeners();
+      this.update();
+    },
+
+    attachListeners() {
+      if (
+        typeof waypointLayerGroup !== 'undefined' &&
+        waypointLayerGroup &&
+        typeof waypointLayerGroup.on === 'function'
+      ) {
+        if (this.waypointListener) {
+          waypointLayerGroup.off('layeradd', this.waypointListener);
+          waypointLayerGroup.off('layerremove', this.waypointListener);
+        }
+        this.waypointListener = () => this.update();
+        waypointLayerGroup.on('layeradd', this.waypointListener);
+        waypointLayerGroup.on('layerremove', this.waypointListener);
+      }
+    },
+
+    updateExportButtonState() {
+      if (!this.exportButton) {
+        return;
+      }
+      const hasSteps = Array.isArray(this.steps) && this.steps.length > 0;
+      this.exportButton.disabled = !hasSteps;
+
+      if (!hasSteps) {
+        if (this.exportButton.__copyResetTimeout) {
+          clearTimeout(this.exportButton.__copyResetTimeout);
+          this.exportButton.__copyResetTimeout = null;
+        }
+        this.exportButton.textContent = '📋';
+        this.exportButton.classList.remove('copied');
+      }
+    },
+
+    update() {
+      this.steps = this.computeSteps();
+      this.render();
+    },
+
+    computeSteps() {
+      if (
+        !currentElevationData ||
+        !Array.isArray(currentElevationData.points) ||
+        !currentElevationData.stats
+      ) {
+        return [];
+      }
+
+      const elevationPoints = currentElevationData.points;
+      const totalDistance = Number.isFinite(currentElevationData.stats.totalDistance)
+        ? currentElevationData.stats.totalDistance
+        : 0;
+
+      if (!Array.isArray(elevationPoints) || elevationPoints.length === 0) {
+        return [];
+      }
+
+      const steps = [];
+      const startPoint = elevationPoints[0];
+      if (startPoint) {
+        steps.push({
+          type: 'start',
+          name: 'Départ',
+          lat: startPoint.lat,
+          lng: startPoint.lng,
+          distance: 0,
+          segmentDistance: 0,
+          remainingDistance: Math.max(0, totalDistance),
+          elevation: Number.isFinite(startPoint.elevation) ? startPoint.elevation : null,
+          pointIndex: Number.isFinite(startPoint.index) ? startPoint.index : null
+        });
+      }
+
+      const markers =
+        typeof getWaypointMarkers === 'function' ? getWaypointMarkers() : [];
+
+      const waypointSteps = markers
+        .map((marker) => {
+          if (!marker || typeof marker.getLatLng !== 'function') {
+            return null;
+          }
+          const latlng = marker.getLatLng();
+          const closestPoint = this.findClosestElevationPoint(latlng, elevationPoints);
+          const distance = closestPoint ? closestPoint.distance : 0;
+          return {
+            type: 'waypoint',
+            name: marker.waypointName || 'Waypoint',
+            lat: latlng.lat,
+            lng: latlng.lng,
+            distance,
+            elevation: closestPoint && Number.isFinite(closestPoint.elevation)
+              ? closestPoint.elevation
+              : null,
+            pointIndex: closestPoint && Number.isFinite(closestPoint.index) ? closestPoint.index : null,
+            marker
+          };
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.distance - b.distance);
+
+      waypointSteps.forEach((waypoint) => {
+        const previousStepDistance =
+          steps.length > 0 ? steps[steps.length - 1].distance : 0;
+        waypoint.segmentDistance = Math.max(0, waypoint.distance - previousStepDistance);
+        waypoint.remainingDistance = Math.max(0, totalDistance - waypoint.distance);
+        steps.push(waypoint);
+      });
+
+      const endPoint = elevationPoints[elevationPoints.length - 1];
+      if (endPoint) {
+        const previousDistance = steps.length > 0 ? steps[steps.length - 1].distance : 0;
+        steps.push({
+          type: 'end',
+          name: 'Arrivée',
+          lat: endPoint.lat,
+          lng: endPoint.lng,
+          distance: Math.max(0, totalDistance),
+          segmentDistance: Math.max(0, totalDistance - previousDistance),
+          remainingDistance: 0,
+          elevation: Number.isFinite(endPoint.elevation) ? endPoint.elevation : null,
+          pointIndex: Number.isFinite(endPoint.index) ? endPoint.index : null
+        });
+      }
+
+      // Calculate remaining elevation gain (D+ restant) for each step
+      try {
+        const findRemainingGainFromIndex = (startIdx) => {
+          if (!Number.isFinite(startIdx) || startIdx < 0 || startIdx >= elevationPoints.length) return 0;
+          let gain = 0;
+          for (let i = startIdx + 1; i < elevationPoints.length; i++) {
+            const diff = elevationPoints[i].elevation - elevationPoints[i - 1].elevation;
+            if (diff > 0) gain += diff;
+          }
+          return Math.round(gain);
+        };
+
+        steps.forEach((s) => {
+          if (Number.isFinite(s.pointIndex)) {
+            s.remainingElevationGain = findRemainingGainFromIndex(s.pointIndex);
+          } else {
+            s.remainingElevationGain = null;
+          }
+        });
+      } catch (e) {
+        // if something goes wrong, don't block the roadbook
+        steps.forEach((s) => { s.remainingElevationGain = null; });
+      }
+
+      return steps;
+    },
+
+    findClosestElevationPoint(latlng, points) {
+      if (!latlng || !Array.isArray(points) || points.length === 0) {
+        return null;
+      }
+
+      let closest = points[0];
+      let minDistance = Infinity;
+
+      points.forEach((point) => {
+        const dist = haversineDistance(
+          { lat: point.lat, lng: point.lng },
+          { lat: latlng.lat, lng: latlng.lng }
+        );
+        if (dist < minDistance) {
+          minDistance = dist;
+          closest = point;
+        }
+      });
+
+      return closest || null;
+    },
+
+    render() {
+      if (!this.section || !this.listContainer || !this.emptyState) {
+        return;
+      }
+
+      const hasSteps = this.steps.length > 0;
+      this.updateExportButtonState();
+      this.section.style.display = hasSteps ? 'block' : 'none';
+
+      if (!hasSteps) {
+        this.emptyState.style.display = 'block';
+        this.listContainer.style.display = 'none';
+        if (this.stepCount) {
+          this.stepCount.textContent = '0';
+        }
+        return;
+      }
+
+      const waypointCount = this.steps.filter((step) => step.type === 'waypoint').length;
+      if (this.stepCount) {
+        this.stepCount.textContent = String(waypointCount);
+      }
+
+      if (waypointCount === 0) {
+        this.emptyState.style.display = 'block';
+      } else {
+        this.emptyState.style.display = 'none';
+      }
+
+      this.listContainer.style.display = 'flex';
+      this.listContainer.innerHTML = this.steps
+        .map((step, index) => this.renderStep(step, index))
+        .join('');
+
+      this.attachStepEvents();
+    },
+
+    renderStep(step, index) {
+      const icon =
+        step.type === 'start' ? '🟢' : step.type === 'end' ? '🏁' : '📍';
+
+      const formatKm = (value) => {
+        if (!Number.isFinite(value)) {
+          return '0.00';
+        }
+        return (value / 1000).toFixed(2);
+      };
+
+      const distanceKm = formatKm(step.distance);
+      const segmentKm = formatKm(step.segmentDistance);
+      const remainingKm = formatKm(step.remainingDistance);
+
+      const showSegment = step.type !== 'start';
+      const showRemaining = step.type !== 'end' && this.steps.length > 1;
+      const showElevation =
+        step.elevation !== null && Number.isFinite(step.elevation);
+      const showRemainingElevation =
+        step.remainingElevationGain !== null && Number.isFinite(step.remainingElevationGain);
+
+      return `
+        <div class="roadbook-step" data-type="${step.type}" data-index="${index}">
+          <div class="roadbook-step-marker">
+            <span class="roadbook-step-icon">${icon}</span>
+            <span class="roadbook-step-number">#${index + 1}</span>
+          </div>
+          <div class="roadbook-step-content">
+            <div class="roadbook-step-header">
+              <h4 class="roadbook-step-name">${escapeHtml(step.name)}</h4>
+              <button class="roadbook-step-center-btn" title="Centrer sur la carte">🎯</button>
+            </div>
+            <div class="roadbook-step-distances">
+              <div class="roadbook-distance-item roadbook-distance-cumul">
+                <span class="roadbook-distance-label">Depuis le départ :</span>
+                <span class="roadbook-distance-value">${distanceKm} km</span>
+              </div>
+              ${showSegment ? `
+                <div class="roadbook-distance-item roadbook-distance-segment">
+                  <span class="roadbook-distance-label">Depuis la dernière étape :</span>
+                  <span class="roadbook-distance-value">${segmentKm} km</span>
+                </div>
+              ` : ''}
+              ${showRemaining ? `
+                <div class="roadbook-distance-item roadbook-distance-remaining">
+                  <span class="roadbook-distance-label">Jusqu'à l'arrivée :</span>
+                  <span class="roadbook-distance-value">${remainingKm} km</span>
+                </div>
+              ` : ''}
+            </div>
+            ${showElevation || showRemainingElevation ? `
+              <div class="roadbook-step-elevation">
+                ${showElevation ? `
+                  <span class="roadbook-elevation-label">Altitude :</span>
+                  <span class="roadbook-elevation-value">${Math.round(step.elevation)} m</span>
+                ` : ''}
+                ${showRemainingElevation ? `
+                  <span class="roadbook-elevation-label">D+ restant :</span>
+                  <span class="roadbook-elevation-value">${step.remainingElevationGain} m</span>
+                ` : ''}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    },
+
+    attachStepEvents() {
+      const buttons = this.listContainer.querySelectorAll('.roadbook-step-center-btn');
+      buttons.forEach((button) => {
+        button.addEventListener('click', (event) => {
+          event.stopPropagation();
+          const stepElement = button.closest('.roadbook-step');
+          if (!stepElement) {
+            return;
+          }
+          const index = parseInt(stepElement.getAttribute('data-index'), 10);
+          const step = Number.isInteger(index) ? this.steps[index] : null;
+          if (!step) {
+            return;
+          }
+          if (typeof map !== 'undefined' && map && typeof map.setView === 'function') {
+            map.setView([step.lat, step.lng], Math.max(map.getZoom(), 15));
+          }
+          if (step.marker && typeof step.marker.openPopup === 'function') {
+            step.marker.openPopup();
+          }
+        });
+      });
+    }
+  };
+
+  window.roadbookManager = roadbookManager;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.roadbookManager && typeof window.roadbookManager.init === 'function') {
+      window.roadbookManager.init();
+    }
+  });
+
+  function exportRoadbookToText() {
+    const manager = window.roadbookManager;
+    if (!manager || !Array.isArray(manager.steps) || manager.steps.length === 0) {
+      showMessage("Le roadbook est vide. Ajoutez des waypoints pour l'utiliser.", true);
+      return;
+    }
+
+    const traceNameFromFile =
+      window.currentGpxFileName && typeof window.currentGpxFileName === 'string'
+        ? window.currentGpxFileName.replace(/\.gpx$/i, '')
+        : '';
+    const traceName =
+      window.currentTraceName ||
+      traceNameFromFile ||
+      'Trace sans nom';
+
+    const lines = [];
+    lines.push(`🗺️ ROADBOOK - ${traceName}`);
+    lines.push('━'.repeat(40));
+    lines.push('');
+
+    let waypointIndex = 0;
+
+    manager.steps.forEach((step, index) => {
+      if (!step) {
+        return;
+      }
+
+      const icon = step.type === 'start' ? '🟢' : step.type === 'end' ? '🏁' : '📍';
+      const rawName = (step.name || '').trim();
+      const upperName = rawName ? rawName.toUpperCase() : '';
+      let headerLabel = '';
+
+      if (step.type === 'start') {
+        headerLabel = upperName && upperName !== 'DÉPART'
+          ? `DÉPART - ${upperName}`
+          : 'DÉPART';
+      } else if (step.type === 'end') {
+        headerLabel = upperName && upperName !== 'ARRIVÉE'
+          ? `ARRIVÉE - ${upperName}`
+          : 'ARRIVÉE';
+      } else {
+        waypointIndex += 1;
+        const waypointName = upperName || `WAYPOINT ${waypointIndex}`;
+        headerLabel = `WAYPOINT ${waypointIndex} - ${waypointName}`;
+      }
+
+      lines.push(`${icon} ${headerLabel}`);
+
+      if (step.type === 'end') {
+        lines.push(`📍 Distance totale : ${formatKmExport(step.distance)}`);
+        if (Number.isFinite(step.segmentDistance) && step.segmentDistance > 0) {
+          lines.push(`└─ Depuis l'étape précédente : ${formatKmExport(step.segmentDistance)}`);
+        }
+      } else {
+        lines.push(`📍 Depuis le départ : ${formatKmExport(step.distance)}`);
+
+        if (step.type !== 'start' && Number.isFinite(step.segmentDistance) && step.segmentDistance >= 0) {
+          lines.push(`└─ Depuis l'étape précédente : ${formatKmExport(step.segmentDistance)}`);
+        }
+
+        if (step.type === 'waypoint' && Number.isFinite(step.remainingDistance) && step.remainingDistance >= 0) {
+          lines.push(`└─ Jusqu'à l'arrivée : ${formatKmExport(step.remainingDistance)}`);
+        }
+      }
+
+      if (Number.isFinite(step.elevation)) {
+        lines.push(`⛰️ Altitude : ${Math.round(step.elevation)} m`);
+      }
+
+      if (step.type !== 'end' && Number.isFinite(step.remainingElevationGain)) {
+        lines.push(`📈 D+ restant : ${Math.round(step.remainingElevationGain)} m`);
+      }
+
+      lines.push('');
+    });
+
+    if (lines[lines.length - 1] === '') {
+      lines.pop();
+    }
+
+    lines.push('━'.repeat(40));
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('fr-FR');
+    const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    lines.push(`Généré le ${dateStr} à ${timeStr}`);
+
+    const text = lines.join('\n');
+    copyRoadbookTextToClipboard(text);
+  }
+
+  function formatKmExport(meters) {
+    if (!Number.isFinite(meters)) {
+      return '0.00 km';
+    }
+    return (meters / 1000).toFixed(2) + ' km';
+  }
+
+  function handleRoadbookCopySuccess(button) {
+    if (!button) {
+      return;
+    }
+    button.textContent = '✓';
+    button.classList.add('copied');
+
+    if (button.__copyResetTimeout) {
+      clearTimeout(button.__copyResetTimeout);
+    }
+
+    button.__copyResetTimeout = setTimeout(() => {
+      button.textContent = '📋';
+      button.classList.remove('copied');
+      button.__copyResetTimeout = null;
+    }, 2000);
+  }
+
+  function copyRoadbookTextToClipboard(text) {
+    const button = document.getElementById('roadbook-export-text');
+
+    if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+      fallbackCopyRoadbookText(text, button, null);
+      return;
+    }
+
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        handleRoadbookCopySuccess(button);
+        showMessage('Roadbook copié dans le presse-papiers ✓', false);
+      })
+      .catch((err) => {
+        console.error('Erreur de copie du roadbook:', err);
+        fallbackCopyRoadbookText(text, button, err);
+      });
+  }
+
+  function fallbackCopyRoadbookText(text, button, originalError) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.top = '-9999px';
+    textarea.style.opacity = '0';
+
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+
+    let successful = false;
+
+    try {
+      successful = document.execCommand('copy');
+    } catch (error) {
+      console.error('Fallback copy failed:', error);
+      successful = false;
+    } finally {
+      document.body.removeChild(textarea);
+    }
+
+    if (successful) {
+      handleRoadbookCopySuccess(button);
+      showMessage('Roadbook copié ✓', false);
+      return;
+    }
+
+    if (button) {
+      button.textContent = '📋';
+      button.classList.remove('copied');
+      if (button.__copyResetTimeout) {
+        clearTimeout(button.__copyResetTimeout);
+        button.__copyResetTimeout = null;
       }
     }
 
-    function createArrowIconHtml(bearing) {
+    if (originalError && originalError.name === 'NotAllowedError') {
+      showMessage('Permission de copie refusée par le navigateur.', true);
+    } else if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+      showMessage('Impossible de copier le texte. Essayez manuellement.', true);
+    } else {
+      showMessage('Erreur lors de la copie dans le presse-papiers.', true);
+    }
+  }
+
+  function createArrowIconHtml(bearing) {
       const rotation = ((bearing - 90) + 360) % 360;
       return `<span class="direction-arrow" style="display:inline-block; color:#ff5722; font-size:1rem; line-height:1; text-shadow:0 0 2px rgba(0,0,0,0.5); transform-origin:center; transform: rotate(${rotation}deg);">➤</span>`;
     }
@@ -6407,6 +7234,10 @@ function createWaypointMarker(latlng, name = '') {
               elevationProfile.setAttribute('aria-hidden', 'true');
             }
             noElevationData = true;
+          }
+
+          if (window.roadbookManager && typeof window.roadbookManager.update === 'function') {
+            window.roadbookManager.update();
           }
 
           let successMessage = '';
@@ -7351,6 +8182,10 @@ function loadTraceFromLocalStorage() {
       }
     }
 
+    if (window.roadbookManager && typeof window.roadbookManager.update === 'function') {
+      window.roadbookManager.update();
+    }
+
     // UX message
     const elapsed = Date.now() - (traceData.timestamp || Date.now());
     const minutes = Math.max(0, Math.floor(elapsed / 60000));
@@ -7498,6 +8333,9 @@ function ensureElevationRendered(retries = 8) {
           if (recomputed) {
             window.currentElevationData = recomputed;
             if (typeof updateElevationStats === 'function') updateElevationStats(recomputed.stats);
+            if (window.roadbookManager && typeof window.roadbookManager.update === 'function') {
+              window.roadbookManager.update();
+            }
           }
         } catch (e) {
           console.warn('Recompute elevation failed:', e);
@@ -7927,12 +8765,23 @@ const collapsibleSections = Object.assign(window.collapsibleSections, {
   },
   waypoints: {
     id: 'waypoints-section',
-    storageKey: 'gpx_waypoints_section_expanded',
-    defaultExpanded: true,
+    storageKey: null,
+    defaultExpanded: false,
     section: null,
     toggle: null,
     content: null,
-    isExpanded: true,
+    isExpanded: false,
+    boundToggleHandler: null,
+    initialized: false
+  },
+  roadbook: {
+    id: 'roadbook-section',
+    storageKey: null,
+    defaultExpanded: false,
+    section: null,
+    toggle: null,
+    content: null,
+    isExpanded: false,
     boundToggleHandler: null,
     initialized: false
   }
@@ -7967,6 +8816,9 @@ function loadSectionState(sectionKey) {
   const config = collapsibleSections[sectionKey];
   if (!config) {
     return false;
+  }
+  if (!config.storageKey) {
+    return config.defaultExpanded;
   }
   try {
     const saved = localStorage.getItem(config.storageKey);
