@@ -1961,6 +1961,16 @@ html, body {
   position: relative;
 }
 
+.collapsible-section .section-header-with-action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.collapsible-section .section-header-with-action .section-header-toggle {
+  flex: 1;
+}
+
 .collapsible-section .section-header-toggle {
   width: 100%;
   display: flex;
@@ -2083,6 +2093,45 @@ html, body {
 </style>
 <style>
 /* === ROADBOOK SECTION === */
+
+.roadbook-export-btn {
+  margin-left: auto;
+  margin-right: 0.5rem;
+  opacity: 0.7;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.roadbook-export-btn:hover,
+.roadbook-export-btn:focus-visible {
+  opacity: 1;
+  transform: scale(1.05);
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.roadbook-export-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.roadbook-export-btn.copied {
+  animation: copySuccess 0.6s ease;
+}
+
+@keyframes copySuccess {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+    background: var(--color-primary-light);
+  }
+}
+
 .roadbook-empty {
   padding: 2rem 1rem;
   text-align: center;
@@ -3093,8 +3142,8 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 </div>
 </section>
 <section class="panel-section" id="layers-section-placeholder"></section>
-<section class="panel-section collapsible-section expanded" id="waypoints-section" style="display: none;">
-<button aria-controls="waypoints-content" aria-expanded="true" class="section-header-toggle" type="button">
+<section class="panel-section collapsible-section" id="waypoints-section" style="display: none;">
+<button aria-controls="waypoints-content" aria-expanded="false" class="section-header-toggle" type="button">
 <span class="section-header-icon">📍</span>
 <h3 class="section-title">Waypoints <span class="badge" id="waypoint-count">0</span></h3>
 <span class="section-header-chevron">▼</span>
@@ -3105,11 +3154,14 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 </div>
 </section>
 <section class="panel-section collapsible-section" id="roadbook-section" style="display: none;">
+<div class="section-header-with-action">
 <button aria-controls="roadbook-content" aria-expanded="false" class="section-header-toggle" type="button">
 <span class="section-header-icon">📋</span>
 <h3 class="section-title">Roadbook <span class="badge" id="roadbook-step-count">0</span></h3>
 <span class="section-header-chevron">▼</span>
 </button>
+<button class="btn-icon-small roadbook-export-btn" id="roadbook-export-text" type="button" title="Copier le roadbook en texte" aria-label="Copier le roadbook au format texte" disabled>📋</button>
+</div>
 <div class="section-collapsible-content" id="roadbook-content">
 <div class="roadbook-empty" id="roadbook-empty">
 <p class="roadbook-empty-text">
@@ -6265,6 +6317,8 @@ function createWaypointMarker(latlng, name = '') {
     listContainer: null,
     emptyState: null,
     stepCount: null,
+    exportButton: null,
+    exportClickHandler: null,
     steps: [],
     waypointListener: null,
 
@@ -6273,6 +6327,24 @@ function createWaypointMarker(latlng, name = '') {
       this.listContainer = document.getElementById('roadbook-list');
       this.emptyState = document.getElementById('roadbook-empty');
       this.stepCount = document.getElementById('roadbook-step-count');
+      const exportButtonElement = document.getElementById('roadbook-export-text');
+
+      if (this.exportButton && this.exportClickHandler) {
+        this.exportButton.removeEventListener('click', this.exportClickHandler);
+      }
+
+      this.exportButton = exportButtonElement || null;
+
+      if (this.exportButton) {
+        this.exportClickHandler = (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          exportRoadbookToText();
+        };
+        this.exportButton.addEventListener('click', this.exportClickHandler);
+      } else {
+        this.exportClickHandler = null;
+      }
 
       if (!this.section || !this.listContainer) {
         return;
@@ -6302,6 +6374,23 @@ function createWaypointMarker(latlng, name = '') {
         this.waypointListener = () => this.update();
         waypointLayerGroup.on('layeradd', this.waypointListener);
         waypointLayerGroup.on('layerremove', this.waypointListener);
+      }
+    },
+
+    updateExportButtonState() {
+      if (!this.exportButton) {
+        return;
+      }
+      const hasSteps = Array.isArray(this.steps) && this.steps.length > 0;
+      this.exportButton.disabled = !hasSteps;
+
+      if (!hasSteps) {
+        if (this.exportButton.__copyResetTimeout) {
+          clearTimeout(this.exportButton.__copyResetTimeout);
+          this.exportButton.__copyResetTimeout = null;
+        }
+        this.exportButton.textContent = '📋';
+        this.exportButton.classList.remove('copied');
       }
     },
 
@@ -6450,6 +6539,7 @@ function createWaypointMarker(latlng, name = '') {
       }
 
       const hasSteps = this.steps.length > 0;
+      this.updateExportButtonState();
       this.section.style.display = hasSteps ? 'block' : 'none';
 
       if (!hasSteps) {
@@ -6580,6 +6670,188 @@ function createWaypointMarker(latlng, name = '') {
       window.roadbookManager.init();
     }
   });
+
+  function exportRoadbookToText() {
+    const manager = window.roadbookManager;
+    if (!manager || !Array.isArray(manager.steps) || manager.steps.length === 0) {
+      showMessage("Le roadbook est vide. Ajoutez des waypoints pour l'utiliser.", true);
+      return;
+    }
+
+    const traceNameFromFile =
+      window.currentGpxFileName && typeof window.currentGpxFileName === 'string'
+        ? window.currentGpxFileName.replace(/\.gpx$/i, '')
+        : '';
+    const traceName =
+      window.currentTraceName ||
+      traceNameFromFile ||
+      'Trace sans nom';
+
+    const lines = [];
+    lines.push(`🗺️ ROADBOOK - ${traceName}`);
+    lines.push('━'.repeat(40));
+    lines.push('');
+
+    let waypointIndex = 0;
+
+    manager.steps.forEach((step, index) => {
+      if (!step) {
+        return;
+      }
+
+      const icon = step.type === 'start' ? '🟢' : step.type === 'end' ? '🏁' : '📍';
+      const rawName = (step.name || '').trim();
+      const upperName = rawName ? rawName.toUpperCase() : '';
+      let headerLabel = '';
+
+      if (step.type === 'start') {
+        headerLabel = upperName && upperName !== 'DÉPART'
+          ? `DÉPART - ${upperName}`
+          : 'DÉPART';
+      } else if (step.type === 'end') {
+        headerLabel = upperName && upperName !== 'ARRIVÉE'
+          ? `ARRIVÉE - ${upperName}`
+          : 'ARRIVÉE';
+      } else {
+        waypointIndex += 1;
+        const waypointName = upperName || `WAYPOINT ${waypointIndex}`;
+        headerLabel = `WAYPOINT ${waypointIndex} - ${waypointName}`;
+      }
+
+      lines.push(`${icon} ${headerLabel}`);
+
+      if (step.type === 'end') {
+        lines.push(`📍 Distance totale : ${formatKmExport(step.distance)}`);
+        if (Number.isFinite(step.segmentDistance) && step.segmentDistance > 0) {
+          lines.push(`└─ Depuis l'étape précédente : ${formatKmExport(step.segmentDistance)}`);
+        }
+      } else {
+        lines.push(`📍 Depuis le départ : ${formatKmExport(step.distance)}`);
+
+        if (step.type !== 'start' && Number.isFinite(step.segmentDistance) && step.segmentDistance >= 0) {
+          lines.push(`└─ Depuis l'étape précédente : ${formatKmExport(step.segmentDistance)}`);
+        }
+
+        if (step.type === 'waypoint' && Number.isFinite(step.remainingDistance) && step.remainingDistance >= 0) {
+          lines.push(`└─ Jusqu'à l'arrivée : ${formatKmExport(step.remainingDistance)}`);
+        }
+      }
+
+      if (Number.isFinite(step.elevation)) {
+        lines.push(`⛰️ Altitude : ${Math.round(step.elevation)} m`);
+      }
+
+      if (step.type !== 'end' && Number.isFinite(step.remainingElevationGain)) {
+        lines.push(`📈 D+ restant : ${Math.round(step.remainingElevationGain)} m`);
+      }
+
+      lines.push('');
+    });
+
+    if (lines[lines.length - 1] === '') {
+      lines.pop();
+    }
+
+    lines.push('━'.repeat(40));
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('fr-FR');
+    const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    lines.push(`Généré le ${dateStr} à ${timeStr}`);
+
+    const text = lines.join('\n');
+    copyRoadbookTextToClipboard(text);
+  }
+
+  function formatKmExport(meters) {
+    if (!Number.isFinite(meters)) {
+      return '0.00 km';
+    }
+    return (meters / 1000).toFixed(2) + ' km';
+  }
+
+  function handleRoadbookCopySuccess(button) {
+    if (!button) {
+      return;
+    }
+    button.textContent = '✓';
+    button.classList.add('copied');
+
+    if (button.__copyResetTimeout) {
+      clearTimeout(button.__copyResetTimeout);
+    }
+
+    button.__copyResetTimeout = setTimeout(() => {
+      button.textContent = '📋';
+      button.classList.remove('copied');
+      button.__copyResetTimeout = null;
+    }, 2000);
+  }
+
+  function copyRoadbookTextToClipboard(text) {
+    const button = document.getElementById('roadbook-export-text');
+
+    if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+      fallbackCopyRoadbookText(text, button, null);
+      return;
+    }
+
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        handleRoadbookCopySuccess(button);
+        showMessage('Roadbook copié dans le presse-papiers ✓', false);
+      })
+      .catch((err) => {
+        console.error('Erreur de copie du roadbook:', err);
+        fallbackCopyRoadbookText(text, button, err);
+      });
+  }
+
+  function fallbackCopyRoadbookText(text, button, originalError) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.top = '-9999px';
+    textarea.style.opacity = '0';
+
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+
+    let successful = false;
+
+    try {
+      successful = document.execCommand('copy');
+    } catch (error) {
+      console.error('Fallback copy failed:', error);
+      successful = false;
+    } finally {
+      document.body.removeChild(textarea);
+    }
+
+    if (successful) {
+      handleRoadbookCopySuccess(button);
+      showMessage('Roadbook copié ✓', false);
+      return;
+    }
+
+    if (button) {
+      button.textContent = '📋';
+      button.classList.remove('copied');
+      if (button.__copyResetTimeout) {
+        clearTimeout(button.__copyResetTimeout);
+        button.__copyResetTimeout = null;
+      }
+    }
+
+    if (originalError && originalError.name === 'NotAllowedError') {
+      showMessage('Permission de copie refusée par le navigateur.', true);
+    } else if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+      showMessage('Impossible de copier le texte. Essayez manuellement.', true);
+    } else {
+      showMessage('Erreur lors de la copie dans le presse-papiers.', true);
+    }
+  }
 
   function createArrowIconHtml(bearing) {
       const rotation = ((bearing - 90) + 360) % 360;
@@ -8493,12 +8765,12 @@ const collapsibleSections = Object.assign(window.collapsibleSections, {
   },
   waypoints: {
     id: 'waypoints-section',
-    storageKey: 'gpx_waypoints_section_expanded',
-    defaultExpanded: true,
+    storageKey: null,
+    defaultExpanded: false,
     section: null,
     toggle: null,
     content: null,
-    isExpanded: true,
+    isExpanded: false,
     boundToggleHandler: null,
     initialized: false
   },
