@@ -770,6 +770,45 @@
       color: var(--color-text-primary);
     }
 
+    .mini-elevation-profile {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background: var(--color-background-alt);
+      border: 1px solid var(--color-border-light);
+      border-radius: var(--radius-md);
+    }
+
+    .mini-profile-title {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .mini-profile-canvas-wrapper {
+      position: relative;
+      width: 100%;
+      height: 120px;
+      background: var(--color-background);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    #mini-elevation-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: default;
+    }
+
+    @media (max-width: 767px) {
+      .mini-profile-canvas-wrapper {
+        height: 100px;
+      }
+    }
+
     .text-muted {
       color: var(--color-text-muted);
     }
@@ -2880,6 +2919,16 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 <dt>Type</dt>
 <dd id="trace-type">—</dd>
 </dl>
+<div class="mini-elevation-profile" id="mini-elevation-profile" style="display: none;">
+<h4 class="mini-profile-title">Profil d'élévation</h4>
+<div class="mini-profile-canvas-wrapper">
+<canvas aria-label="Aperçu du profil d'élévation de la trace" id="mini-elevation-canvas" role="img"></canvas>
+</div>
+<div class="sr-only" id="mini-elevation-description">
+          Graphique montrant l'évolution de l'altitude sur la distance totale de la trace.
+          Altitude minimale : <span id="mini-aria-min">—</span>, maximale : <span id="mini-aria-max">—</span>.
+        </div>
+</div>
 </section>
 <section class="panel-section panel-messages">
 <div aria-live="polite" class="message hidden" id="message" role="status"></div>
@@ -4607,6 +4656,10 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     const elevationCanvas = document.getElementById('elevation-canvas');
     const elevationTooltip = document.getElementById('elevation-tooltip');
     const poiRefreshButton = document.getElementById('poi-refresh-button');
+    const miniElevationProfile = document.getElementById('mini-elevation-profile');
+    const miniElevationCanvas = document.getElementById('mini-elevation-canvas');
+    const miniAriaMin = document.getElementById('mini-aria-min');
+    const miniAriaMax = document.getElementById('mini-aria-max');
 
     // Activer le bouton "Recharger les POI"
     if (poiRefreshButton) {
@@ -5106,6 +5159,7 @@ let elevationMouseLeaveHandler = null;
           elevationProfile.classList.remove('visible');
           elevationProfile.setAttribute('aria-hidden', 'true');
         }
+        updateMiniElevationProfile();
         return;
       }
 
@@ -5135,6 +5189,7 @@ let elevationMouseLeaveHandler = null;
         elevationProfile.classList.add('visible');
         elevationProfile.setAttribute('aria-hidden', 'false');
       }
+      updateMiniElevationProfile();
     }
 
     function resetElevationDisplay() {
@@ -5268,6 +5323,153 @@ let elevationMouseLeaveHandler = null;
       ctx.rotate(-Math.PI / 2);
       ctx.fillText('Altitude (m)', 0, 0);
       ctx.restore();
+    }
+
+    function drawMiniElevationProfile(canvas, points, stats) {
+      if (!canvas || !Array.isArray(points) || points.length < 2 || !stats) {
+        return;
+      }
+
+      const parentWidth = canvas.offsetWidth || canvas.parentElement?.offsetWidth || 0;
+      const parentHeight = canvas.offsetHeight || canvas.parentElement?.offsetHeight || 0;
+      if (!parentWidth || !parentHeight) {
+        return;
+      }
+
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      canvas.width = Math.floor(parentWidth * dpr);
+      canvas.height = Math.floor(parentHeight * dpr);
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        return;
+      }
+
+      ctx.save();
+      ctx.scale(dpr, dpr);
+
+      const width = parentWidth;
+      const height = parentHeight;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const margin = { top: 10, right: 10, bottom: 25, left: 40 };
+      const chartWidth = Math.max(10, width - margin.left - margin.right);
+      const chartHeight = Math.max(10, height - margin.top - margin.bottom);
+
+      const maxDistance = stats.totalDistance || 1;
+      const minEle = Math.min(stats.minElevation, stats.maxElevation) - 20;
+      const maxEle = Math.max(stats.minElevation, stats.maxElevation) + 20;
+      const range = Math.max(1, maxEle - minEle);
+
+      const xScale = (distance) =>
+        margin.left + (Math.min(distance, maxDistance) / maxDistance) * chartWidth;
+      const yScale = (elevation) =>
+        margin.top + chartHeight - ((elevation - minEle) / range) * chartHeight;
+
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
+      ctx.lineWidth = 1;
+      const elevationSteps = 2;
+      for (let i = 0; i <= elevationSteps; i++) {
+        const ele = minEle + (range * i) / elevationSteps;
+        const y = yScale(ele);
+        ctx.beginPath();
+        ctx.moveTo(margin.left, y);
+        ctx.lineTo(width - margin.right, y);
+        ctx.stroke();
+        ctx.fillStyle = '#999';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(`${Math.round(ele)}m`, margin.left - 5, y + 3);
+      }
+
+      ctx.fillStyle = '#999';
+      ctx.font = '10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('0km', margin.left, height - 5);
+      ctx.fillText(`${(maxDistance / 1000).toFixed(1)}km`, width - margin.right, height - 5);
+
+      ctx.beginPath();
+      points.forEach((point, index) => {
+        const x = xScale(point.distance);
+        const y = yScale(point.elevation);
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+      ctx.lineTo(xScale(points[points.length - 1].distance), height - margin.bottom);
+      ctx.lineTo(margin.left, height - margin.bottom);
+      ctx.closePath();
+
+      const gradient = ctx.createLinearGradient(0, margin.top, 0, height - margin.bottom);
+      gradient.addColorStop(0, 'rgba(25, 118, 210, 0.15)');
+      gradient.addColorStop(1, 'rgba(25, 118, 210, 0.02)');
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      ctx.beginPath();
+      points.forEach((point, index) => {
+        const x = xScale(point.distance);
+        const y = yScale(point.elevation);
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+      ctx.strokeStyle = '#1976d2';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function updateMiniElevationProfile() {
+      if (!miniElevationProfile || !miniElevationCanvas) {
+        return;
+      }
+
+      const hasData =
+        currentElevationData &&
+        Array.isArray(currentElevationData.points) &&
+        currentElevationData.points.length >= 2 &&
+        currentElevationData.stats;
+
+      if (!hasData) {
+        miniElevationProfile.style.display = 'none';
+        if (miniAriaMin) miniAriaMin.textContent = '—';
+        if (miniAriaMax) miniAriaMax.textContent = '—';
+        return;
+      }
+
+      const simplified =
+        typeof simplifyElevationData === 'function'
+          ? simplifyElevationData(currentElevationData.points, 150)
+          : currentElevationData.points;
+
+      if (!Array.isArray(simplified) || simplified.length < 2) {
+        miniElevationProfile.style.display = 'none';
+        return;
+      }
+
+      miniElevationProfile.style.display = 'block';
+      const stats = currentElevationData.stats;
+      if (miniAriaMin) {
+        miniAriaMin.textContent = Number.isFinite(stats.minElevation)
+          ? `${stats.minElevation} m`
+          : '—';
+      }
+      if (miniAriaMax) {
+        miniAriaMax.textContent = Number.isFinite(stats.maxElevation)
+          ? `${stats.maxElevation} m`
+          : '—';
+      }
+
+      requestAnimationFrame(() => {
+        drawMiniElevationProfile(miniElevationCanvas, simplified, stats);
+      });
     }
 
     function renderElevationProfile() {
@@ -6615,7 +6817,10 @@ setTimeout(() => { if (typeof saveTraceToLocalStorage === 'function') saveTraceT
     // S'assure que la carte s'ajuste lors des changements de taille de fenêtre
     window.addEventListener('resize', () => {
       map.invalidateSize();
-      requestAnimationFrame(() => renderElevationProfile());
+      requestAnimationFrame(() => {
+        renderElevationProfile();
+        updateMiniElevationProfile();
+      });
     });
 
     // Fermer le panneau avec la touche Échap sur mobile
