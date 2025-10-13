@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+  <msapplication>
+    <tile>
+      <square70x70logo src="/bikepacking-gpx-manager/img/favicon-32x32.png"/>
+      <square150x150logo src="/bikepacking-gpx-manager/img/icon-192x192.png"/>
+      <square310x310logo src="/bikepacking-gpx-manager/img/icon-512x512.png"/>
+      <wide310x150logo src="/bikepacking-gpx-manager/img/og-image.png"/>
+      <TileColor>#0066FF</TileColor>
+    </tile>
+    <notification>
+      <polling-uri src="/"/>
+      <frequency>30</frequency>
+      <cycle>1</cycle>
+    </notification>
+  </msapplication>
+</browserconfig>
