@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://blamouche.github.io/bikepacking-gpx-manager/</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    
+    <!-- Images associées -->
+    <image:image>
+      <image:loc>https://blamouche.github.io/bikepacking-gpx-manager/img/og-image.png</image:loc>
+      <image:title>Cycling Companion - Image de partage</image:title>
+      <image:caption>Image optimisée pour les réseaux sociaux</image:caption>
+    </image:image>
+    
+    <image:image>
+      <image:loc>https://blamouche.github.io/bikepacking-gpx-manager/img/screenshot.png</image:loc>
+      <image:title>Cycling Companion - Capture d'écran</image:title>
+      <image:caption>Interface complète de planification d'itinéraires bikepacking avec trace GPX, profil d'élévation et points d'intérêt</image:caption>
+    </image:image>
+    
+    <image:image>
+      <image:loc>https://blamouche.github.io/bikepacking-gpx-manager/img/logo.png</image:loc>
+      <image:title>Logo Cycling Companion</image:title>
+      <image:caption>Logo de l'application</image:caption>
+    </image:image>
+  </url>
+</urlset>

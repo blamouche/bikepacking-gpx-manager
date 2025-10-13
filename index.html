@@ -6,6 +6,226 @@
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Bikepacking helper - Localisez les points d'intérêt dont vous avez besoin</title>
+<!-- ==================== SEO META TAGS ==================== -->
+
+<!-- Description principale -->
+<meta name="description" content="Planifiez vos sorties bikepacking avec Cycling Companion : importez vos traces GPX, visualisez le profil d'élévation, ajoutez des waypoints et trouvez les points d'intérêt (eau, nourriture, hébergement) le long de votre parcours.">
+
+<!-- Mots-clés -->
+<meta name="keywords" content="bikepacking, cyclotourisme, planification itinéraire vélo, trace GPX, profil altimétrique, waypoints, points d'intérêt cyclisme, carte vélo interactive, hébergement cycliste, bivouac vélo, gravel bike, voyage à vélo">
+
+<!-- Auteur -->
+<meta name="author" content="Benoit Lamouche">
+
+<!-- Robots -->
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+
+<!-- Langue -->
+<meta name="language" content="fr">
+<link rel="alternate" hreflang="fr" href="https://blamouche.github.io/bikepacking-gpx-manager/">
+<link rel="alternate" hreflang="x-default" href="https://blamouche.github.io/bikepacking-gpx-manager/">
+
+<!-- URL Canonique -->
+<link rel="canonical" href="https://blamouche.github.io/bikepacking-gpx-manager/">
+
+<!-- Géolocalisation -->
+<meta name="geo.region" content="FR">
+<meta name="geo.placename" content="France">
+
+<!-- ==================== OPEN GRAPH (Facebook, LinkedIn) ==================== -->
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cycling Companion">
+<meta property="og:title" content="Cycling Companion - Planificateur d'itinéraires bikepacking et cyclotourisme">
+<meta property="og:description" content="Outil gratuit de planification pour vos aventures à vélo : importez vos traces GPX, visualisez le dénivelé, ajoutez des waypoints et trouvez facilement les points d'eau, restaurants et hébergements le long de votre parcours.">
+<meta property="og:url" content="https://blamouche.github.io/bikepacking-gpx-manager/">
+<meta property="og:image" content="https://blamouche.github.io/bikepacking-gpx-manager/img/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Interface de Cycling Companion montrant une carte interactive avec trace GPX et points d'intérêt">
+<meta property="og:image:type" content="image/png">
+<meta property="og:locale" content="fr_FR">
+
+<!-- ==================== TWITTER CARDS ==================== -->
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@blamouche">
+<meta name="twitter:creator" content="@blamouche">
+<meta name="twitter:title" content="Cycling Companion - Planificateur bikepacking gratuit">
+<meta name="twitter:description" content="Planifiez vos sorties vélo : traces GPX, profil d'élévation, waypoints et POI (eau, nourriture, hébergement) sur carte interactive.">
+<meta name="twitter:image" content="https://blamouche.github.io/bikepacking-gpx-manager/img/twitter-card.png">
+<meta name="twitter:image:alt" content="Carte cyclable avec trace GPX et points d'intérêt">
+
+<!-- ==================== FAVICONS & ICÔNES ==================== -->
+
+<!-- Favicons standards -->
+<link rel="icon" type="image/png" sizes="16x16" href="/bikepacking-gpx-manager/img/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/bikepacking-gpx-manager/img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/bikepacking-gpx-manager/img/icon-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/bikepacking-gpx-manager/img/icon-512x512.png">
+
+<!-- Apple Touch Icon -->
+<link rel="apple-touch-icon" sizes="180x180" href="/bikepacking-gpx-manager/img/apple-touch-icon.png">
+
+<!-- Web App Manifest (PWA) -->
+<link rel="manifest" href="/bikepacking-gpx-manager/site.webmanifest">
+
+<!-- Microsoft Tiles -->
+<meta name="msapplication-TileColor" content="#0066FF">
+<meta name="msapplication-TileImage" content="/bikepacking-gpx-manager/img/icon-512x512.png">
+<meta name="msapplication-config" content="/bikepacking-gpx-manager/browserconfig.xml">
+
+<!-- Theme Color -->
+<meta name="theme-color" content="#0066FF">
+
+<!-- Apple Web App -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Cycling Companion">
+
+<!-- Mobile Web App -->
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- ==================== PERFORMANCE & PRECONNECT ==================== -->
+
+<!-- Preconnect pour les ressources externes -->
+<link rel="preconnect" href="https://unpkg.com">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="dns-prefetch" href="https://tile.openstreetmap.org">
+<link rel="dns-prefetch" href="https://tile-cyclosm.openstreetmap.fr">
+<link rel="dns-prefetch" href="https://overpass-api.de">
+
+<!-- Preload des ressources critiques Leaflet -->
+<link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style">
+<link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" as="script">
+
+<!-- ==================== SCHEMA.ORG JSON-LD ==================== -->
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Cycling Companion",
+      "alternateName": "Bikepacking Helper",
+      "url": "https://blamouche.github.io/bikepacking-gpx-manager/",
+      "description": "Application web gratuite de planification d'itinéraires de bikepacking et cyclotourisme avec visualisation de traces GPX, profil d'élévation interactif, gestion de waypoints et recherche de points d'intérêt (eau potable, alimentation, hébergement, réparation vélo).",
+      "applicationCategory": "LifestyleApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "featureList": [
+        "Import et visualisation de traces GPX",
+        "Profil d'élévation interactif avec statistiques (D+, D-, distance)",
+        "Création et gestion de waypoints personnalisés",
+        "Export GPX avec waypoints",
+        "Recherche de points d'intérêt : eau potable, alimentation, hébergement, services vélo",
+        "Fond de carte multiple : CyclOSM, OpenStreetMap, OpenTopoMap, satellite",
+        "Génération de roadbook détaillé",
+        "Géolocalisation en temps réel",
+        "Sauvegarde automatique locale",
+        "100% gratuit et sans publicité"
+      ],
+      "screenshot": "https://blamouche.github.io/bikepacking-gpx-manager/img/screenshot.png",
+      "image": "https://blamouche.github.io/bikepacking-gpx-manager/img/logo.png",
+      "author": {
+        "@type": "Person",
+        "name": "Benoit Lamouche",
+        "url": "https://lamouche.fr",
+        "sameAs": [
+          "https://twitter.com/blamouche",
+          "https://github.com/blamouche"
+        ]
+      },
+      "inLanguage": "fr-FR",
+      "browserRequirements": "Requires JavaScript. Requires HTML5.",
+      "softwareVersion": "1.0",
+      "datePublished": "2025-01-15",
+      "dateModified": "2025-01-15",
+      "license": "https://opensource.org/licenses/MIT"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Accueil",
+          "item": "https://blamouche.github.io/bikepacking-gpx-manager/"
+        }
+      ]
+    },
+    {
+      "@type": "Organization",
+      "name": "Cycling Companion",
+      "url": "https://blamouche.github.io/bikepacking-gpx-manager/",
+      "logo": "https://blamouche.github.io/bikepacking-gpx-manager/img/logo.png",
+      "sameAs": [
+        "https://twitter.com/blamouche",
+        "https://github.com/blamouche",
+        "https://lamouche.fr"
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Cycling Companion est-il gratuit ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Oui, Cycling Companion est 100% gratuit et open source. Toutes les fonctionnalités sont accessibles sans inscription ni abonnement."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Quels formats de fichiers sont supportés ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "L'application supporte les fichiers GPX standard, contenant des traces (tracks), des routes ou des waypoints. Vous pouvez importer des fichiers créés avec n'importe quelle application de navigation GPS (Komoot, Strava, Garmin, Wahoo, etc.)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Mes données sont-elles sauvegardées ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Oui, vos traces et waypoints sont automatiquement sauvegardés localement dans votre navigateur. Aucune donnée n'est envoyée à un serveur externe, garantissant votre confidentialité totale."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Quels types de points d'intérêt puis-je trouver ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "L'application vous permet de localiser : points d'eau potable, cimetières (source d'eau), supermarchés, épiceries, restaurants, cafés, stations de réparation vélo, magasins de vélo, campings, bivouacs, refuges, hôtels, auberges, toilettes publiques, douches, pharmacies et hôpitaux."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "L'application fonctionne-t-elle hors ligne ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Une fois chargée, l'application peut fonctionner partiellement hors ligne avec vos traces déjà importées. Cependant, le chargement des cartes et la recherche de POI nécessitent une connexion internet."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Comment exporter mes traces avec les waypoints ?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Cliquez sur le bouton Exporter, choisissez d'inclure ou non vos waypoints, et téléchargez le fichier GPX. Votre trace enrichie sera compatible avec tous les GPS et applications de navigation."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
 <!-- Leaflet CSS -->
 <link crossorigin="" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" rel="stylesheet"/>
 <style>
@@ -3217,7 +3437,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 <main class="map-container">
 <div class="map-main">
 <div class="map-wrapper"><div class="map-topbar">
-<span class="map-topbar-title"><h1>Cycling Companion</h1></span>
+<span class="map-topbar-title"><h1>Cycling Companion - Planificateur bikepacking gratuit</h1></span>
 </div><div id="map"></div></div>
 <div class="map-style-section">
 <div class="map-style-section-title">Routes &amp; Cyclisme</div>
@@ -9120,6 +9340,173 @@ document.addEventListener('DOMContentLoaded', initCollapsibleSections);
     refreshLayers: refreshPreviewLayers
   };
 })();
+</script>
+
+<!-- ==================== FOOTER SEO (masqué visuellement) ==================== -->
+<footer id="seo-footer" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
+  <h2>À propos de Cycling Companion</h2>
+  <p>
+    <strong>Cycling Companion</strong> est un outil gratuit et <strong>open source</strong> de planification 
+    d'itinéraires pour le <strong>bikepacking</strong> et le <strong>cyclotourisme</strong>. 
+    Développé par <a href="https://lamouche.fr" rel="author">Benoit Lamouche</a> 
+    (<a href="https://twitter.com/blamouche" rel="author">@blamouche</a>), cet outil 
+    vous permet d'importer vos <strong>traces GPX</strong>, de visualiser le 
+    <strong>profil d'élévation</strong> avec statistiques détaillées (dénivelé positif D+, 
+    dénivelé négatif D-, distance totale), d'ajouter des <strong>waypoints personnalisés</strong> 
+    et de trouver facilement les <strong>points d'intérêt essentiels</strong> pour vos aventures à vélo.
+  </p>
+  
+  <h3>Fonctionnalités principales pour le bikepacking</h3>
+  <ul>
+    <li><strong>Import et export GPX</strong> : Compatibilité totale avec Komoot, Strava, Garmin, Wahoo, Suunto</li>
+    <li><strong>Profil d'élévation interactif</strong> : Visualisez le dénivelé en temps réel avec votre souris</li>
+    <li><strong>Gestion de waypoints</strong> : Créez des points d'étape avec noms personnalisables</li>
+    <li><strong>Roadbook automatique</strong> : Générez un carnet de route détaillé avec distances cumulées et D+ restant</li>
+    <li><strong>Recherche de POI</strong> : Trouvez eau potable, nourriture, hébergement, réparation vélo</li>
+    <li><strong>Multiples fonds de carte</strong> : CyclOSM (optimisée cyclisme), OpenStreetMap, OpenTopoMap (relief), vue satellite Esri</li>
+    <li><strong>Géolocalisation GPS</strong> : Suivez votre position en temps réel sur la trace</li>
+    <li><strong>Sauvegarde automatique</strong> : Vos données restent privées, stockées localement dans votre navigateur</li>
+    <li><strong>100% gratuit</strong> : Aucune inscription, aucune publicité, code open source sur GitHub</li>
+    <li><strong>Application web progressive (PWA)</strong> : Installez l'app sur votre téléphone et utilisez-la hors ligne</li>
+  </ul>
+
+  <h3>Points d'intérêt pour cyclotouristes et bikepackers</h3>
+  <p>
+    Localisez facilement tous les services essentiels le long de votre parcours cycliste :
+  </p>
+  <ul>
+    <li><strong>Eau potable</strong> : Fontaines publiques, points d'eau, cimetières (robinets d'eau gratuits)</li>
+    <li><strong>Alimentation</strong> : Supermarchés, épiceries, boulangeries, restaurants, cafés, fast-food</li>
+    <li><strong>Hébergement outdoor</strong> : Campings, bivouacs autorisés, zones de camping sauvage, refuges montagne, refuges alpins</li>
+    <li><strong>Hébergement confort</strong> : Hôtels, auberges de jeunesse, chambres d'hôtes, gîtes</li>
+    <li><strong>Services vélo</strong> : Stations de réparation self-service, magasins de cycles, vélocistes</li>
+    <li><strong>Hygiène et sanitaires</strong> : Toilettes publiques, douches, blocs sanitaires</li>
+    <li><strong>Santé</strong> : Pharmacies, hôpitaux, centres médicaux</li>
+    <li><strong>Patrimoine</strong> : Cimetières (point d'eau), monuments historiques</li>
+  </ul>
+
+  <h3>Pour qui ?</h3>
+  <p>
+    Cycling Companion s'adresse à tous les passionnés de <strong>voyage à vélo</strong> :
+  </p>
+  <ul>
+    <li><strong>Bikepackers</strong> solos ou en groupe préparant des aventures multi-jours</li>
+    <li><strong>Cyclotouristes</strong> longue distance planifiant des itinéraires à travers la France et l'Europe</li>
+    <li><strong>Gravel riders</strong> cherchant des parcours mixtes route/chemin</li>
+    <li><strong>Vététistes en itinérance</strong> explorant les sentiers et single tracks</li>
+    <li><strong>Cyclistes ultra-distance</strong> (audax, brevets, ultra-cycling)</li>
+    <li><strong>Voyageurs à vélo</strong> préparant des week-ends bikepacking ou des vacances cyclistes</li>
+    <li><strong>Organisateurs de randonnées</strong> cyclosportives ou événements vélo</li>
+  </ul>
+
+  <h3>Cas d'usage typiques</h3>
+  <ul>
+    <li>Préparer un voyage bikepacking de plusieurs jours avec étapes quotidiennes</li>
+    <li>Planifier un itinéraire cyclotourisme à travers les véloroutes européennes (EuroVelo)</li>
+    <li>Repérer les points d'eau et de ravitaillement sur un parcours gravel</li>
+    <li>Calculer le dénivelé total et anticiper les difficultés d'un parcours montagne</li>
+    <li>Trouver des campings et bivouacs le long d'un itinéraire</li>
+    <li>Exporter une trace GPX enrichie avec waypoints pour son GPS Garmin, Wahoo ou Sigma</li>
+    <li>Partager un itinéraire détaillé avec roadbook à ses compagnons de voyage</li>
+  </ul>
+
+  <h3>Technologies et données ouvertes</h3>
+  <p>
+    Application web responsive et moderne basée sur <strong>Leaflet.js</strong> pour la cartographie interactive 
+    et les données libres <strong>OpenStreetMap</strong>. Points d'intérêt fournis en temps réel par 
+    <strong>Overpass API</strong>. Multiples fonds de carte disponibles : 
+  </p>
+  <ul>
+    <li><strong>CyclOSM</strong> : Carte optimisée pour le cyclisme avec pistes cyclables, véloroutes et voies vertes</li>
+    <li><strong>OpenStreetMap</strong> : Carte standard collaborative mondiale</li>
+    <li><strong>OpenTopoMap</strong> : Carte topographique avec courbes de niveau et relief</li>
+    <li><strong>Esri Satellite</strong> : Imagerie satellite haute résolution</li>
+    <li><strong>Esri Hybrid</strong> : Satellite avec labels et noms de lieux</li>
+  </ul>
+  <p>
+    Compatible avec tous les navigateurs modernes (Chrome, Firefox, Safari, Edge) sur mobile, tablette et desktop. 
+    Interface optimisée pour écrans tactiles. Application web progressive installable sur iOS et Android.
+  </p>
+
+  <h3>Open Source et contributions</h3>
+  <p>
+    Code source disponible sur 
+    <a href="https://github.com/blamouche/bikepacking-gpx-manager" target="_blank" rel="noopener">
+      GitHub
+    </a>. 
+    Contributions, suggestions et rapports de bugs sont les bienvenus ! Licence MIT.
+  </p>
+  
+  <h3>Compatibilité GPS et applications</h3>
+  <p>
+    Les fichiers GPX exportés sont compatibles avec :
+  </p>
+  <ul>
+    <li><strong>GPS de vélo</strong> : Garmin Edge, Wahoo ELEMNT, Sigma ROX, Bryton, Hammerhead Karoo</li>
+    <li><strong>Montres GPS</strong> : Garmin Fenix, Suunto, Polar, Coros</li>
+    <li><strong>Smartphones</strong> : Komoot, Strava, Ride with GPS, ViewRanger, OruxMaps</li>
+    <li><strong>Applications web</strong> : Strava Routes, Komoot, Ride with GPS, Bikemap</li>
+  </ul>
+
+  <h3>Données et confidentialité</h3>
+  <p>
+    Cycling Companion respecte votre vie privée. Aucune donnée personnelle n'est collectée ou envoyée 
+    à un serveur externe. Vos traces GPX et waypoints sont sauvegardés uniquement dans le stockage local 
+    de votre navigateur (localStorage). Aucun compte utilisateur requis. Aucun cookie de tracking. 
+    Application conforme RGPD.
+  </p>
+
+  <h3>Mots-clés et recherche</h3>
+  <p>
+    bikepacking, cyclotourisme, trace GPX, profil altimétrique, dénivelé positif, dénivelé négatif, 
+    waypoints, roadbook vélo, planification itinéraire vélo, carte cyclable, points d'intérêt vélo, 
+    eau potable vélo, bivouac vélo, camping vélo, gravel bike, voyage à vélo, ultra-cycling, 
+    randonneur cycliste, cyclosportif, véloroute, voie verte, EuroVelo, grande traversée VTT, 
+    OpenStreetMap, CyclOSM, Leaflet, application web progressive, PWA vélo, GPS vélo, 
+    Garmin GPX, Komoot alternative, Strava route planner, Ride with GPS alternative
+  </p>
+
+  <p>
+    <small>
+      Données cartographiques © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> | 
+      CyclOSM © <a href="https://www.cyclosm.org/">CyclOSM</a> | 
+      Esri Imagery © <a href="https://www.esri.com/">Esri</a> |
+      Développé par <a href="https://lamouche.fr">Benoit Lamouche</a> | 
+      Twitter: <a href="https://twitter.com/blamouche">@blamouche</a> | 
+      Code source: <a href="https://github.com/blamouche/bikepacking-gpx-manager">GitHub</a>
+    </small>
+  </p>
+</footer>
+
+<!-- ==================== SERVICE WORKER REGISTRATION (PWA) ==================== -->
+<script>
+  // Enregistrement du Service Worker pour fonctionnalité PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register('/bikepacking-gpx-manager/sw.js')
+        .then((registration) => {
+          console.log('✅ Service Worker enregistré:', registration.scope);
+          
+          // Vérifier les mises à jour périodiquement
+          setInterval(() => {
+            registration.update();
+          }, 60 * 60 * 1000); // Toutes les heures
+        })
+        .catch((error) => {
+          console.log('❌ Échec enregistrement Service Worker:', error);
+        });
+      
+      // Gérer les mises à jour du Service Worker
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+          refreshing = true;
+          window.location.reload();
+        }
+      });
+    });
+  }
 </script>
 </body>
 </html>
