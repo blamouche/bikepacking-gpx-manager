@@ -1775,6 +1775,520 @@
 */
 
 </style>
+<style>
+/* ==================== DESIGN MODERNE - VARIABLES AMÉLIORÉES ==================== */
+:root {
+  --color-geo: #2196F3;
+  --color-trace: #FF6B35;
+  --color-map: #4CAF50;
+  --color-poi: #9C27B0;
+  --color-waypoint: #E91E63;
+  --color-roadbook: #1565C0;
+  --color-primary: #0066FF;
+  --color-primary-hover: #0052CC;
+  --color-primary-light: #E3F2FD;
+  --color-background: #FFFFFF;
+  --color-background-alt: #F5F7FA;
+  --color-background-elevated: #FFFFFF;
+  --color-surface: #FAFBFC;
+  --color-text-primary: #1A202C;
+  --color-text-secondary: #4A5568;
+  --color-text-muted: #718096;
+  --color-border: #E2E8F0;
+  --color-border-light: #EDF2F7;
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75rem;
+  --spacing-lg: 1rem;
+  --spacing-xl: 1.5rem;
+  --spacing-2xl: 2rem;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+}
+
+.tools-panel {
+  background: linear-gradient(to bottom, #FFFFFF 0%, #FAFBFC 100%);
+  border-right: 1px solid var(--color-border-light);
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.04);
+}
+
+.panel-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.5rem;
+  border-bottom: none;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+}
+
+.panel-title {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.panel-title::before {
+  content: "🧰";
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.btn-close-panel {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-close-panel:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+.panel-content {
+  padding: 1rem;
+  background: transparent;
+}
+
+.panel-section {
+  background: var(--color-background);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.panel-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.panel-section:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.panel-section:hover::before {
+  width: 6px;
+}
+
+#geolocation-section::before {
+  background: linear-gradient(to bottom, var(--color-geo), #1976D2);
+}
+
+.gpx-section::before {
+  background: linear-gradient(to bottom, var(--color-trace), #E64A19);
+}
+
+#map-style-section::before {
+  background: linear-gradient(to bottom, var(--color-map), #388E3C);
+}
+
+#layers-section::before {
+  background: linear-gradient(to bottom, var(--color-poi), #7B1FA2);
+}
+
+#waypoints-section::before {
+  background: linear-gradient(to bottom, var(--color-waypoint), #C2185B);
+}
+
+#roadbook-section::before {
+  background: linear-gradient(to bottom, var(--color-roadbook), #0D47A1);
+}
+
+#trace-info-section::before {
+  background: linear-gradient(to bottom, #FF9800, #F57C00);
+}
+
+.section-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-primary);
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--color-border-light);
+}
+
+.section-title .section-icon {
+  font-size: 1.25rem;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+#geolocation-section .section-title { color: var(--color-geo); }
+.gpx-section .section-title { color: var(--color-trace); }
+#map-style-section .section-title { color: var(--color-map); }
+#layers-section .section-title { color: var(--color-poi); }
+#waypoints-section .section-title { color: var(--color-waypoint); }
+#roadbook-section .section-title { color: var(--color-roadbook); }
+#trace-info-section .section-title { color: #FF9800; }
+
+.btn {
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.75rem 1.25rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+
+.btn:hover::before {
+  transform: translateX(100%);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: var(--color-background-alt);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+  background: var(--color-background);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+  min-width: 1.5rem;
+  text-align: center;
+}
+
+.gpx-import-zone {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gpx-import-zone:hover {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-color: var(--color-primary);
+  transform: scale(1.02);
+  box-shadow: var(--shadow-lg);
+}
+
+.gpx-import-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.gpx-import-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.gpx-import-hint {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.layer-group {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.layer-group:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.layer-group-header {
+  background: linear-gradient(to right, rgba(102, 126, 234, 0.05), transparent);
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.layer-group-header:hover {
+  background: linear-gradient(to right, rgba(102, 126, 234, 0.1), transparent);
+}
+
+.layer-group.expanded .layer-group-header {
+  border-bottom-color: var(--color-border-light);
+}
+
+.layer-group-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+}
+
+.toggle-switch {
+  width: 46px;
+  height: 26px;
+  background: #CBD5E0;
+  border-radius: 13px;
+  position: relative;
+  transition: background 0.3s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-input:checked + .toggle-switch {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.toggle-input:checked + .toggle-switch::after {
+  transform: translateX(20px);
+}
+
+.info-list {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem 1rem;
+}
+
+.info-list dt {
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.info-list dd {
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.waypoint-item {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-left: 3px solid var(--color-waypoint);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.waypoint-icon {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+.elevation-profile {
+  background: white;
+  border-top: 3px solid var(--color-primary);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.elevation-header {
+  background: linear-gradient(to right, rgba(102, 126, 234, 0.05), transparent);
+  border-bottom: 1px solid var(--color-border-light);
+  padding: 1rem 1.5rem;
+}
+
+.elevation-title h3 {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.roadbook-step {
+  background: white;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  box-shadow: var(--shadow-xs);
+  transition: all 0.2s ease;
+}
+
+.roadbook-step:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.roadbook-step[data-type="start"] {
+  border-left: 4px solid #4CAF50;
+  background: linear-gradient(to right, rgba(76, 175, 80, 0.05), white);
+}
+
+.roadbook-step[data-type="waypoint"] {
+  border-left: 4px solid var(--color-waypoint);
+}
+
+.roadbook-step[data-type="end"] {
+  border-left: 4px solid #FF5722;
+  background: linear-gradient(to right, rgba(255, 87, 34, 0.05), white);
+}
+
+.panel-footer {
+  margin-top: auto;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color-border-light);
+  background: var(--color-background);
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.panel-footer a {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.panel-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.panel-footer-separator {
+  color: var(--color-border);
+  font-weight: 600;
+}
+.panel-footer a:hover {
+  text-decoration: underline;
+}
+
+.panel-version {
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 767px) {
+  .panel-header {
+    padding: 1.25rem;
+  }
+
+  .panel-title {
+    font-size: 1.25rem;
+  }
+
+  .panel-section {
+    padding: 1rem;
+    border-radius: var(--radius-md);
+  }
+
+  .section-title {
+    font-size: 0.8125rem;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panel-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.panel-content::-webkit-scrollbar-track {
+  background: var(--color-background-alt);
+  border-radius: 4px;
+}
+
+.panel-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #667eea, #764ba2);
+  border-radius: 4px;
+}
+
+.panel-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #5568d3, #653b8b);
+}
+</style>
 <!-- Modern Compact UI Overrides -->
 <style>
 :root {
@@ -3241,15 +3755,15 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 }
 .map-topbar {
   height: 48px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(6px);
+  background: #ffffff;
   border-bottom: 1px solid var(--color-border, #E5E5EA);
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: 0 16px;
   font-weight: 700;
   font-size: 1rem;
-  color: var(--color-text-primary, #1A1A1A);
+  color: #667eea;
   flex-shrink: 0;
   z-index: 10;
 }
@@ -3271,6 +3785,64 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
   .btn-menu {
     top: 4.5rem !important; /* ajuste selon la hauteur de ta topbar */
     z-index: 1200 !important; /* s’assure qu’il reste cliquable */
+  }
+}
+</style>
+<style>
+.panel-header {
+  height: 48px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #ffffff;
+  border-bottom: none;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+}
+
+.panel-title {
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.panel-title::before {
+  content: "🧰";
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.btn-close-panel {
+  display: none;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-close-panel:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+@media (max-width: 767px) {
+  .panel-header {
+    height: 56px;
+    padding: 0 14px;
+  }
+
+  .btn-close-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 </style>
@@ -3433,11 +4005,21 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 <div aria-live="polite" class="message hidden" id="message" role="status"></div>
 </section>
 </div>
+<footer class="panel-footer">
+<div class="panel-footer-links" role="list">
+<span role="listitem"><a href="https://lamouche.fr" rel="author noopener" target="_blank">Développé par Benoit Lamouche</a></span>
+<span class="panel-footer-separator" aria-hidden="true">•</span>
+<span role="listitem"><a href="https://www.strava.com/athletes/4347458" rel="noopener" target="_blank">Strava</a></span>
+<span class="panel-footer-separator" aria-hidden="true">•</span>
+<span role="listitem"><a href="https://paypal.me/blamouche" rel="noopener" target="_blank">Offre moi une bière 🍺</a></span>
+</div>
+<span class="panel-version">Version 1.0.0</span>
+</footer>
 </aside>
 <main class="map-container">
 <div class="map-main">
 <div class="map-wrapper"><div class="map-topbar">
-<span class="map-topbar-title"><h1>Cycling Companion</h1></span>
+<span class="map-topbar-title"><h1 style="margin:0;">Cycling Companion</h1></span>
 </div><div id="map"></div></div>
 <div class="map-style-section">
 <div class="map-style-section-title">Routes &amp; Cyclisme</div>
