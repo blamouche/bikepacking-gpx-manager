@@ -2,10 +2,10 @@
 <browserconfig>
   <msapplication>
     <tile>
-      <square70x70logo src="/bikepacking-gpx-manager/img/favicon-32x32.png"/>
-      <square150x150logo src="/bikepacking-gpx-manager/img/icon-192x192.png"/>
-      <square310x310logo src="/bikepacking-gpx-manager/img/icon-512x512.png"/>
-      <wide310x150logo src="/bikepacking-gpx-manager/img/og-image.png"/>
+      <square70x70logo src="/img/favicon-32x32.png"/>
+      <square150x150logo src="/img/icon-192x192.png"/>
+      <square310x310logo src="/img/icon-512x512.png"/>
+      <wide310x150logo src="/img/og-image.png"/>
       <TileColor>#0066FF</TileColor>
     </tile>
     <notification>
