@@ -1,5 +1,5 @@
 # Robots.txt pour Cycling Companion
-# https://blamouche.github.io/bikepacking-gpx-manager/
+# https://cyclingcompanion.lamouche.fr/
 
 User-agent: *
 Allow: /bikepacking-gpx-manager/
@@ -9,7 +9,7 @@ Disallow: /bikepacking-gpx-manager/*.json
 Disallow: /bikepacking-gpx-manager/*.gpx
 
 # Sitemap
-Sitemap: https://blamouche.github.io/bikepacking-gpx-manager/sitemap.xml
+Sitemap: https://cyclingcompanion.lamouche.fr/sitemap.xml
 
 # Politesse d'exploration
 Crawl-delay: 1

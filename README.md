@@ -1,13 +1,13 @@
 # 🚴 Cycling Companion - Planificateur Bikepacking
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Live Demo](https://img.shields.io/badge/demo-live-green.svg)](https://blamouche.github.io/bikepacking-gpx-manager/)
+[![Live Demo](https://img.shields.io/badge/demo-live-green.svg)](https://cyclingcompanion.lamouche.fr/)
 [![GitHub Stars](https://img.shields.io/github/stars/blamouche/bikepacking-gpx-manager?style=social)](https://github.com/blamouche/bikepacking-gpx-manager)
 [![Twitter Follow](https://img.shields.io/twitter/follow/blamouche?style=social)](https://twitter.com/blamouche)
 
 **Outil gratuit et open source de planification d'itinéraires pour le bikepacking et le cyclotourisme**
 
-🔗 **[🚀 Lancer l'application](https://blamouche.github.io/bikepacking-gpx-manager/)**
+🔗 **[🚀 Lancer l'application](https://cyclingcompanion.lamouche.fr/)**
 
 ---
 
