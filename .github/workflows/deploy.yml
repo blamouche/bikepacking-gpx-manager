@@ -1,0 +1,57 @@
+name: Deploy via FTP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy with zero downtime
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_PORT: ${{ secrets.FTP_PORT }}
+          FTP_PASSIVE: ${{ secrets.FTP_PASSIVE }}
+        run: |
+          set -euo pipefail
+          SERVER_DIR="apps/cyclingcompanion"
+          STAGING_DIR="${SERVER_DIR}_next"
+          BACKUP_DIR="${SERVER_DIR}_prev"
+          LOCAL_DIR="."
+
+          PORT_ARG=""
+          if [[ -n "${FTP_PORT:-}" ]]; then
+            PORT_ARG=":${FTP_PORT}"
+          fi
+
+          PASSIVE_LINE=""
+          if [[ -n "${FTP_PASSIVE:-}" ]]; then
+            PASSIVE_LINE="set ftp:passive-mode ${FTP_PASSIVE}"
+          fi
+
+          lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_SERVER}${PORT_ARG}" <<EOF
+set ftp:ssl-force false
+set ftp:ssl-allow yes
+set ssl:verify-certificate false
+set cmd:fail-exit true
+set net:max-retries 2
+set net:timeout 20
+${PASSIVE_LINE}
+mirror -R --delete-first --parallel=4 --verbose ${LOCAL_DIR} ${STAGING_DIR} --exclude-glob .git* --exclude-glob .github --exclude-glob node_modules --exclude-glob README.md
+if (exists ${BACKUP_DIR}) rm -r ${BACKUP_DIR}
+if (exists ${SERVER_DIR}) mv ${SERVER_DIR} ${BACKUP_DIR}
+mv ${STAGING_DIR} ${SERVER_DIR}
+bye
+EOF
