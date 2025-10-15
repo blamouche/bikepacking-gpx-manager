@@ -26,7 +26,7 @@ jobs:
           FTP_PASSIVE: ${{ secrets.FTP_PASSIVE }}
         run: |
           set -euo pipefail
-          SERVER_DIR="apps/cyclingcompanion/"
+          SERVER_DIR="apps/cyclingcompanion"
           STAGING_DIR="${SERVER_DIR}_next"
           BACKUP_DIR="${SERVER_DIR}_prev"
           LOCAL_DIR="."
@@ -49,10 +49,11 @@ jobs:
             printf 'set ftp:passive-mode %s\n' "${FTP_PASSIVE}" >> lftp-commands.txt
           fi
 
+          printf 'open -u %s,%s %s\n' "${FTP_USERNAME}" "${FTP_PASSWORD}" "${FTP_SERVER}${PORT_ARG}" >> lftp-commands.txt
           printf 'mirror -R --delete-first --parallel=4 --verbose %s %s --exclude-glob .git* --exclude-glob .github --exclude-glob node_modules --exclude-glob README.md\n' "${LOCAL_DIR}" "${STAGING_DIR}" >> lftp-commands.txt
           printf 'if (exists %s) rm -r %s\n' "${BACKUP_DIR}" "${BACKUP_DIR}" >> lftp-commands.txt
           printf 'if (exists %s) mv %s %s\n' "${SERVER_DIR}" "${SERVER_DIR}" "${BACKUP_DIR}" >> lftp-commands.txt
           printf 'mv %s %s\n' "${STAGING_DIR}" "${SERVER_DIR}" >> lftp-commands.txt
           printf 'bye\n' >> lftp-commands.txt
 
-          lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_SERVER}${PORT_ARG}" -f lftp-commands.txt
+          lftp -f lftp-commands.txt
