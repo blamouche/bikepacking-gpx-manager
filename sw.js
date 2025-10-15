@@ -2,7 +2,7 @@
 // Version 1.0.0
 
 const CACHE_NAME = 'cycling-companion-v1.0.0';
-const BASE_PATH = '/bikepacking-gpx-manager';
+const BASE_PATH = '';
 
 // Ressources essentielles à mettre en cache
 const CRITICAL_ASSETS = [
@@ -68,7 +68,11 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   
   // Ne pas intercepter les requêtes externes (cartes, API)
-  if (!url.pathname.startsWith(BASE_PATH)) {
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+  
+  if (BASE_PATH && !url.pathname.startsWith(BASE_PATH)) {
     return;
   }
   

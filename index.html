@@ -59,21 +59,21 @@
 <!-- ==================== FAVICONS & ICÔNES ==================== -->
 
 <!-- Favicons standards -->
-<link rel="icon" type="image/png" sizes="16x16" href="/bikepacking-gpx-manager/img/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/bikepacking-gpx-manager/img/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/bikepacking-gpx-manager/img/icon-192x192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="/bikepacking-gpx-manager/img/icon-512x512.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/img/icon-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/img/icon-512x512.png">
 
 <!-- Apple Touch Icon -->
-<link rel="apple-touch-icon" sizes="180x180" href="/bikepacking-gpx-manager/img/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
 
 <!-- Web App Manifest (PWA) -->
-<link rel="manifest" href="/bikepacking-gpx-manager/site.webmanifest">
+<link rel="manifest" href="/site.webmanifest">
 
 <!-- Microsoft Tiles -->
 <meta name="msapplication-TileColor" content="#0066FF">
-<meta name="msapplication-TileImage" content="/bikepacking-gpx-manager/img/icon-512x512.png">
-<meta name="msapplication-config" content="/bikepacking-gpx-manager/browserconfig.xml">
+<meta name="msapplication-TileImage" content="/img/icon-512x512.png">
+<meta name="msapplication-config" content="/browserconfig.xml">
 
 <!-- Theme Color -->
 <meta name="theme-color" content="#0066FF">
@@ -10147,7 +10147,7 @@ document.addEventListener('DOMContentLoaded', initCollapsibleSections);
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
-        .register('/bikepacking-gpx-manager/sw.js')
+        .register('/sw.js')
         .then((registration) => {
           console.log('✅ Service Worker enregistré:', registration.scope);
           

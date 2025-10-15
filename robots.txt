@@ -2,11 +2,11 @@
 # https://cyclingcompanion.lamouche.fr/
 
 User-agent: *
-Allow: /bikepacking-gpx-manager/
+Allow: /
 
 # Bloquer les fichiers de données utilisateur
-Disallow: /bikepacking-gpx-manager/*.json
-Disallow: /bikepacking-gpx-manager/*.gpx
+Disallow: /*.json
+Disallow: /*.gpx
 
 # Sitemap
 Sitemap: https://cyclingcompanion.lamouche.fr/sitemap.xml
@@ -16,13 +16,13 @@ Crawl-delay: 1
 
 # Bots spécifiques
 User-agent: Googlebot
-Allow: /bikepacking-gpx-manager/
-Disallow: /bikepacking-gpx-manager/*.json
-Disallow: /bikepacking-gpx-manager/*.gpx
+Allow: /
+Disallow: /*.json
+Disallow: /*.gpx
 
 User-agent: Googlebot-Image
-Allow: /bikepacking-gpx-manager/img/
+Allow: /img/
 
 User-agent: bingbot
-Allow: /bikepacking-gpx-manager/
+Allow: /
 Crawl-delay: 2
