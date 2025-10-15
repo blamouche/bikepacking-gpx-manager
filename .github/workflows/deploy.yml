@@ -26,7 +26,7 @@ jobs:
           FTP_PASSIVE: ${{ secrets.FTP_PASSIVE }}
         run: |
           set -euo pipefail
-          SERVER_DIR="apps/cyclingcompanion"
+          SERVER_DIR="apps/cyclingcompanion/"
           STAGING_DIR="${SERVER_DIR}_next"
           BACKUP_DIR="${SERVER_DIR}_prev"
           LOCAL_DIR="."
