@@ -36,24 +36,34 @@ jobs:
             PORT_ARG=":${FTP_PORT}"
           fi
 
-          cat > lftp-commands.txt <<'EOF'
-            set ftp:ssl-force false
-            set ftp:ssl-allow yes
-            set ssl:verify-certificate false
-            set cmd:fail-exit true
-            set net:max-retries 2
-            set net:timeout 20
+          cat <<'EOF' > deploy.lftp
+          set ftp:ssl-force false
+          set ftp:ssl-allow yes
+          set ssl:verify-certificate false
+          set cmd:fail-exit true
+          set net:max-retries 2
+          set net:timeout 20
           EOF
 
           if [[ -n "${FTP_PASSIVE:-}" ]]; then
-            printf 'set ftp:passive-mode %s\n' "${FTP_PASSIVE}" >> lftp-commands.txt
+            printf 'set ftp:passive-mode %s\n' "${FTP_PASSIVE}" >> deploy.lftp
           fi
 
-          printf 'open -u %s,%s %s\n' "${FTP_USERNAME}" "${FTP_PASSWORD}" "${FTP_SERVER}${PORT_ARG}" >> lftp-commands.txt
-          printf 'mirror -R --delete-first --parallel=4 --verbose %s %s --exclude-glob .git* --exclude-glob .github --exclude-glob node_modules --exclude-glob README.md\n' "${LOCAL_DIR}" "${STAGING_DIR}" >> lftp-commands.txt
-          printf 'if (exists %s) rm -r %s\n' "${BACKUP_DIR}" "${BACKUP_DIR}" >> lftp-commands.txt
-          printf 'if (exists %s) mv %s %s\n' "${SERVER_DIR}" "${SERVER_DIR}" "${BACKUP_DIR}" >> lftp-commands.txt
-          printf 'mv %s %s\n' "${STAGING_DIR}" "${SERVER_DIR}" >> lftp-commands.txt
-          printf 'bye\n' >> lftp-commands.txt
+          {
+            printf 'open -u %s,%s %s\n' "${FTP_USERNAME}" "${FTP_PASSWORD}" "${FTP_SERVER}${PORT_ARG}"
+            printf 'mkdir -p %s\n' "${STAGING_DIR}"
+            printf 'mirror -R --delete --only-newer --parallel=4 --verbose %s %s ' "${LOCAL_DIR}" "${STAGING_DIR}"
+            printf '--exclude-glob .git/ --exclude-glob .git/** '
+            printf '--exclude-glob .github/ --exclude-glob .github/** '
+            printf '--exclude-glob node_modules/ --exclude-glob node_modules/** '
+            printf '--exclude-glob .DS_Store --exclude-glob README.md --exclude-glob deploy.lftp\n'
+            printf 'rm -rf %s\n' "${BACKUP_DIR}"
+            printf 'set cmd:fail-exit false\n'
+            printf 'mv %s %s\n' "${SERVER_DIR}" "${BACKUP_DIR}"
+            printf 'set cmd:fail-exit true\n'
+            printf 'mv %s %s\n' "${STAGING_DIR}" "${SERVER_DIR}"
+            printf 'bye\n'
+          } >> deploy.lftp
 
-          lftp -f lftp-commands.txt
+          lftp -f deploy.lftp
+          rm -f deploy.lftp
