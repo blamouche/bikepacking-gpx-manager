@@ -36,22 +36,21 @@ jobs:
             PORT_ARG=":${FTP_PORT}"
           fi
 
-          PASSIVE_LINE=""
+          COMMANDS=$'set ftp:ssl-force false\n'
+          COMMANDS+=$'set ftp:ssl-allow yes\n'
+          COMMANDS+=$'set ssl:verify-certificate false\n'
+          COMMANDS+=$'set cmd:fail-exit true\n'
+          COMMANDS+=$'set net:max-retries 2\n'
+          COMMANDS+=$'set net:timeout 20\n'
+
           if [[ -n "${FTP_PASSIVE:-}" ]]; then
-            PASSIVE_LINE="set ftp:passive-mode ${FTP_PASSIVE}"
+            COMMANDS+="set ftp:passive-mode ${FTP_PASSIVE}\n"
           fi
 
-          lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_SERVER}${PORT_ARG}" <<EOF
-set ftp:ssl-force false
-set ftp:ssl-allow yes
-set ssl:verify-certificate false
-set cmd:fail-exit true
-set net:max-retries 2
-set net:timeout 20
-${PASSIVE_LINE}
-mirror -R --delete-first --parallel=4 --verbose ${LOCAL_DIR} ${STAGING_DIR} --exclude-glob .git* --exclude-glob .github --exclude-glob node_modules --exclude-glob README.md
-if (exists ${BACKUP_DIR}) rm -r ${BACKUP_DIR}
-if (exists ${SERVER_DIR}) mv ${SERVER_DIR} ${BACKUP_DIR}
-mv ${STAGING_DIR} ${SERVER_DIR}
-bye
-EOF
+          COMMANDS+="mirror -R --delete-first --parallel=4 --verbose ${LOCAL_DIR} ${STAGING_DIR} --exclude-glob .git* --exclude-glob .github --exclude-glob node_modules --exclude-glob README.md\n"
+          COMMANDS+="if (exists ${BACKUP_DIR}) rm -r ${BACKUP_DIR}\n"
+          COMMANDS+="if (exists ${SERVER_DIR}) mv ${SERVER_DIR} ${BACKUP_DIR}\n"
+          COMMANDS+="mv ${STAGING_DIR} ${SERVER_DIR}\n"
+          COMMANDS+="bye"
+
+          lftp -u "${FTP_USERNAME},${FTP_PASSWORD}" "${FTP_SERVER}${PORT_ARG}" -e "${COMMANDS}"
