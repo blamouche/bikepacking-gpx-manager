@@ -143,7 +143,7 @@
       },
       "inLanguage": "fr-FR",
       "browserRequirements": "Requires JavaScript. Requires HTML5.",
-      "softwareVersion": "1.0",
+      "softwareVersion": "1.1.0",
       "datePublished": "2025-01-15",
       "dateModified": "2025-01-15",
       "license": "https://opensource.org/licenses/MIT"
@@ -4013,7 +4013,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 <span class="panel-footer-separator" aria-hidden="true">•</span>
 <span role="listitem"><a href="https://paypal.me/blamouche" rel="noopener" target="_blank">Offre moi une bière 🍺</a></span>
 </div>
-<span class="panel-version">Version 1.0.0</span>
+<span class="panel-version">Version 1.1.0</span>
 </footer>
 </aside>
 <main class="map-container">
@@ -4298,7 +4298,8 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       food_shop: { id: 'food_shop', label: 'Alimentation', icon: '🛒', defaultExpanded: true, order: 6 },
       food_service: { id: 'food_service', label: 'Restauration', icon: '🍴', defaultExpanded: false, order: 7 },
       health: { id: 'health', label: 'Santé', icon: '💊', defaultExpanded: true, order: 8 },
-      heritage: { id: 'heritage', label: 'Patrimoine', icon: '🪦', defaultExpanded: false, order: 9 }
+      heritage: { id: 'heritage', label: 'Patrimoine', icon: '🪦', defaultExpanded: false, order: 9 },
+      public_transport: { id: 'public_transport', label: 'Transports collectifs', icon: '🚉', defaultExpanded: true, order: 10 }
     };
 
     const POI_CATEGORIES = {bicycle_repair: {
@@ -4513,6 +4514,77 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
         tags: { amenity: 'grave_yard' },
         priority: 'low',
         minZoom: 12
+      },
+      railway_station: {
+        id: 'railway_station',
+        label: 'Gares ferroviaires',
+        icon: '🚉',
+        color: '#E53935',
+        group: 'public_transport',
+        tags: { railway: 'station' },
+        excludeTags: { station: 'subway' },
+        priority: 'high',
+        minZoom: 11
+      },
+      bus_stop: {
+        id: 'bus_stop',
+        label: 'Arrêts de bus',
+        icon: '🚌',
+        color: '#1E88E5',
+        group: 'public_transport',
+        tags: { highway: 'bus_stop' },
+        priority: 'medium',
+        minZoom: 13
+      },
+      bus_station: {
+        id: 'bus_station',
+        label: 'Gares routières',
+        icon: '🚍',
+        color: '#1565C0',
+        group: 'public_transport',
+        tags: { amenity: 'bus_station' },
+        priority: 'high',
+        minZoom: 12
+      },
+      tram_stop: {
+        id: 'tram_stop',
+        label: 'Arrêts de tram',
+        icon: '🚊',
+        color: '#43A047',
+        group: 'public_transport',
+        tags: { railway: 'tram_stop' },
+        priority: 'medium',
+        minZoom: 13
+      },
+      subway_station: {
+        id: 'subway_station',
+        label: 'Stations de métro',
+        icon: '🚇',
+        color: '#F57C00',
+        group: 'public_transport',
+        tags: { railway: 'station', station: 'subway' },
+        priority: 'high',
+        minZoom: 12
+      },
+      taxi_stand: {
+        id: 'taxi_stand',
+        label: 'Stations de taxi',
+        icon: '🚕',
+        color: '#FFB300',
+        group: 'public_transport',
+        tags: { amenity: 'taxi' },
+        priority: 'low',
+        minZoom: 14
+      },
+      bicycle_rental: {
+        id: 'bicycle_rental',
+        label: 'Vélos en libre-service',
+        icon: '🚲',
+        color: '#7CB342',
+        group: 'public_transport',
+        tags: { amenity: 'bicycle_rental' },
+        priority: 'high',
+        minZoom: 13
       }
     };
 
@@ -4564,6 +4636,15 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     categories: [
       'pharmacy',
       'hospital'
+    ]
+  },
+  intermodal_travel: {
+    label: 'J\'ai besoin d\'un moyen de transport',
+    icon: '🚉',
+    categories: [
+      'railway_station',
+      'bus_station',
+      'taxi_stand'
     ]
   }
 };
