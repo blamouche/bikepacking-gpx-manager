@@ -59,21 +59,21 @@
 <!-- ==================== FAVICONS & ICÔNES ==================== -->
 
 <!-- Favicons standards -->
-<link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/img/icon-192x192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="/img/icon-512x512.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="img/icon-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="img/icon-512x512.png">
 
 <!-- Apple Touch Icon -->
-<link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
 
 <!-- Web App Manifest (PWA) -->
-<link rel="manifest" href="/site.webmanifest">
+<link rel="manifest" href="site.webmanifest">
 
 <!-- Microsoft Tiles -->
 <meta name="msapplication-TileColor" content="#0066FF">
-<meta name="msapplication-TileImage" content="/img/icon-512x512.png">
-<meta name="msapplication-config" content="/browserconfig.xml">
+<meta name="msapplication-TileImage" content="img/icon-512x512.png">
+<meta name="msapplication-config" content="browserconfig.xml">
 
 <!-- Theme Color -->
 <meta name="theme-color" content="#0066FF">
@@ -96,8 +96,8 @@
 <link rel="dns-prefetch" href="https://overpass-api.de">
 
 <!-- Preload des ressources critiques Leaflet -->
-<link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style">
-<link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" as="script">
+<link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" crossorigin="anonymous" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=">
+<link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" as="script" crossorigin="anonymous" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=">
 
 <!-- ==================== SCHEMA.ORG JSON-LD ==================== -->
 
@@ -2690,6 +2690,84 @@ html, body {
 }
 </style>
 <style>
+/* ========================================
+   GPX Track Visibility Toggle Control
+   ======================================== */
+
+/* Control container and button base styles */
+.leaflet-control-toggle-track {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: #333333;
+  background: #ffffff;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+  position: relative;
+}
+
+/* Hover state for desktop */
+.leaflet-control-toggle-track:hover {
+  background: #f4f4f4;
+}
+
+/* Active/pressed state */
+.leaflet-control-toggle-track.pressed {
+  background: #0078d4;
+  color: #ffffff;
+}
+
+/* Disabled state (no GPX loaded) */
+.leaflet-control-toggle-track:disabled,
+.leaflet-control-toggle-track.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* SVG icon sizing */
+.leaflet-control-toggle-track svg {
+  width: 18px;
+  height: 18px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Hide icon when not in use */
+.leaflet-control-toggle-track .icon-hidden {
+  display: none;
+}
+
+.leaflet-control-toggle-track.pressed .icon-visible {
+  display: none;
+}
+
+.leaflet-control-toggle-track.pressed .icon-hidden {
+  display: block;
+}
+
+/* Mobile-friendly touch targets (WCAG 2.1 AA) */
+@media (max-width: 768px), (hover: none) {
+  .leaflet-control-toggle-track {
+    width: 44px;
+    height: 44px;
+  }
+
+  .leaflet-control-toggle-track svg {
+    width: 22px;
+    height: 22px;
+    transform: translate(-50%, -50%);
+  }
+}
+</style>
+<style>
 /* === Collapsible Sections === */
 .collapsible-section {
   position: relative;
@@ -4124,6 +4202,56 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 <script src="https://unpkg.com/leaflet-polylinedecorator@1.7.0/dist/leaflet.polylineDecorator.min.js"></script>
 <script>
     /**
+     * Retourne un tableau des éléments XML en gérant les espaces de noms.
+     * @param {ParentNode} container
+     * @param {string} tagName
+     * @returns {Element[]}
+     */
+    function getXmlElements(container, tagName) {
+      if (!container || !tagName) {
+        return [];
+      }
+      let elements = [];
+      if (typeof container.getElementsByTagNameNS === 'function') {
+        try {
+          elements = Array.from(container.getElementsByTagNameNS('*', tagName));
+        } catch (error) {
+          elements = [];
+        }
+      }
+      if (!elements.length && typeof container.getElementsByTagName === 'function') {
+        elements = Array.from(container.getElementsByTagName(tagName));
+      }
+      return elements;
+    }
+
+    /**
+     * Retourne le premier élément XML correspondant.
+     * @param {ParentNode} container
+     * @param {string} tagName
+     * @returns {Element|null}
+     */
+    function getFirstXmlElement(container, tagName) {
+      const elements = getXmlElements(container, tagName);
+      return elements.length > 0 ? elements[0] : null;
+    }
+
+    /**
+     * Retourne la valeur textuelle nettoyée du premier élément XML correspondant.
+     * @param {ParentNode} container
+     * @param {string} tagName
+     * @returns {string|null}
+     */
+    function getXmlText(container, tagName) {
+      const element = getFirstXmlElement(container, tagName);
+      if (!element || typeof element.textContent !== 'string') {
+        return null;
+      }
+      const value = element.textContent.trim();
+      return value || null;
+    }
+
+    /**
      * Convertit un élément XML GPX en GeoJSON Feature.
      * @param {Element} element
      * @param {string} featureType
@@ -4143,27 +4271,27 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 
       const properties = { kind: featureType };
 
-      const name = element.querySelector('name');
-      if (name && name.textContent.trim()) {
-        properties.name = name.textContent.trim();
+      const name = getXmlText(element, 'name');
+      if (name) {
+        properties.name = name;
       }
 
-      const desc = element.querySelector('desc');
-      if (desc && desc.textContent.trim()) {
-        properties.description = desc.textContent.trim();
+      const desc = getXmlText(element, 'desc');
+      if (desc) {
+        properties.description = desc;
       }
 
-      const ele = element.querySelector('ele');
-      if (ele && ele.textContent.trim()) {
-        const elevation = parseFloat(ele.textContent.trim());
+      const eleText = getXmlText(element, 'ele');
+      if (eleText) {
+        const elevation = parseFloat(eleText);
         if (Number.isFinite(elevation)) {
           properties.ele = elevation;
         }
       }
 
-      const time = element.querySelector('time');
-      if (time && time.textContent.trim()) {
-        properties.time = time.textContent.trim();
+      const time = getXmlText(element, 'time');
+      if (time) {
+        properties.time = time;
       }
 
       return {
@@ -4183,7 +4311,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
      */
     function extractCoordinates(points) {
       const coordinates = [];
-      points.forEach((point) => {
+      Array.from(points || []).forEach((point) => {
         const lat = parseFloat(point.getAttribute('lat'));
         const lon = parseFloat(point.getAttribute('lon'));
         if (Number.isFinite(lat) && Number.isFinite(lon)) {
@@ -4205,28 +4333,28 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       }
 
       const properties = { kind: featureType };
-      const name = element.querySelector('name');
-      if (name && name.textContent.trim()) {
-        properties.name = name.textContent.trim();
+      const name = getXmlText(element, 'name');
+      if (name) {
+        properties.name = name;
       }
 
-      const desc = element.querySelector('desc');
-      if (desc && desc.textContent.trim()) {
-        properties.description = desc.textContent.trim();
+      const desc = getXmlText(element, 'desc');
+      if (desc) {
+        properties.description = desc;
       }
 
       const segments = [];
 
       if (featureType === 'track') {
-        const trksegs = element.querySelectorAll('trkseg');
+        const trksegs = getXmlElements(element, 'trkseg');
         trksegs.forEach((segment) => {
-          const coords = extractCoordinates(segment.querySelectorAll('trkpt'));
+          const coords = extractCoordinates(getXmlElements(segment, 'trkpt'));
           if (coords.length > 1) {
             segments.push(coords);
           }
         });
       } else if (featureType === 'route') {
-        const coords = extractCoordinates(element.querySelectorAll('rtept'));
+        const coords = extractCoordinates(getXmlElements(element, 'rtept'));
         if (coords.length > 1) {
           segments.push(coords);
         }
@@ -4256,21 +4384,21 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     function convertGpxToGeoJSON(xml) {
       const features = [];
 
-      xml.querySelectorAll('wpt').forEach((wpt) => {
+      getXmlElements(xml, 'wpt').forEach((wpt) => {
         const feature = convertPoint(wpt, 'waypoint');
         if (feature) {
           features.push(feature);
         }
       });
 
-      xml.querySelectorAll('rte').forEach((route) => {
+      getXmlElements(xml, 'rte').forEach((route) => {
         const feature = convertLinearFeature(route, 'route');
         if (feature) {
           features.push(feature);
         }
       });
 
-      xml.querySelectorAll('trk').forEach((track) => {
+      getXmlElements(xml, 'trk').forEach((track) => {
         const feature = convertLinearFeature(track, 'track');
         if (feature) {
           features.push(feature);
@@ -5761,11 +5889,195 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
   // Expose Leaflet map globally for style control
   window.map = map;
 
+let gpxLayerGroup = null;
+let arrowLayerGroup = null;
+let arrowLayerWasVisible = false;
+
 
   // Initialiser le contrôle de style AVANT POI/GPX
   requestAnimationFrame(()=>{ if (window.initMapStyleControl) window.initMapStyleControl(); });
 
     map.zoomControl.setPosition('topright');
+
+// ========================================
+// GPX Track Visibility Toggle Control
+// ========================================
+
+/**
+ * Hide the GPX track layer group by setting display:none on all layer elements
+ * Performance: <10ms (instant, no visual lag)
+ */
+function hideGpxTrack() {
+  if (!gpxLayerGroup || !map.hasLayer(gpxLayerGroup)) return;
+
+  gpxLayerGroup.eachLayer(function(layer) {
+    // Hide polylines/paths (GeoJSON features)
+    if (layer._path) {
+      layer._path.style.display = 'none';
+    }
+    // Hide markers (if any in layer group)
+    if (layer._icon) {
+      layer._icon.style.display = 'none';
+    }
+    // Hide marker shadows
+    if (layer._shadow) {
+      layer._shadow.style.display = 'none';
+    }
+  });
+
+  if (arrowLayerGroup) {
+    arrowLayerWasVisible = map.hasLayer(arrowLayerGroup);
+    if (arrowLayerWasVisible) {
+      map.removeLayer(arrowLayerGroup);
+    }
+  }
+}
+
+/**
+ * Show the GPX track layer group by restoring display property
+ */
+function showGpxTrack() {
+  if (!gpxLayerGroup || !map.hasLayer(gpxLayerGroup)) return;
+
+  gpxLayerGroup.eachLayer(function(layer) {
+    // Restore polylines/paths
+    if (layer._path) {
+      layer._path.style.display = '';  // Empty string restores default
+    }
+    // Restore markers
+    if (layer._icon) {
+      layer._icon.style.display = '';
+    }
+    // Restore marker shadows
+    if (layer._shadow) {
+      layer._shadow.style.display = '';
+    }
+  });
+
+  if (arrowLayerGroup && !map.hasLayer(arrowLayerGroup) && arrowLayerWasVisible) {
+    arrowLayerGroup.addTo(map);
+  }
+}
+
+/**
+ * Custom Leaflet Control for GPX Track Visibility Toggle
+ * Positioned below zoom controls in top-right corner
+ */
+L.Control.ToggleTrack = L.Control.extend({
+  options: {
+    position: 'topright'  // Same as zoom control for automatic stacking
+  },
+
+  onAdd: function(map) {
+    // Create control container with Leaflet's standard classes
+    const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+
+    // Create button element
+    const button = L.DomUtil.create('a', 'leaflet-control-toggle-track', container);
+    button.href = '#';
+    button.title = 'Masquer temporairement la trace GPX (Maintenir appuyé)';
+    button.setAttribute('role', 'button');
+    button.setAttribute('aria-label', 'Masquer temporairement la trace GPX');
+    button.setAttribute('aria-pressed', 'false');
+    button.tabIndex = 0;
+
+    // Add eye icon (visible state) and eye-slash icon (hidden state)
+    button.innerHTML = `
+      <svg class="icon-visible" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+        <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+      </svg>
+      <svg class="icon-hidden" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7 7 0 0 0-2.79.588l.77.771A6 6 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755q-.247.248-.517.486z"/>
+        <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829"/>
+        <path d="M3.35 5.47q-.27.24-.518.487A13 13 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7 7 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709z"/>
+        <path fill-rule="evenodd" d="m13.646 14.354-12-12 .708-.708 12 12z"/>
+      </svg>
+    `;
+
+    // Disable button initially (enabled when GPX loads)
+    if (!gpxLayerGroup || !map.hasLayer(gpxLayerGroup)) {
+      button.classList.add('disabled');
+    }
+
+    // Prevent map interactions when clicking button
+    L.DomEvent.disableClickPropagation(container);
+    L.DomEvent.disableScrollPropagation(container);
+
+    // Event handler: hide track on press
+    const handlePressStart = function(e) {
+      L.DomEvent.preventDefault(e);
+      L.DomEvent.stopPropagation(e);
+
+      if (button.classList.contains('disabled')) return;
+
+      button.classList.add('pressed');
+      button.setAttribute('aria-pressed', 'true');
+      button.setAttribute('aria-label', 'Afficher la trace GPX');
+      hideGpxTrack();
+    };
+
+    // Event handler: show track on release
+    const handlePressEnd = function(e) {
+      L.DomEvent.preventDefault(e);
+      L.DomEvent.stopPropagation(e);
+
+      button.classList.remove('pressed');
+      button.setAttribute('aria-pressed', 'false');
+      button.setAttribute('aria-label', 'Masquer temporairement la trace GPX');
+      showGpxTrack();
+    };
+
+    // Mouse events (desktop)
+    L.DomEvent.on(button, 'mousedown', handlePressStart);
+    L.DomEvent.on(button, 'mouseup mouseleave', handlePressEnd);
+
+    // Touch events (mobile)
+    L.DomEvent.on(button, 'touchstart', handlePressStart);
+    L.DomEvent.on(button, 'touchend touchcancel', handlePressEnd);
+
+    // Keyboard events (accessibility)
+    L.DomEvent.on(button, 'keydown', function(e) {
+      if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) {
+        handlePressStart(e);
+      }
+    });
+    L.DomEvent.on(button, 'keyup', function(e) {
+      if (e.key === ' ' || e.key === 'Enter') {
+        handlePressEnd(e);
+      }
+    });
+
+    // Store reference to button for enabling/disabling
+    this._button = button;
+
+    return container;
+  },
+
+  onRemove: function(map) {
+    // Cleanup (Leaflet handles most DOM cleanup automatically)
+  },
+
+  enable: function() {
+    if (this._button) {
+      this._button.classList.remove('disabled');
+    }
+  },
+
+  disable: function() {
+    if (this._button) {
+      this._button.classList.add('disabled');
+      this._button.classList.remove('pressed');
+    }
+  }
+});
+
+// Create and add the control to the map
+const toggleTrackControl = new L.Control.ToggleTrack();
+toggleTrackControl.addTo(map);
+
+// Store global reference for enabling/disabling
+window.toggleTrackControl = toggleTrackControl;
 
     // Couche de tuiles OpenStreetMap avec attribution obligatoire
     const fileInput = document.getElementById('file-input');
@@ -5860,8 +6172,6 @@ function attachWaypointPersistence() {
 attachWaypointPersistence();
     let waypointCounter = 1;
 
-let gpxLayerGroup = null;
-let arrowLayerGroup = null;
 let currentGpxDocument = null;
 let currentGpxFileName = '';
 let currentGeojson = null;
@@ -5940,6 +6250,7 @@ let elevationMouseLeaveHandler = null;
       if (arrowLayerGroup) {
         map.removeLayer(arrowLayerGroup);
         arrowLayerGroup = null;
+        arrowLayerWasVisible = false;
       }
       waypointLayerGroup.clearLayers();
       waypointCounter = 1;
@@ -6044,28 +6355,26 @@ let elevationMouseLeaveHandler = null;
 
     function extractTraceName(xmlDoc, fileName) {
       if (xmlDoc) {
-        const trackNames = xmlDoc.querySelectorAll('trk > name');
-        for (const trackName of trackNames) {
-          const value = trackName.textContent && trackName.textContent.trim();
+        const tracks = getXmlElements(xmlDoc, 'trk');
+        for (const track of tracks) {
+          const value = getXmlText(track, 'name');
           if (value) {
             return { name: value, source: 'gpx-track' };
           }
         }
 
-        const routeNames = xmlDoc.querySelectorAll('rte > name');
-        for (const routeName of routeNames) {
-          const value = routeName.textContent && routeName.textContent.trim();
+        const routes = getXmlElements(xmlDoc, 'rte');
+        for (const route of routes) {
+          const value = getXmlText(route, 'name');
           if (value) {
             return { name: value, source: 'gpx-route' };
           }
         }
 
-        const metadataName = xmlDoc.querySelector('metadata > name');
+        const metadata = getFirstXmlElement(xmlDoc, 'metadata');
+        const metadataName = metadata ? getXmlText(metadata, 'name') : null;
         if (metadataName) {
-          const value = metadataName.textContent && metadataName.textContent.trim();
-          if (value) {
-            return { name: value, source: 'gpx-metadata' };
-          }
+          return { name: metadataName, source: 'gpx-metadata' };
         }
       }
 
@@ -6182,16 +6491,19 @@ let elevationMouseLeaveHandler = null;
         return null;
       }
 
-      const trackPoints = Array.from(gpxDoc.querySelectorAll('trkpt, rtept'));
+      const trackPoints = [
+        ...getXmlElements(gpxDoc, 'trkpt'),
+        ...getXmlElements(gpxDoc, 'rtept')
+      ];
       const elevationMap = new Map();
       trackPoints.forEach((trkpt) => {
         const lat = parseFloat(trkpt.getAttribute('lat'));
         const lng = parseFloat(trkpt.getAttribute('lon'));
-        const eleNode = trkpt.querySelector('ele');
-        if (!Number.isFinite(lat) || !Number.isFinite(lng) || !eleNode) {
+        const eleText = getXmlText(trkpt, 'ele');
+        if (!Number.isFinite(lat) || !Number.isFinite(lng) || !eleText) {
           return;
         }
-        const elevation = parseFloat(eleNode.textContent);
+        const elevation = parseFloat(eleText);
         if (!Number.isFinite(elevation)) {
           return;
         }
@@ -7965,6 +8277,11 @@ function createWaypointMarker(latlng, name = '') {
 
       if (arrowLayers.length > 0) {
         arrowLayerGroup = L.layerGroup(arrowLayers).addTo(map);
+        arrowLayerWasVisible = true;
+      }
+      else {
+        arrowLayerGroup = null;
+        arrowLayerWasVisible = false;
       }
 
       if (pointFeatures.length > 0) {
@@ -7998,8 +8315,13 @@ function createWaypointMarker(latlng, name = '') {
 
       updateTraceInfo(computeTraceInfo(lineFeatures, geojsonData));
       currentGeojson = geojsonData;
-    
+
     try { addTraceEndpointMarkers(geojsonData); } catch(e){ console.warn('addTraceEndpointMarkers: ', e); }
+
+    // Enable the track visibility toggle control
+    if (window.toggleTrackControl) {
+      window.toggleTrackControl.enable();
+    }
 }
 
     /**
@@ -9122,6 +9444,11 @@ function clearSavedTrace() {
     if (typeof waypointLayerGroup !== 'undefined' && waypointLayerGroup && typeof waypointLayerGroup.clearLayers === 'function') waypointLayerGroup.clearLayers();
     if (typeof gpxLayerGroup !== 'undefined' && gpxLayerGroup && typeof gpxLayerGroup.clearLayers === 'function') gpxLayerGroup.clearLayers();
     if (typeof arrowLayerGroup !== 'undefined' && arrowLayerGroup && typeof arrowLayerGroup.clearLayers === 'function') arrowLayerGroup.clearLayers();
+
+    // Disable the track visibility toggle control
+    if (window.toggleTrackControl) {
+      window.toggleTrackControl.disable();
+    }
   } catch (error) {
     console.warn('Nettoyage des calques :', error);
   }
@@ -10144,7 +10471,11 @@ document.addEventListener('DOMContentLoaded', initCollapsibleSections);
 <!-- ==================== SERVICE WORKER REGISTRATION (PWA) ==================== -->
 <script>
   // Enregistrement du Service Worker pour fonctionnalité PWA
-  if ('serviceWorker' in navigator) {
+  const canRegisterServiceWorker =
+    'serviceWorker' in navigator &&
+    (window.location.protocol === 'https:' || window.location.hostname === 'localhost');
+
+  if (canRegisterServiceWorker) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
         .register('/sw.js')
@@ -10169,6 +10500,8 @@ document.addEventListener('DOMContentLoaded', initCollapsibleSections);
         }
       });
     });
+  } else {
+    console.log('Service Worker non enregistré (contexte non sécurisé).');
   }
 </script>
 </body>
