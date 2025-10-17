@@ -13,247 +13,182 @@
 
 ![Cycling Companion Screenshot](img/screenshot.png)
 
-*Interface complète : trace GPX avec profil d'élévation interactif, waypoints personnalisés et points d'intérêt*
+*Interface complète : trace GPX, profil d'élévation interactif, roadbook auto et POI en temps réel*
 
 ---
 
-## ✨ Fonctionnalités principales
+## Aperçu
 
-### 📍 Gestion complète de traces GPX
+Cycling Companion vous accompagne de la préparation à l'itinérance :
 
-- ✅ **Import/Export GPX** : Compatibilité totale avec Komoot, Strava, Garmin, Wahoo, Suunto
-- 🗺️ **Visualisation interactive** : Cartes CyclOSM, OpenStreetMap, OpenTopoMap, satellite
-- 📊 **Profil d'élévation détaillé** : Statistiques D+/D-, altitude min/max, distance
-- ➡️ **Flèches directionnelles** : Sens de parcours clairement indiqué sur la trace
-- 🎯 **Markers début/fin** : Points de départ et d'arrivée automatiquement affichés
-
-### 🎯 Waypoints et Roadbook
-
-- 📍 **Création intuitive** : Cliquez sur la trace pour ajouter des points d'étape
-- ✏️ **Noms personnalisables** : Renommez vos waypoints (restaurant, camping, point de vue...)
-- 📋 **Roadbook automatique** : Génération d'un carnet de route avec :
-  - Distances cumulées depuis le départ
-  - Distances entre chaque étape
-  - Distance restante jusqu'à l'arrivée
-  - D+ (dénivelé positif) restant
-  - Altitude de chaque point
-- 💾 **Export enrichi** : Téléchargez votre GPX avec tous vos waypoints inclus
-- 📄 **Copie texte** : Copiez le roadbook au format texte pour l'imprimer ou le partager
-
-### 🗺️ Points d'intérêt (POI) en temps réel
-
-Trouvez facilement tous les services le long de votre parcours :
-
-#### 💧 Ressources essentielles
-- **Eau potable** : Fontaines publiques
-- **Cimetières** : Source gratuite d'eau (robinets extérieurs)
-
-#### 🛒 Alimentation
-- **Supermarchés** et **épiceries** : Ravitaillement complet
-- **Restaurants**, **cafés**, **fast-food** : Restauration sur place
-
-#### 🏕️ Hébergement outdoor
-- **Campings** : Officiels et aménagés
-- **Bivouacs autorisés** : Zones de camping sauvage légales
-- **Refuges** : De montagne et alpins
-- **Refuges non gardés** : Abris gratuits
-
-#### 🏨 Hébergement confort
-- **Hôtels**, **auberges de jeunesse**, **chambres d'hôtes**
-
-#### 🔧 Services vélo
-- **Stations de réparation** : Bornes self-service
-- **Magasins de vélo** : Pièces détachées et assistance
-
-#### 🚻 Hygiène
-- **Toilettes publiques** et **douches**
-
-#### 💊 Santé
-- **Pharmacies** et **hôpitaux**
-
-**🎨 Profils prédéfinis** : "J'ai besoin d'eau", "J'ai besoin de manger", "J'ai besoin de réparer", etc.
-
-### 🎨 Interface moderne et intuitive
-
-- 📱 **Responsive design** : Fonctionne parfaitement sur mobile, tablette et desktop
-- 🌙 **Interface épurée** : Design moderne et lisible
-- 📍 **Géolocalisation** : Suivez votre position en temps réel sur la trace
-- 💾 **Sauvegarde automatique** : Vos données restent dans votre navigateur (confidentialité totale)
-- 🔄 **Sections collapsibles** : Interface personnalisable selon vos besoins
-- ⚡ **Performances optimisées** : Chargement rapide, scroll fluide
-
-### 📱 Application Web Progressive (PWA)
-
-- 📲 **Installable** : Ajoutez l'app à votre écran d'accueil (iOS/Android)
-- ⚡ **Hors ligne** : Consultez vos traces même sans connexion internet
-- 🚀 **Pas de store** : Aucune installation via App Store/Play Store requise
+- Importez vos traces GPX et visualisez les statistiques clés en un clin d'œil
+- Enrichissez votre parcours avec un roadbook dynamique et des waypoints personnalisés
+- Trouvez instantanément les points d'eau, commerces, hébergements ou ateliers vélo autour de votre trace
+- Travaillez hors ligne, sans compte ni partage de données : tout reste dans votre navigateur
 
 ---
 
-## 🚀 Utilisation rapide
+## Nouveautés 2025
 
-### 1️⃣ Importer une trace
-
-- 📁 **Glissez-déposez** votre fichier `.gpx` ou cliquez pour parcourir
-- ⚡ Affichage instantané avec profil d'élévation
-
-### 2️⃣ Explorer et enrichir
-
-- 🗺️ **Naviguez** sur la carte et changez de fond selon vos besoins
-- 📍 **Ajoutez des waypoints** : Cliquez sur la trace pour créer des étapes
-- 🔍 **Activez les POI** : Cochez les types de points d'intérêt utiles
-
-### 3️⃣ Planifier avec le roadbook
-
-- 📋 Consultez le **roadbook** avec distances et dénivelé
-- 📄 **Copiez** le roadbook en texte pour l'imprimer
-
-### 4️⃣ Exporter
-
-- 💾 **Téléchargez** votre GPX enrichi avec waypoints
-- 📤 Importez-le dans votre GPS Garmin, Wahoo, application Komoot, etc.
+- ✅ **Bouton de visibilité de la trace** : maintenez-le enfoncé pour masquer temporairement la trace GPX et lire la carte sans surcharges
+- ✅ **Sélecteur de styles de carte repensé** : galerie avec aperçus (Voyager, CyclOSM, OSM, OpenTopo, Esri Satellite & Hybrid) et mémorisation automatique
+- ✅ **Géolocalisation temps réel** : activez le suivi, visualisez votre précision et recentrez-vous en un clic
+- ✅ **Panneau latéral adaptatif** : sections repliables, compteur de couches actives et navigation mobile optimisée
 
 ---
 
-## 📱 Installation (PWA)
+## Fonctionnalités principales
 
-Cycling Companion peut être installé comme une application native :
+### 📍 Gestion avancée des traces GPX
 
-### Sur mobile (iOS/Android)
+- Importez par glisser-déposer ou sélection de fichier, support complet Komoot / Strava / Garmin / Wahoo / Suunto
+- Affichez le profil altimétrique interactif, les stats D+/D-, vitesses moyennes, altitudes min/max, distances
+- Identifiez immédiatement départ, arrivée et sens de parcours grâce aux marqueurs dédiés
+- Exportez votre trace enrichie (waypoints, POI) en une seconde
 
-**iOS Safari** :
-1. Appuyez sur le bouton **Partager** (carré avec flèche)
-2. Sélectionnez **"Sur l'écran d'accueil"**
-3. Confirmez
+### 🎯 Waypoints et Roadbook intelligent
 
-**Android Chrome** :
-1. Appuyez sur le menu **⋮** (trois points)
-2. Sélectionnez **"Ajouter à l'écran d'accueil"**
-3. Confirmez
+- Ajoutez des étapes d'un simple clic sur la trace, renommez-les, classez-les par type
+- Roadbook automatique avec distances cumulées, segment, distance restante, altitude et D+ restant
+- Centrez la carte sur une étape depuis le roadbook et copiez l'ensemble en texte pour partager/imprimer
 
-### Sur desktop (Chrome/Edge/Brave)
+### 🗺️ Points d'intérêt en direct
 
-1. Cliquez sur l'icône **➕** dans la barre d'adresse
-2. Ou menu : **"Installer Cycling Companion"**
+- Recherche Overpass API optimisée pour le bikepacking : eau, alimentation, hygiène, hébergements, réparations, santé
+- Profils rapides (ex. « besoin d'eau », « manger », « réparer ») pour afficher les bonnes catégories en un clic
+- Compteur de POI par catégorie et affichage par groupes pour garder la carte lisible
 
-**L'application installée fonctionne hors ligne avec vos traces sauvegardées !** ⚡
+### 🧭 Navigation & carte
+
+- Bouton press-and-hold pour masquer la trace GPX et inspecter la cartographie en détail
+- Galerie de styles de carte avec vignettes : CyclOSM, OpenStreetMap, CARTO Voyager, OpenTopoMap, Esri Satellite/Hybrid
+- Suivi de votre position, cercle de précision, recentrage instantané et historique de verrouillage
+- Gestion fine des couches (POI, géolocalisation, tracé) via un panneau latéral responsive et mémorisation locale
+
+### 🌐 Expérience PWA
+
+- Application installable (mobile & desktop) fonctionnant hors ligne
+- Préchargement des ressources critiques, performances optimisées et UI responsive
+- Sauvegarde automatique de la trace, des waypoints et de vos préférences dans `localStorage`
+- Aucune création de compte, aucun tracking : vos données restent en local
 
 ---
 
-## 🛠️ Technologies
+## Prise en main rapide
 
-- **[Leaflet.js](https://leafletjs.com/)** - Cartographie interactive
-- **[OpenStreetMap](https://www.openstreetmap.org/)** - Données cartographiques libres
-- **[CyclOSM](https://www.cyclosm.org/)** - Rendu optimisé pour le cyclisme
-- **[Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API)** - Recherche de POI temps réel
-- **Vanilla JavaScript** - Aucune dépendance framework lourde
-- **HTML5 / CSS3** - Interface moderne et responsive
-- **PWA** - Application web progressive installable
+1. **Importer** : déposez un `.gpx` ou utilisez le bouton « Importer ». La trace, la carte et le profil d'élévation se synchronisent instantanément.
+2. **Explorer** : activez les catégories de POI utiles, changez de style de carte et utilisez le bouton de visibilité pour inspecter les détails.
+3. **Planifier** : ajoutez des waypoints sur les points d'intérêt repérés, le roadbook s'enrichit automatiquement.
+4. **Exporter & partager** : téléchargez la trace enrichie ou copiez le roadbook en texte pour votre équipe de route.
 
 ---
 
-## 💻 Installation locale
+## Vie privée & stockage
+
+- Les traces, waypoints, préférences de couches et style de carte sont conservés dans `localStorage`
+- Aucun envoi serveur ni analytics : le projet respecte le principe « vos données, votre navigateur »
+- Supprimez tout en un clic via l'interface (« Réinitialiser ») si vous changez de parcours
+
+---
+
+## Installation comme PWA
+
+### Mobile (iOS Safari)
+
+1. Ouvrez [cyclingcompanion.lamouche.fr](https://cyclingcompanion.lamouche.fr/)
+2. Touchez **Partager**
+3. Sélectionnez **« Sur l'écran d'accueil »**
+4. Validez, l'app se comporte comme une application native
+
+### Mobile (Android Chrome)
+
+1. Ouvrez l'application web
+2. Menu ⋮ → **Installer l'application**
+3. Confirmez pour créer le raccourci et activer le mode hors ligne
+
+### Desktop (Chrome / Edge / Brave)
+
+1. Cliquez sur l'icône **➕ Installer** dans la barre d'adresse
+2. Ou via le menu du navigateur → **Installer Cycling Companion**
+
+L'application installée reste disponible hors ligne avec vos traces sauvegardées.
+
+---
+
+## Installation locale
 
 ```bash
-# Cloner le repository
+# Cloner le dépôt
 git clone https://github.com/blamouche/bikepacking-gpx-manager.git
 cd bikepacking-gpx-manager
 
-# Ouvrir directement index.html dans votre navigateur
-# Ou lancer un serveur local :
+# Option rapide : ouvrir index.html dans votre navigateur
 
-# Option 1 : Python
-python -m http.server 8000
+# Ou lancer un petit serveur local
+python -m http.server 8000         # Python
+npx serve -s . -p 8000             # Node.js
+php -S localhost:8000              # PHP
 
-# Option 2 : Node.js (npx)
-npx serve -s . -p 8000
-
-# Option 3 : PHP
-php -S localhost:8000
-
-# Puis ouvrir : http://localhost:8000
+# Puis visiter http://localhost:8000
 ```
 
 ---
 
-## 🤝 Contribution
+## Stack technique
 
-Les contributions sont les bienvenues ! 🎉
-
-### Comment contribuer
-
-1. 🍴 **Forkez** le projet
-2. 🌿 **Créez une branche** : `git checkout -b feature/amelioration`
-3. 💾 **Committez** : `git commit -m 'Ajout nouvelle fonctionnalité'`
-4. 📤 **Pushez** : `git push origin feature/amelioration`
-5. 🔃 **Pull Request** : Ouvrez une PR avec description détaillée
-
-### Idées de contributions
-
-- 🐛 **Signaler des bugs** : Ouvrir une [issue](https://github.com/blamouche/bikepacking-gpx-manager/issues)
-- 💡 **Proposer des fonctionnalités** : Partager vos idées
-- 🌍 **Traductions** : Ajouter d'autres langues (EN, ES, DE, IT...)
-- 📖 **Documentation** : Améliorer le README ou ajouter des tutoriels
-- 🎨 **Design** : Proposer des améliorations UI/UX
-- ⚡ **Performance** : Optimisations code
+- **Leaflet.js** pour la cartographie interactive et les contrôles personnalisés
+- **OpenStreetMap / CyclOSM / OpenTopoMap / Esri** comme fournisseurs de tuiles
+- **Overpass API** pour la recherche de points d'intérêt ciblée bikepacking
+- **Vanilla JavaScript + HTML5/CSS3** pour une interface performante et légère
+- **Service Worker + Manifest** pour les capacités PWA hors ligne
 
 ---
 
-## 📄 Licence
+## Contribution
 
-**MIT** © [Benoit Lamouche](https://lamouche.fr)
+1. 🍴 Forkez le projet
+2. 🌿 Créez une branche : `git checkout -b feature/amelioration`
+3. 💾 Commitez : `git commit -m 'Ajout nouvelle fonctionnalité'`
+4. 📤 Pushez : `git push origin feature/amelioration`
+5. 🔃 Ouvrez une Pull Request bien documentée
 
-Vous êtes libre d'utiliser, modifier et distribuer ce projet. Voir [LICENSE](LICENSE) pour plus de détails.
-
----
-
-## 🙏 Remerciements
-
-- 🗺️ Données © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright)
-- 🚴 Style CyclOSM © [CyclOSM team](https://www.cyclosm.org/)
-- 🌍 OpenTopoMap © [OpenTopoMap](https://opentopomap.org/)
-- 🛰️ Esri Imagery © [Esri](https://www.esri.com/)
-- 📚 Documentation Leaflet © [Leaflet team](https://leafletjs.com/)
+Idées bienvenues : corrections de bugs, nouvelles catégories de POI, optimisation performances, traduction de l'UI, tutoriels d'utilisation.
 
 ---
 
-## 📞 Contact & Support
+## Contact & support
 
-- 🌐 **Site web** : [lamouche.fr](https://lamouche.fr)
-- 🐦 **Twitter** : [@blamouche](https://twitter.com/blamouche)
-- 💼 **GitHub** : [@blamouche](https://github.com/blamouche)
-- 📧 **Email** : (disponible sur le site web)
+- 🌐 [lamouche.fr](https://lamouche.fr)
+- 🐦 [@blamouche](https://twitter.com/blamouche)
+- 💼 [github.com/blamouche](https://github.com/blamouche)
 
-### Support
+Support :
 
-- 💬 **Questions** : Ouvrir une [Discussion](https://github.com/blamouche/bikepacking-gpx-manager/discussions)
-- 🐛 **Bugs** : Ouvrir une [Issue](https://github.com/blamouche/bikepacking-gpx-manager/issues)
-- ⭐ **Vous aimez ?** : Donnez une étoile au projet !
-
----
-
-## 🗺️ Roadmap & Fonctionnalités futures
-
-- [ ] 🌍 **Multilingue** : Interface EN/ES/DE/IT
-- [ ] 🌙 **Mode sombre** : Thème adapté à la nuit
-- [ ] 📊 **Graphiques avancés** : Analyse détaillée du parcours
-- [ ] 🗓️ **Planification multi-jours** : Découpage automatique en étapes
-- [ ] 🧭 **Navigation turn-by-turn** : Guidage pas à pas
-- [ ] 📸 **Photos géolocalisées** : Ajout d'images sur la trace
-- [ ] ☁️ **Sync cloud (optionnel)** : Sauvegarde en ligne
-- [ ] 🏆 **Badges et défis** : Gamification
+- 💬 Questions : [Discussions GitHub](https://github.com/blamouche/bikepacking-gpx-manager/discussions)
+- 🐛 Bugs : [Issues GitHub](https://github.com/blamouche/bikepacking-gpx-manager/issues)
+- ⭐ Vous aimez ? Ajoutez une étoile au dépôt !
 
 ---
 
-## 📈 Statistiques
+## Roadmap
 
-![GitHub repo size](https://img.shields.io/github/repo-size/blamouche/bikepacking-gpx-manager)
-![GitHub last commit](https://img.shields.io/github/last-commit/blamouche/bikepacking-gpx-manager)
-![GitHub issues](https://img.shields.io/github/issues/blamouche/bikepacking-gpx-manager)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/blamouche/bikepacking-gpx-manager)
+- [x] Bouton press-and-hold pour masquer la trace GPX
+- [x] Galerie de styles de carte avec mémorisation
+- [x] Géolocalisation continue et recentrage
+- [ ] Interface multilingue (EN / ES / DE / IT)
+- [ ] Mode sombre pour utilisation nocturne
+- [ ] Planification multi-jours avec étapes automatiques
+- [ ] Navigation turn-by-turn et indications audio
+- [ ] Export avancé (CSV/GPX segmentés, PDF roadbook)
 
 ---
 
-**⭐ Si ce projet vous est utile, n'hésitez pas à lui donner une étoile ! ⭐**
+## Licence & remerciements
 
-**🚴 Bon bikepacking ! 🏕️**
+- Licence **MIT** © [Benoit Lamouche](https://lamouche.fr) — voir [LICENSE](LICENSE)
+- Données cartographiques © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright)
+- Styles CyclOSM © [CyclOSM](https://www.cyclosm.org/) • OpenTopoMap © [OpenTopoMap](https://opentopomap.org/) • Imagerie © [Esri](https://www.esri.com/)
+
+---
+
+**🚴 Bon bikepacking & belle planification !**
