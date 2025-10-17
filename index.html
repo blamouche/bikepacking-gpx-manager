@@ -4852,6 +4852,8 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     let layersErrorElement = null;
     let layersInfoElement = null;
     let layersZoomInfoElement = null;
+    let layersErrorHideTimer = null;
+    let layersInfoHideTimer = null;
     let presetSelectElement = null;
     let isApplyingPreset = false;
 
@@ -5104,11 +5106,23 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       if (layersErrorElement) {
         layersErrorElement.textContent = `⚠️ ${message}`;
         layersErrorElement.style.display = 'block';
+        if (layersErrorHideTimer) clearTimeout(layersErrorHideTimer);
+        layersErrorHideTimer = setTimeout(() => {
+          if (layersErrorElement) {
+            layersErrorElement.style.display = 'none';
+            layersErrorElement.textContent = '';
+          }
+          layersErrorHideTimer = null;
+        }, 2000);
       }
     }
 
     function hideLayersError() {
       if (layersErrorElement) {
+        if (layersErrorHideTimer) {
+          clearTimeout(layersErrorHideTimer);
+          layersErrorHideTimer = null;
+        }
         layersErrorElement.style.display = 'none';
         layersErrorElement.textContent = '';
       }
@@ -5118,11 +5132,23 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       if (layersInfoElement) {
         layersInfoElement.textContent = message;
         layersInfoElement.style.display = 'block';
+        if (layersInfoHideTimer) clearTimeout(layersInfoHideTimer);
+        layersInfoHideTimer = setTimeout(() => {
+          if (layersInfoElement) {
+            layersInfoElement.style.display = 'none';
+            layersInfoElement.textContent = '';
+          }
+          layersInfoHideTimer = null;
+        }, 2000);
       }
     }
 
     function hideLayersInfo() {
       if (layersInfoElement) {
+        if (layersInfoHideTimer) {
+          clearTimeout(layersInfoHideTimer);
+          layersInfoHideTimer = null;
+        }
         layersInfoElement.style.display = 'none';
         layersInfoElement.textContent = '';
       }
