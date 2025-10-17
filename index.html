@@ -2768,6 +2768,16 @@ html, body {
 }
 </style>
 <style>
+.leaflet-control-attribution .map-zoom-info {
+  margin-left: 0.75rem;
+  white-space: nowrap;
+}
+
+.leaflet-control-attribution .map-zoom-info::before {
+  content: '| ';
+}
+</style>
+<style>
 /* === Collapsible Sections === */
 .collapsible-section {
   position: relative;
@@ -4852,6 +4862,8 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     let layersErrorElement = null;
     let layersInfoElement = null;
     let layersZoomInfoElement = null;
+    let layersErrorHideTimer = null;
+    let layersInfoHideTimer = null;
     let presetSelectElement = null;
     let isApplyingPreset = false;
 
@@ -5104,11 +5116,23 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       if (layersErrorElement) {
         layersErrorElement.textContent = `⚠️ ${message}`;
         layersErrorElement.style.display = 'block';
+        if (layersErrorHideTimer) clearTimeout(layersErrorHideTimer);
+        layersErrorHideTimer = setTimeout(() => {
+          if (layersErrorElement) {
+            layersErrorElement.style.display = 'none';
+            layersErrorElement.textContent = '';
+          }
+          layersErrorHideTimer = null;
+        }, 2000);
       }
     }
 
     function hideLayersError() {
       if (layersErrorElement) {
+        if (layersErrorHideTimer) {
+          clearTimeout(layersErrorHideTimer);
+          layersErrorHideTimer = null;
+        }
         layersErrorElement.style.display = 'none';
         layersErrorElement.textContent = '';
       }
@@ -5118,11 +5142,23 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       if (layersInfoElement) {
         layersInfoElement.textContent = message;
         layersInfoElement.style.display = 'block';
+        if (layersInfoHideTimer) clearTimeout(layersInfoHideTimer);
+        layersInfoHideTimer = setTimeout(() => {
+          if (layersInfoElement) {
+            layersInfoElement.style.display = 'none';
+            layersInfoElement.textContent = '';
+          }
+          layersInfoHideTimer = null;
+        }, 2000);
       }
     }
 
     function hideLayersInfo() {
       if (layersInfoElement) {
+        if (layersInfoHideTimer) {
+          clearTimeout(layersInfoHideTimer);
+          layersInfoHideTimer = null;
+        }
         layersInfoElement.style.display = 'none';
         layersInfoElement.textContent = '';
       }
@@ -5130,20 +5166,6 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 
     function showLayersZoomInfo(minZoom) {
       if (!layersZoomInfoElement) return;
-      // Si le zoom actuel est >= 13, masquer l'info même si appelée
-      try {
-        if (typeof map !== 'undefined' && map && typeof map.getZoom === 'function') {
-          const currentZoom = map.getZoom();
-          if (currentZoom >= 13) {
-            // s'assurer que l'élément est caché
-            layersZoomInfoElement.style.display = 'none';
-            layersZoomInfoElement.textContent = '';
-            return;
-          }
-        }
-      } catch (e) {
-        // ignore errors reading map zoom
-      }
       layersZoomInfoElement.textContent = `ℹ️ Zoomez davantage pour voir les POI (zoom ≥ ${minZoom})`;
       layersZoomInfoElement.style.display = 'block';
     }
@@ -5155,8 +5177,42 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       }
     }
 
+    function updatePoiZoomIndicator() {
+      if (!layersZoomInfoElement) {
+        return;
+      }
+      if (!poiManager || !poiManager.activeCategories || poiManager.activeCategories.size === 0) {
+        hideLayersZoomInfo();
+        return;
+      }
+      const minZoomRequired = Math.max(14, getMinZoomForActiveCategories());
+      let currentZoom = null;
+      try {
+        currentZoom = map && typeof map.getZoom === 'function' ? map.getZoom() : null;
+      } catch (_) {
+        currentZoom = null;
+      }
+      if (typeof currentZoom === 'number' && currentZoom < minZoomRequired) {
+        showLayersZoomInfo(minZoomRequired);
+      } else {
+        hideLayersZoomInfo();
+      }
+    }
+
+    function canShowPoiRefreshButton() {
+      try {
+        return Boolean(map) && typeof map.getZoom === 'function' && map.getZoom() >= 14;
+      } catch (_) {
+        return false;
+      }
+    }
+
     function showPoiRefreshButton() {
       if (!poiRefreshButton) {
+        return;
+      }
+      if (!canShowPoiRefreshButton()) {
+        hidePoiRefreshButton();
         return;
       }
       poiRefreshButton.style.display = 'block';
@@ -5311,6 +5367,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
         updatePresetSelection();
       }
       updateCategoryCountUI(categoryId, poiManager.counts.get(categoryId) || 0);
+      updatePoiZoomIndicator();
       if (triggerLoad) {
         cancelPendingPOILoad();
         loadPOIForCurrentView(true);
@@ -5326,6 +5383,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       });
       poiManager.counts.clear();
       updateAllPOICounts();
+      updatePoiZoomIndicator();
     }
 
     function cancelPendingPOILoad() {
@@ -5366,16 +5424,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       if (!poiManager.enabled) {
         return;
       }
-      // If user zoomed sufficiently, hide the zoom-info alert immediately
-      try {
-        if (typeof map !== 'undefined' && map && typeof map.getZoom === 'function') {
-          if (map.getZoom() >= 13) {
-            hideLayersZoomInfo();
-          }
-        }
-      } catch (e) {
-        // ignore
-      }
+      updatePoiZoomIndicator();
       if (poiManager.suppressRefreshPrompt) {
         poiManager.suppressRefreshPrompt = false;
         return;
@@ -5384,7 +5433,8 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
         clearTimeout(poiManager.debounceTimer);
       }
       poiManager.debounceTimer = setTimeout(() => {
-        if (poiManager.activeCategories.size === 0 || poiManager.loading) {
+        const zoomAllowsRefresh = canShowPoiRefreshButton();
+        if (poiManager.activeCategories.size === 0 || poiManager.loading || !zoomAllowsRefresh) {
           poiManager.refreshPending = false;
           hidePoiRefreshButton();
           return;
@@ -5457,11 +5507,12 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
         hideLayersIndicators();
         return;
       }
+      updatePoiZoomIndicator();
       const bounds = map.getBounds();
       const minZoom = getMinZoomForActiveCategories();
       if (map.getZoom() < minZoom) {
         clearAllPOILayers();
-        showLayersZoomInfo(minZoom);
+        showLayersZoomInfo(Math.max(minZoom, 14));
         hideLayersLoading();
         return;
       }
@@ -5471,7 +5522,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
         hideLayersLoading();
         return;
       }
-      hideLayersZoomInfo();
+      updatePoiZoomIndicator();
       hideLayersError();
       hideLayersInfo();
       const cacheKey = buildCacheKey(bounds, poiManager.activeCategories);
@@ -5878,6 +5929,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       poiManager.enabled = true;
       map.on('moveend', handlePOIViewportChange);
       map.on('zoomend', handlePOIViewportChange);
+      updatePoiZoomIndicator();
       if (poiManager.activeCategories.size > 0) {
         loadPOIForCurrentView(true);
       } else {
@@ -5888,6 +5940,64 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     const map = L.map('map').setView([48.8566, 2.3522], 12);
   // Expose Leaflet map globally for style control
   window.map = map;
+
+let mapZoomInfoElement = null;
+let mapZoomInfoInitialized = false;
+let mapZoomInfoOriginalUpdate = null;
+
+function ensureMapZoomInfoElement() {
+  if (!map || !map.attributionControl || typeof map.attributionControl.getContainer !== 'function') {
+    mapZoomInfoElement = null;
+    return;
+  }
+
+  const container = map.attributionControl.getContainer();
+  if (!container) {
+    mapZoomInfoElement = null;
+    return;
+  }
+
+  let span = container.querySelector('.map-zoom-info');
+  if (!span) {
+    span = document.createElement('span');
+    span.className = 'map-zoom-info';
+    container.appendChild(span);
+  }
+  mapZoomInfoElement = span;
+}
+
+function updateMapZoomInfo() {
+  ensureMapZoomInfoElement();
+  if (!mapZoomInfoElement) return;
+  mapZoomInfoElement.textContent = `Zoom ${map.getZoom()}`;
+}
+
+function setupMapZoomInfo() {
+  if (!map || mapZoomInfoInitialized || !map.attributionControl) {
+    if (mapZoomInfoInitialized) updateMapZoomInfo();
+    return;
+  }
+
+  ensureMapZoomInfoElement();
+  if (!mapZoomInfoElement) return;
+
+  const attributionControl = map.attributionControl;
+  if (attributionControl && typeof attributionControl._update === 'function' && !mapZoomInfoOriginalUpdate) {
+    mapZoomInfoOriginalUpdate = attributionControl._update.bind(attributionControl);
+    attributionControl._update = function() {
+      mapZoomInfoOriginalUpdate();
+      updateMapZoomInfo();
+    };
+  }
+
+  mapZoomInfoInitialized = true;
+  updateMapZoomInfo();
+  map.on('zoomend', updateMapZoomInfo);
+  map.on('layeradd', updateMapZoomInfo);
+  map.on('layerremove', updateMapZoomInfo);
+}
+
+map.whenReady(setupMapZoomInfo);
 
 let gpxLayerGroup = null;
 let arrowLayerGroup = null;
@@ -6145,6 +6255,15 @@ window.toggleTrackControl = toggleTrackControl;
       });
     }
 
+    map.on('zoomend', () => {
+      if (!canShowPoiRefreshButton()) {
+        hidePoiRefreshButton();
+        poiManager.refreshPending = false;
+      } else if (poiManager.refreshPending) {
+        showPoiRefreshButton();
+      }
+      updatePoiZoomIndicator();
+    });
 
     let backdropElement = null;
 
