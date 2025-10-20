@@ -4466,7 +4466,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 <section class="panel-section map-style-section collapsible-section" id="map-style-section">
 <button aria-controls="map-style-content" aria-expanded="false" class="section-header-toggle" type="button">
 <span class="section-header-icon">🗺️</span>
-<h3 class="section-title">Style de carte</h3>
+<h3 class="section-title">Style de carte <span class="badge" id="map-style-badge">Voyager</span></h3>
 <span class="section-header-chevron">▼</span>
 </button>
 <div class="section-collapsible-content" id="map-style-content">
@@ -10873,11 +10873,29 @@ document.addEventListener('DOMContentLoaded', initCollapsibleSections);
     var buttons = Array.prototype.slice.call(container.querySelectorAll('.map-style-option'));
     if (!buttons.length) return;
 
+    // Map style names
+    var styleNames = {
+      'voyager': 'Voyager',
+      'cyclosm': 'CyclOSM',
+      'osm': 'OSM',
+      'topo': 'Topo',
+      'satellite': 'Satellite',
+      'hybrid': 'Hybrid'
+    };
+
+    function updateBadge(id){
+      var badge = document.getElementById('map-style-badge');
+      if (badge && styleNames[id]) {
+        badge.textContent = styleNames[id];
+      }
+    }
+
     function setActive(id){
       buttons.forEach(function(b){
         if (b.getAttribute('data-style') === id) b.classList.add('active');
         else b.classList.remove('active');
       });
+      updateBadge(id);
     }
 
     // Determine saved or default style
