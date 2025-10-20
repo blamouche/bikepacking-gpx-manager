@@ -143,7 +143,7 @@
       },
       "inLanguage": "fr-FR",
       "browserRequirements": "Requires JavaScript. Requires HTML5.",
-      "softwareVersion": "1.4",
+      "softwareVersion": "2.0",
       "datePublished": "2025-01-15",
       "dateModified": "2025-01-15",
       "license": "https://opensource.org/licenses/MIT"
@@ -3933,6 +3933,390 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     justify-content: center;
   }
 }
+
+/* ==================== USER POI STYLES ==================== */
+
+/* Add POI Toggle Button */
+#add-poi-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  background: var(--color-background);
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+#add-poi-toggle:hover {
+  background: var(--color-background-hover);
+  border-color: var(--color-primary);
+}
+
+#add-poi-toggle.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.2);
+}
+
+#add-poi-toggle::before {
+  content: '📍';
+  font-size: 18px;
+}
+
+/* User POI Marker Styles */
+.user-poi-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: white;
+  border: 3px dashed;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.user-poi-marker:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* User POI Form Popup */
+.user-poi-form-popup {
+  min-width: 280px;
+  max-width: 320px;
+}
+
+.user-poi-form-popup .leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.user-poi-form-popup .leaflet-popup-content {
+  margin: 16px;
+  font-size: 14px;
+}
+
+/* User POI Display Popup (same style as form popup) */
+.user-poi-popup .leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.user-poi-popup .leaflet-popup-content {
+  margin: 16px;
+  font-size: 14px;
+}
+
+/* POI Form Styles */
+.poi-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.poi-form-header {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--color-text);
+}
+
+.poi-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.poi-form-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.poi-form-input,
+.poi-form-textarea {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: white;
+  transition: border-color 0.2s ease;
+  touch-action: manipulation;
+}
+
+.poi-form-input:focus,
+.poi-form-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+}
+
+.poi-form-textarea {
+  resize: vertical;
+  min-height: 60px;
+  max-height: 120px;
+}
+
+.poi-form-input.error {
+  border-color: #D32F2F;
+}
+
+.poi-form-error {
+  color: #D32F2F;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Icon Picker */
+.poi-icon-picker {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  padding: 8px;
+  background: var(--color-background);
+  border-radius: 8px;
+}
+
+.poi-icon-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: white;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 44px;
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+.poi-icon-option:hover {
+  border-color: var(--color-primary);
+  background: rgba(0, 102, 255, 0.05);
+}
+
+.poi-icon-option.selected {
+  border-color: var(--color-primary);
+  background: rgba(0, 102, 255, 0.1);
+  box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.2);
+}
+
+.poi-icon-emoji {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.poi-icon-label {
+  font-size: 10px;
+  margin-top: 4px;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+/* Form Buttons */
+.poi-form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.poi-form-button {
+  flex: 1;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  min-height: 44px;
+}
+
+.poi-form-button.primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.poi-form-button.primary:hover:not(:disabled) {
+  background: #0052CC;
+}
+
+.poi-form-button.secondary {
+  background: var(--color-background);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.poi-form-button.secondary:hover {
+  background: var(--color-background-hover);
+}
+
+.poi-form-button.danger {
+  background: #D32F2F;
+  color: white;
+}
+
+.poi-form-button.danger:hover {
+  background: #B71C1C;
+}
+
+.poi-form-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* User POI Sidebar Section */
+#user-poi-section {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+#user-poi-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.user-poi-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  margin-bottom: 8px;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-poi-item:hover {
+  background: var(--color-background-hover);
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-poi-item-icon {
+  font-size: 20px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed;
+  border-radius: 50%;
+  background: white;
+  flex-shrink: 0;
+}
+
+.user-poi-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-poi-item-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-poi-item-description {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+.user-poi-item-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.user-poi-item-action {
+  padding: 6px 10px;
+  font-size: 12px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.user-poi-item-action:hover {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.user-poi-empty {
+  text-align: center;
+  padding: 20px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+/* POI Counter Badge */
+.poi-counter {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--color-primary);
+  color: white;
+  border-radius: 12px;
+  margin-left: 8px;
+}
+
+.poi-counter.warning {
+  background: #F57C00;
+}
+
+.poi-counter.danger {
+  background: #D32F2F;
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 767px) {
+  .poi-icon-picker {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  #user-poi-list {
+    max-height: 200px;
+  }
+
+  .user-poi-item {
+    padding: 8px;
+  }
+}
 </style>
 
 </head>
@@ -3944,8 +4328,13 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 <button aria-label="Fermer le panneau" class="btn-close-panel" id="close-panel">✕</button>
 </header>
 <div class="panel-content">
-<section class="panel-section geolocation-section" id="geolocation-section">
+<section class="panel-section geolocation-section collapsible-section" id="geolocation-section">
+<button aria-controls="geolocation-content" aria-expanded="false" class="section-header-toggle" type="button">
+<span class="section-header-icon">📍</span>
 <h3 class="section-title">Ma position</h3>
+<span class="section-header-chevron">▼</span>
+</button>
+<div class="section-collapsible-content" id="geolocation-content">
 <label class="layer-toggle geolocation-toggle">
 <input aria-label="Activer la géolocalisation en temps réel" class="toggle-input" id="geolocation-toggle" type="checkbox"/>
 <span class="toggle-switch"></span>
@@ -3965,12 +4354,52 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     </button>
 </div>
 <div class="geolocation-error" id="geolocation-error" style="display: none;"></div>
+</div>
 </section>
-<section class="panel-section gpx-section">
-<h3 class="section-title">
-<span class="section-icon" aria-hidden="true">📍</span>
-        Trace GPX
-      </h3>
+<section class="panel-section collapsible-section" id="user-poi-section">
+<button aria-controls="user-poi-content" aria-expanded="false" class="section-header-toggle" type="button">
+<span class="section-header-icon">📍</span>
+<h3 class="section-title">Mes POI <span class="poi-counter" id="user-poi-counter" style="display: none;">0</span></h3>
+<span class="section-header-chevron">▼</span>
+</button>
+<div class="section-collapsible-content" id="user-poi-content">
+<button id="add-poi-toggle" type="button" aria-pressed="false" aria-label="Activer le mode ajout de POI" style="width: 100%; margin-bottom: 12px;">
+      Ajouter un POI
+    </button>
+<div id="user-poi-empty-state">
+<div aria-label="Importer des POI depuis GPX" class="gpx-import-zone" id="user-poi-import-zone" role="button" tabindex="0">
+<span aria-hidden="true" class="gpx-import-icon">📍</span>
+<span class="gpx-import-title">Importer des POI</span>
+<span class="gpx-import-hint">Glissez un fichier .gpx ou cliquez pour parcourir</span>
+</div>
+<div style="text-align: center; margin-top: 12px; color: #888; font-size: 12px;">
+      ou
+    </div>
+<button id="add-poi-manual-hint" type="button" class="btn btn-secondary btn-small" style="width: 100%; margin-top: 8px;" onclick="document.getElementById('add-poi-toggle').click()">
+<span aria-hidden="true">➕</span>
+      Créer un POI sur la carte
+    </button>
+</div>
+<div id="user-poi-list" style="display: none;"></div>
+<div id="user-poi-actions" style="display: none; margin-top: 12px; gap: 8px;">
+<button id="export-user-pois" type="button" class="btn btn-secondary btn-small" style="flex: 1;">
+<span aria-hidden="true">💾</span>
+      Exporter
+    </button>
+<button id="clear-user-pois" type="button" class="btn btn-secondary btn-small" style="flex: 1;">
+<span aria-hidden="true">🗑️</span>
+      Effacer tout
+    </button>
+</div>
+</div>
+</section>
+<section class="panel-section gpx-section collapsible-section" id="gpx-section">
+<button aria-controls="gpx-content" aria-expanded="false" class="section-header-toggle" type="button">
+<span class="section-header-icon">📍</span>
+<h3 class="section-title">Trace GPX</h3>
+<span class="section-header-chevron">▼</span>
+</button>
+<div class="section-collapsible-content" id="gpx-content">
 <div class="gpx-empty-state" id="gpx-empty-state">
 <div aria-label="Importer une trace GPX" class="gpx-import-zone" id="gpx-import-zone" role="button" tabindex="0">
 <span aria-hidden="true" class="gpx-import-icon">📁</span>
@@ -4001,6 +4430,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 <span aria-hidden="true" class="icon">🗑️</span>
 <span class="label">Effacer</span>
 </button>
+</div>
 </div>
 </div>
 </section>
@@ -4101,7 +4531,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 <span class="panel-footer-separator" aria-hidden="true">•</span>
 <span role="listitem"><a href="https://paypal.me/blamouche" rel="noopener" target="_blank">Offre moi une bière 🍺</a></span>
 </div>
-<span class="panel-version">Version 1.4</span>
+<span class="panel-version">Version 2.0</span>
 </footer>
 </aside>
 <main class="map-container">
@@ -4425,6 +4855,36 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       'https://overpass.kumi.systems/api/interpreter',
       'https://overpass.openstreetmap.fr/api/interpreter'
     ];
+
+    // User-Created POI Icon Definitions (based on OSM categories)
+    const USER_POI_ICONS = {
+      camp_site: { emoji: '🏕️', label: 'Camping', color: '#4CAF50' },
+      backcountry: { emoji: '⛺', label: 'Bivouac', color: '#66BB6A' },
+      wilderness_hut: { emoji: '🛖', label: 'Refuge', color: '#8D6E63' },
+      alpine_hut: { emoji: '🏔️', label: 'Refuge alpin', color: '#795548' },
+      drinking_water: { emoji: '💧', label: 'Eau potable', color: '#2196F3' },
+      restaurant: { emoji: '🍴', label: 'Restaurant', color: '#FFC107' },
+      cafe: { emoji: '☕', label: 'Café', color: '#FFD54F' },
+      supermarket: { emoji: '🛒', label: 'Supermarché', color: '#FF5252' },
+      convenience: { emoji: '🏪', label: 'Épicerie', color: '#FF7043' },
+      bicycle_repair: { emoji: '🔧', label: 'Réparation vélo', color: '#FF6B00' },
+      bicycle_shop: { emoji: '🚲', label: 'Magasin vélo', color: '#FF8C00' },
+      toilets: { emoji: '🚻', label: 'Toilettes', color: '#607D8B' },
+      shower: { emoji: '🚿', label: 'Douches', color: '#78909C' },
+      hotel: { emoji: '🏨', label: 'Hôtel', color: '#9C27B0' },
+      hostel: { emoji: '🏠', label: 'Auberge', color: '#AB47BC' },
+      pharmacy: { emoji: '💊', label: 'Pharmacie', color: '#00C853' },
+      hospital: { emoji: '🏥', label: 'Hôpital', color: '#E53935' },
+      railway_station: { emoji: '🚉', label: 'Gare', color: '#E53935' },
+      bus_station: { emoji: '🚍', label: 'Gare routière', color: '#1565C0' },
+      star: { emoji: '⭐', label: 'Favori', color: '#FBC02D' },
+      generic: { emoji: '📍', label: 'Générique', color: '#757575' }
+    };
+
+    const USER_POI_STORAGE_KEY = 'gpx_user_pois';
+    const USER_POI_SOFT_LIMIT = 100;
+    const USER_POI_HARD_LIMIT = 200;
+    const PROXIMITY_THRESHOLD_METERS = 20;
 
     const POI_GROUPS = {
       bike_services: { id: 'bike_services', label: 'Services vélo', icon: '🚴', defaultExpanded: true, order: 1 },
@@ -5734,8 +6194,8 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
         title: poi.name
       });
       marker.bindPopup(createMultiCategoryPOIPopup(poi, category), {
-        maxWidth: 320,
-        className: 'poi-popup-container'
+        maxWidth: 300,
+        className: 'user-poi-popup'
       });
       if (poi.name) {
         marker.bindTooltip(poi.name, {
@@ -5748,96 +6208,126 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 
     function createMultiCategoryPOIPopup(poi, category) {
       const meta = poi.metadata || {};
-      let html = `
-        <div class="poi-popup">
-          <div class="poi-header">
-            <span class="poi-icon" aria-hidden="true">${category.icon}</span>
-            <strong class="poi-name">${escapeHtml(poi.name)}</strong>
-          </div>
-          <div class="poi-details">
-            <div class="poi-row">
-              <span class="poi-label">Type :</span>
-              <span class="poi-value">${escapeHtml(category.label)}</span>
-            </div>`;
+
+      // Build details rows
+      let detailsRows = '';
+
+      // Type
+      detailsRows += `<div><strong>Type:</strong> ${escapeHtml(category.label)}</div>`;
+
+      // Address
       if (poi.address) {
-        html += `
-            <div class="poi-row">
-              <span class="poi-label">Adresse :</span>
-              <span class="poi-value">${escapeHtml(poi.address)}</span>
-            </div>`;
+        detailsRows += `<div><strong>Adresse:</strong> ${escapeHtml(poi.address)}</div>`;
       }
+
+      // Opening hours
       if (meta.opening_hours) {
-        html += `
-            <div class="poi-row">
-              <span class="poi-label">Horaires :</span>
-              <span class="poi-value">${escapeHtml(meta.opening_hours)}</span>
-            </div>`;
+        detailsRows += `<div><strong>Horaires:</strong> ${escapeHtml(meta.opening_hours)}</div>`;
       }
+
+      // Phone
       if (meta.phone) {
-        html += `
-            <div class="poi-row">
-              <span class="poi-label">Téléphone :</span>
-              <span class="poi-value"><a href="tel:${escapeHtml(meta.phone)}">${escapeHtml(meta.phone)}</a></span>
-            </div>`;
+        detailsRows += `<div><strong>Téléphone:</strong> <a href="tel:${escapeHtml(meta.phone)}">${escapeHtml(meta.phone)}</a></div>`;
       }
+
+      // Website
       if (meta.website) {
-        html += `
-            <div class="poi-row">
-              <span class="poi-label">Site web :</span>
-              <span class="poi-value"><a href="${escapeHtml(meta.website)}" target="_blank" rel="noopener">🔗</a></span>
-            </div>`;
+        detailsRows += `<div><strong>Site web:</strong> <a href="${escapeHtml(meta.website)}" target="_blank" rel="noopener">🔗 Visiter</a></div>`;
       }
+
+      // Capacity
       if (meta.capacity) {
-        html += `
-            <div class="poi-row">
-              <span class="poi-label">Capacité :</span>
-              <span class="poi-value">${escapeHtml(meta.capacity)}</span>
-            </div>`;
+        detailsRows += `<div><strong>Capacité:</strong> ${escapeHtml(meta.capacity)}</div>`;
       }
+
+      // Fee
       if (meta.fee) {
         const feeLabel = meta.fee === 'yes' ? 'Payant' : meta.fee === 'no' ? 'Gratuit' : escapeHtml(meta.fee);
-        html += `
-            <div class="poi-row">
-              <span class="poi-label">Tarif :</span>
-              <span class="poi-value">${feeLabel}</span>
-            </div>`;
+        detailsRows += `<div><strong>Tarif:</strong> ${feeLabel}</div>`;
       }
+
+      // Access
       if (meta.access && meta.access !== 'yes') {
-        html += `
-            <div class="poi-row">
-              <span class="poi-label">Accès :</span>
-              <span class="poi-value">${escapeHtml(meta.access)}</span>
-            </div>`;
+        detailsRows += `<div><strong>Accès:</strong> ${escapeHtml(meta.access)}</div>`;
       }
+
+      // Cuisine
       if (meta.cuisine) {
-        html += `
-            <div class="poi-row">
-              <span class="poi-label">Cuisine :</span>
-              <span class="poi-value">${escapeHtml(meta.cuisine)}</span>
-            </div>`;
+        detailsRows += `<div><strong>Cuisine:</strong> ${escapeHtml(meta.cuisine)}</div>`;
       }
+
+      // Services
       const services = [];
       if (meta.drinking_water === 'yes') services.push('💧 Eau potable');
       if (meta.shower === 'yes') services.push('🚿 Douches');
       if (meta.toilets === 'yes') services.push('🚻 Toilettes');
       if (services.length > 0) {
-        html += `
-            <div class="poi-row">
-              <span class="poi-label">Services :</span>
-              <span class="poi-value">${services.join(' • ')}</span>
-            </div>`;
+        detailsRows += `<div><strong>Services:</strong> ${services.join(' • ')}</div>`;
       }
-      html += `
+
+      // Modern popup style (identical to user POIs)
+      return `
+        <div class="user-poi-popup-content" style="min-width: 250px;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+            <div style="
+              width: 36px;
+              height: 36px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              border: 3px solid ${category.color};
+              border-radius: 50%;
+              background: white;
+              font-size: 18px;
+            ">${category.icon}</div>
+            <div style="flex: 1;">
+              <div style="font-weight: 600; font-size: 15px; color: #333;">${escapeHtml(poi.name)}</div>
+              <div style="font-size: 11px; color: #666; margin-top: 2px;">POI OpenStreetMap</div>
+            </div>
           </div>
-          <div class="poi-footer">
-            <small>
-              <a href="https://www.openstreetmap.org/${poi.osmType}/${poi.id}" target="_blank" rel="noopener noreferrer">
-                Voir sur OpenStreetMap ↗
-              </a>
-            </small>
+
+          ${detailsRows ? `
+            <div style="
+              padding: 10px;
+              background: #f5f5f5;
+              border-radius: 6px;
+              font-size: 13px;
+              color: #555;
+              margin-bottom: 12px;
+              line-height: 1.4;
+            ">${detailsRows}</div>
+          ` : ''}
+
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <button
+              onclick="saveOSMPOIAsUserPOI(${poi.lat}, ${poi.lon}, '${escapeHtml(poi.name).replace(/'/g, "\\'")}', '${escapeHtml(category.label).replace(/'/g, "\\'")}', '${poi.osmType}', ${poi.id})"
+              class="poi-form-button primary"
+              style="flex: 1; padding: 8px 12px; font-size: 13px;"
+            >
+              📍 Enregistrer comme POI perso
+            </button>
           </div>
-        </div>`;
-      return html;
+
+          <div style="
+            text-align: center;
+            padding-top: 8px;
+            border-top: 1px solid #e0e0e0;
+          ">
+            <a
+              href="https://www.openstreetmap.org/${poi.osmType}/${poi.id}"
+              target="_blank"
+              rel="noopener noreferrer"
+              style="
+                font-size: 12px;
+                color: #0066FF;
+                text-decoration: none;
+              "
+            >
+              Voir sur OpenStreetMap ↗
+            </a>
+          </div>
+        </div>
+      `;
     }
 
     function displayMultiCategoryPOIs(pois) {
@@ -5939,6 +6429,12 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
     const map = L.map('map').setView([48.8566, 2.3522], 12);
   // Expose Leaflet map globally for style control
   window.map = map;
+
+// User POI Management - Global State
+let isAddPOIModeActive = false;
+let userPOILayerGroup = L.layerGroup().addTo(map);
+let saveUserPOIsDebounceTimer = null;
+let userPOIEditingPopup = null;
 
 let mapZoomInfoElement = null;
 let mapZoomInfoInitialized = false;
@@ -6248,6 +6744,10 @@ window.toggleTrackControl = toggleTrackControl;
     const miniAriaMin = document.getElementById('mini-aria-min');
     const miniAriaMax = document.getElementById('mini-aria-max');
 
+    // Exposer les éléments du profil d'élévation sur window pour accès global
+    window.elevationProfile = elevationProfile;
+    window.elevationCanvas = elevationCanvas;
+
     // Activer le bouton "Recharger les POI"
     if (poiRefreshButton) {
       poiRefreshButton.addEventListener('click', () => {
@@ -6308,6 +6808,7 @@ window.currentGpxFileName = '';
 window.currentTraceName = '';
 window.traceNameSource = '';
 let currentElevationData = null;
+window.currentElevationData = null;
 let elevationHoverMarker = null;
 let elevationMouseMoveHandler = null;
 let elevationMouseLeaveHandler = null;
@@ -7539,15 +8040,6 @@ function createWaypointMarker(latlng, name = '') {
         if (window.collapsibleSectionsAPI?.init && (!configBefore || !configBefore.initialized)) {
           window.collapsibleSectionsAPI.init('waypoints');
         }
-        const config = window.collapsibleSections?.waypoints;
-        if (config && !config.isExpanded) {
-          if (typeof setSectionExpanded === 'function') {
-            setSectionExpanded('waypoints', true, true);
-          }
-          if (typeof saveSectionState === 'function') {
-            saveSectionState('waypoints', true);
-          }
-        }
       }
 
       waypointsList.innerHTML = '';
@@ -8385,7 +8877,7 @@ function createWaypointMarker(latlng, name = '') {
           // Guarded elevation render after import
           if (typeof ensureElevationRendered === 'function') ensureElevationRendered(12);
 
-          currentElevationData = currentElevationData = window.currentElevationData = extractElevationData(geojson, xml);
+          currentElevationData = window.currentElevationData = extractElevationData(geojson, xml);
       let noElevationData = false;
           if (currentElevationData) {
             updateElevationStats(currentElevationData.stats);
@@ -10104,7 +10596,7 @@ window.collapsibleSections = window.collapsibleSections || {};
 const collapsibleSections = Object.assign(window.collapsibleSections, {
   mapStyle: {
     id: 'map-style-section',
-    storageKey: 'gpx_map_style_section_expanded',
+    storageKey: null,
     defaultExpanded: false,
     section: null,
     toggle: null,
@@ -10115,12 +10607,12 @@ const collapsibleSections = Object.assign(window.collapsibleSections, {
   },
   layers: {
     id: 'layers-section',
-    storageKey: 'gpx_layers_section_expanded',
-    defaultExpanded: true,
+    storageKey: null,
+    defaultExpanded: false,
     section: null,
     toggle: null,
     content: null,
-    isExpanded: true,
+    isExpanded: false,
     boundToggleHandler: null,
     initialized: false
   },
@@ -10137,6 +10629,39 @@ const collapsibleSections = Object.assign(window.collapsibleSections, {
   },
   roadbook: {
     id: 'roadbook-section',
+    storageKey: null,
+    defaultExpanded: false,
+    section: null,
+    toggle: null,
+    content: null,
+    isExpanded: false,
+    boundToggleHandler: null,
+    initialized: false
+  },
+  userPoi: {
+    id: 'user-poi-section',
+    storageKey: null,
+    defaultExpanded: false,
+    section: null,
+    toggle: null,
+    content: null,
+    isExpanded: false,
+    boundToggleHandler: null,
+    initialized: false
+  },
+  geolocation: {
+    id: 'geolocation-section',
+    storageKey: null,
+    defaultExpanded: false,
+    section: null,
+    toggle: null,
+    content: null,
+    isExpanded: false,
+    boundToggleHandler: null,
+    initialized: false
+  },
+  gpx: {
+    id: 'gpx-section',
     storageKey: null,
     defaultExpanded: false,
     section: null,
@@ -10481,6 +11006,1268 @@ document.addEventListener('DOMContentLoaded', initCollapsibleSections);
     refreshLayers: refreshPreviewLayers
   };
 })();
+
+// ==================== USER POI MANAGEMENT ====================
+
+// Toggle Add POI Mode
+function toggleAddPOIMode() {
+  isAddPOIModeActive = !isAddPOIModeActive;
+  const toggleBtn = document.getElementById('add-poi-toggle');
+
+  if (toggleBtn) {
+    toggleBtn.classList.toggle('active', isAddPOIModeActive);
+    toggleBtn.setAttribute('aria-pressed', isAddPOIModeActive);
+
+    // Update button text
+    toggleBtn.textContent = isAddPOIModeActive ? 'Mode actif (cliquez sur la carte)' : 'Ajouter un POI';
+
+    // Change cursor
+    map.getContainer().style.cursor = isAddPOIModeActive ? 'crosshair' : '';
+
+    // Show info message
+    if (isAddPOIModeActive) {
+      showMessage('Cliquez sur la carte pour ajouter un POI', 'info');
+    } else {
+      showMessage('Mode ajout de POI désactivé', 'info');
+    }
+  }
+}
+
+// Haversine Distance Calculation (4 parameters version)
+function haversineDistance4(lat1, lon1, lat2, lon2) {
+  const R = 6371e3; // Earth radius in meters
+  const φ1 = lat1 * Math.PI / 180;
+  const φ2 = lat2 * Math.PI / 180;
+  const Δφ = (lat2 - lat1) * Math.PI / 180;
+  const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+  const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ/2) * Math.sin(Δλ/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+  return R * c; // Distance in meters
+}
+
+// Check Proximity to Existing Markers
+function checkProximity(lat, lng, threshold = PROXIMITY_THRESHOLD_METERS) {
+  // Check against all user POI markers
+  const markers = [];
+  userPOILayerGroup.eachLayer(layer => {
+    if (layer instanceof L.Marker) {
+      markers.push(layer);
+    }
+  });
+
+  for (const marker of markers) {
+    const markerLatLng = marker.getLatLng();
+    const distance = haversineDistance4(lat, lng, markerLatLng.lat, markerLatLng.lng);
+    if (distance < threshold) {
+      return { overlapping: true, marker, distance };
+    }
+  }
+
+  return { overlapping: false };
+}
+
+// Generate POI Form HTML
+function generatePOIFormHTML(poiData = null, isEdit = false) {
+  const title = poiData?.title || '';
+  const description = poiData?.description || '';
+  const selectedIcon = poiData?.icon || 'generic';
+
+  let iconPickerHTML = '<div class="poi-icon-picker">';
+  for (const [iconKey, iconData] of Object.entries(USER_POI_ICONS)) {
+    const isSelected = iconKey === selectedIcon ? 'selected' : '';
+    iconPickerHTML += `
+      <div class="poi-icon-option ${isSelected}" data-icon="${iconKey}" onclick="selectPOIIcon('${iconKey}')">
+        <span class="poi-icon-emoji">${iconData.emoji}</span>
+        <span class="poi-icon-label">${iconData.label}</span>
+      </div>
+    `;
+  }
+  iconPickerHTML += '</div>';
+
+  return `
+    <form class="poi-form" id="poi-form" onsubmit="return false;">
+      <div class="poi-form-header">${isEdit ? 'Modifier le POI' : 'Nouveau POI'}</div>
+
+      <div class="poi-form-group">
+        <label class="poi-form-label" for="poi-title">Titre *</label>
+        <input
+          type="text"
+          id="poi-title"
+          class="poi-form-input"
+          maxlength="100"
+          required
+          value="${title}"
+          placeholder="Ex: Camping au bord du lac"
+        />
+        <div class="poi-form-error" id="poi-title-error" style="display: none;"></div>
+      </div>
+
+      <div class="poi-form-group">
+        <label class="poi-form-label" for="poi-description">Description</label>
+        <textarea
+          id="poi-description"
+          class="poi-form-textarea"
+          maxlength="500"
+          placeholder="Ex: Terrain plat, accès à l'eau, vue sur le lac..."
+        >${description}</textarea>
+      </div>
+
+      <div class="poi-form-group">
+        <label class="poi-form-label">Icône</label>
+        ${iconPickerHTML}
+        <input type="hidden" id="poi-selected-icon" value="${selectedIcon}" />
+      </div>
+
+      <div class="poi-form-actions">
+        <button type="button" class="poi-form-button secondary" onclick="cancelPOIForm()">Annuler</button>
+        <button type="button" class="poi-form-button primary" onclick="${isEdit ? 'savePOIEdit()' : 'createPOIFromForm()'}">
+          ${isEdit ? 'Enregistrer' : 'Créer'}
+        </button>
+      </div>
+    </form>
+  `;
+}
+
+// Select POI Icon
+function selectPOIIcon(iconKey) {
+  // Remove all selected states
+  document.querySelectorAll('.poi-icon-option').forEach(opt => {
+    opt.classList.remove('selected');
+  });
+
+  // Add selected state to clicked icon
+  const selectedOption = document.querySelector(`.poi-icon-option[data-icon="${iconKey}"]`);
+  if (selectedOption) {
+    selectedOption.classList.add('selected');
+  }
+
+  // Update hidden input
+  const hiddenInput = document.getElementById('poi-selected-icon');
+  if (hiddenInput) {
+    hiddenInput.value = iconKey;
+  }
+}
+
+// Open POI Creation Form
+function openPOICreationForm(latlng) {
+  // Check proximity to existing markers
+  const proximityCheck = checkProximity(latlng.lat, latlng.lng);
+  if (proximityCheck.overlapping) {
+    showMessage(`Un marqueur existe déjà à ${Math.round(proximityCheck.distance)}m de cet emplacement`, 'warning');
+    return;
+  }
+
+  // Check POI limit
+  const currentCount = getUserPOICount();
+  if (currentCount >= USER_POI_HARD_LIMIT) {
+    showMessage(`Limite de ${USER_POI_HARD_LIMIT} POI atteinte. Supprimez des POI existants pour en ajouter de nouveaux.`, 'error');
+    return;
+  }
+
+  if (currentCount >= USER_POI_SOFT_LIMIT && currentCount < USER_POI_HARD_LIMIT) {
+    showMessage(`Attention: Vous approchez de la limite (${currentCount}/${USER_POI_HARD_LIMIT} POI)`, 'warning');
+  }
+
+  const popup = L.popup({
+    maxWidth: 320,
+    closeButton: true,
+    className: 'user-poi-form-popup',
+    autoClose: false,
+    closeOnClick: false
+  })
+  .setLatLng(latlng)
+  .setContent(generatePOIFormHTML())
+  .openOn(map);
+
+  // Store popup reference and coordinates
+  userPOIEditingPopup = popup;
+  userPOIEditingPopup._poiCoords = latlng;
+
+  // Auto-focus title input
+  setTimeout(() => {
+    const titleInput = document.getElementById('poi-title');
+    if (titleInput) titleInput.focus();
+  }, 100);
+}
+
+// Create POI from Form
+function createPOIFromForm() {
+  const titleInput = document.getElementById('poi-title');
+  const descriptionInput = document.getElementById('poi-description');
+  const iconInput = document.getElementById('poi-selected-icon');
+
+  if (!titleInput || !iconInput || !userPOIEditingPopup) {
+    return;
+  }
+
+  const title = titleInput.value.trim();
+  const description = descriptionInput ? descriptionInput.value.trim() : '';
+  const icon = iconInput.value;
+
+  // Validation
+  if (!title) {
+    titleInput.classList.add('error');
+    const errorDiv = document.getElementById('poi-title-error');
+    if (errorDiv) {
+      errorDiv.textContent = 'Le titre est obligatoire';
+      errorDiv.style.display = 'block';
+    }
+    return;
+  }
+
+  if (title.length > 100) {
+    showMessage('Le titre ne peut pas dépasser 100 caractères', 'error');
+    return;
+  }
+
+  if (description.length > 500) {
+    showMessage('La description ne peut pas dépasser 500 caractères', 'error');
+    return;
+  }
+
+  // Create POI data
+  const coords = userPOIEditingPopup._poiCoords;
+  const poiData = {
+    id: `poi-${Date.now()}`,
+    lat: parseFloat(coords.lat.toFixed(6)),
+    lng: parseFloat(coords.lng.toFixed(6)),
+    title,
+    description,
+    icon,
+    source: 'manual',
+    osmId: null,
+    osmMetadata: null,
+    createdAt: Date.now(),
+    updatedAt: Date.now()
+  };
+
+  // Create marker
+  createUserPOIMarker(poiData);
+
+  // Close popup and clear reference
+  map.closePopup(userPOIEditingPopup);
+  userPOIEditingPopup = null;
+
+  // Deactivate add mode
+  isAddPOIModeActive = false;
+  toggleAddPOIMode();
+
+  // Save to localStorage
+  saveUserPOIsToLocalStorage();
+
+  // Update sidebar
+  renderUserPOISidebar();
+
+  showMessage('POI créé avec succès', 'success');
+}
+
+// Cancel POI Form
+function cancelPOIForm() {
+  if (userPOIEditingPopup) {
+    map.closePopup(userPOIEditingPopup);
+    userPOIEditingPopup = null;
+  }
+}
+
+// Create User POI Marker
+function createUserPOIMarker(poiData) {
+  const iconData = USER_POI_ICONS[poiData.icon] || USER_POI_ICONS.generic;
+
+  const icon = L.divIcon({
+    className: 'user-poi-marker',
+    html: `<span style="font-size: 16px;">${iconData.emoji}</span>`,
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16]
+  });
+
+  const marker = L.marker([poiData.lat, poiData.lng], {
+    icon,
+    title: poiData.title,
+    riseOnHover: true,
+    zIndexOffset: 1000
+  });
+
+  // Store POI data on marker
+  marker.poiData = poiData;
+
+  // Set marker color via inline style
+  marker.on('add', () => {
+    const markerElement = marker.getElement();
+    if (markerElement) {
+      markerElement.style.borderColor = iconData.color;
+    }
+  });
+
+  // Bind popup with POI details
+  marker.bindPopup(() => generatePOIPopupHTML(poiData), {
+    maxWidth: 300,
+    className: 'user-poi-popup'
+  });
+
+  // Bind tooltip
+  marker.bindTooltip(poiData.title, {
+    direction: 'top',
+    offset: [0, -16]
+  });
+
+  // Add to layer group
+  userPOILayerGroup.addLayer(marker);
+
+  return marker;
+}
+
+// Generate POI Popup HTML
+function generatePOIPopupHTML(poiData) {
+  const iconData = USER_POI_ICONS[poiData.icon] || USER_POI_ICONS.generic;
+  const createdDate = new Date(poiData.createdAt).toLocaleDateString('fr-FR');
+
+  return `
+    <div class="user-poi-popup-content" style="min-width: 250px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <div style="
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 3px dashed ${iconData.color};
+          border-radius: 50%;
+          background: white;
+          font-size: 18px;
+        ">${iconData.emoji}</div>
+        <div style="flex: 1;">
+          <div style="font-weight: 600; font-size: 15px; color: #333;">${poiData.title}</div>
+          <div style="font-size: 11px; color: #666; margin-top: 2px;">${iconData.label} • ${createdDate}</div>
+        </div>
+      </div>
+
+      ${poiData.description ? `
+        <div style="
+          padding: 10px;
+          background: #f5f5f5;
+          border-radius: 6px;
+          font-size: 13px;
+          color: #555;
+          margin-bottom: 12px;
+          line-height: 1.4;
+        ">${poiData.description}</div>
+      ` : ''}
+
+      <div style="
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 12px;
+      ">
+        <div><strong>Lat:</strong> ${poiData.lat.toFixed(6)}°</div>
+        <div><strong>Lng:</strong> ${poiData.lng.toFixed(6)}°</div>
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button
+          onclick="editUserPOI('${poiData.id}')"
+          class="poi-form-button secondary"
+          style="flex: 1; padding: 8px 12px; font-size: 13px;"
+        >
+          ✏️ Modifier
+        </button>
+        <button
+          onclick="deleteUserPOI('${poiData.id}')"
+          class="poi-form-button danger"
+          style="flex: 1; padding: 8px 12px; font-size: 13px;"
+        >
+          🗑️ Supprimer
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// Get User POI Count
+function getUserPOICount() {
+  let count = 0;
+  userPOILayerGroup.eachLayer(() => count++);
+  return count;
+}
+
+// Save User POIs to localStorage (Debounced)
+function saveUserPOIsToLocalStorage() {
+  if (saveUserPOIsDebounceTimer) {
+    clearTimeout(saveUserPOIsDebounceTimer);
+  }
+
+  saveUserPOIsDebounceTimer = setTimeout(() => {
+    try {
+      const pois = [];
+      userPOILayerGroup.eachLayer(layer => {
+        if (layer.poiData) {
+          pois.push(layer.poiData);
+        }
+      });
+
+      localStorage.setItem(USER_POI_STORAGE_KEY, JSON.stringify(pois));
+      console.log(`✅ ${pois.length} POI(s) sauvegardé(s)`);
+    } catch (e) {
+      if (e.name === 'QuotaExceededError') {
+        showMessage('Espace de stockage insuffisant. Supprimez des POI ou des données pour continuer.', 'error');
+      } else {
+        console.error('Erreur sauvegarde POI:', e);
+        showMessage('Erreur lors de la sauvegarde des POI', 'error');
+      }
+    }
+  }, 120);
+}
+
+// Load User POIs from localStorage
+function loadUserPOIsFromLocalStorage() {
+  try {
+    const storedData = localStorage.getItem(USER_POI_STORAGE_KEY);
+    if (!storedData) {
+      console.log('Aucun POI sauvegardé');
+      return;
+    }
+
+    const pois = JSON.parse(storedData);
+    if (!Array.isArray(pois)) {
+      console.warn('Format de données POI invalide');
+      return;
+    }
+
+    // Clear existing markers
+    userPOILayerGroup.clearLayers();
+
+    // Create markers for each POI
+    pois.forEach(poiData => {
+      createUserPOIMarker(poiData);
+    });
+
+    console.log(`✅ ${pois.length} POI(s) chargé(s)`);
+    renderUserPOISidebar();
+  } catch (e) {
+    console.error('Erreur chargement POI:', e);
+    showMessage('Erreur lors du chargement des POI', 'error');
+  }
+}
+
+// Render User POI Sidebar
+function renderUserPOISidebar() {
+  const listContainer = document.getElementById('user-poi-list');
+  const counterBadge = document.getElementById('user-poi-counter');
+
+  if (!listContainer) return;
+
+  const pois = [];
+  userPOILayerGroup.eachLayer(layer => {
+    if (layer.poiData) {
+      pois.push({ marker: layer, data: layer.poiData });
+    }
+  });
+
+  // Update counter
+  if (counterBadge) {
+    if (pois.length > 0) {
+      counterBadge.textContent = pois.length;
+      counterBadge.style.display = 'inline-block';
+
+      // Add warning/danger classes
+      counterBadge.classList.remove('warning', 'danger');
+      if (pois.length >= USER_POI_HARD_LIMIT) {
+        counterBadge.classList.add('danger');
+      } else if (pois.length >= USER_POI_SOFT_LIMIT) {
+        counterBadge.classList.add('warning');
+      }
+    } else {
+      counterBadge.style.display = 'none';
+    }
+  }
+
+  // Show/hide empty state vs list
+  const emptyState = document.getElementById('user-poi-empty-state');
+  if (emptyState) {
+    emptyState.style.display = pois.length === 0 ? 'block' : 'none';
+  }
+  if (listContainer) {
+    listContainer.style.display = pois.length > 0 ? 'block' : 'none';
+  }
+
+  // Show/hide action buttons
+  const actionsContainer = document.getElementById('user-poi-actions');
+  if (actionsContainer) {
+    actionsContainer.style.display = pois.length > 0 ? 'flex' : 'none';
+  }
+
+  // If no POIs, nothing more to render
+  if (pois.length === 0) {
+    return;
+  }
+
+  // Sort by creation date (newest first)
+  pois.sort((a, b) => b.data.createdAt - a.data.createdAt);
+
+  let html = '';
+  pois.forEach(({ marker, data }) => {
+    const iconData = USER_POI_ICONS[data.icon] || USER_POI_ICONS.generic;
+    const truncatedDescription = data.description.length > 50
+      ? data.description.substring(0, 50) + '...'
+      : data.description;
+
+    html += `
+      <div class="user-poi-item" onclick="centerOnPOI('${data.id}')">
+        <div class="user-poi-item-icon" style="border-color: ${iconData.color};">
+          ${iconData.emoji}
+        </div>
+        <div class="user-poi-item-content">
+          <div class="user-poi-item-title">${data.title}</div>
+          ${data.description ? `<div class="user-poi-item-description">${truncatedDescription}</div>` : ''}
+        </div>
+      </div>
+    `;
+  });
+
+  listContainer.innerHTML = html;
+}
+
+// Center on POI
+function centerOnPOI(poiId) {
+  userPOILayerGroup.eachLayer(layer => {
+    if (layer.poiData && layer.poiData.id === poiId) {
+      const latlng = layer.getLatLng();
+      map.setView(latlng, Math.max(map.getZoom(), 15));
+      layer.openPopup();
+    }
+  });
+}
+
+// Edit User POI
+function editUserPOI(poiId) {
+  let targetMarker = null;
+  let targetData = null;
+
+  userPOILayerGroup.eachLayer(layer => {
+    if (layer.poiData && layer.poiData.id === poiId) {
+      targetMarker = layer;
+      targetData = layer.poiData;
+    }
+  });
+
+  if (!targetMarker || !targetData) {
+    showMessage('POI introuvable', 'error');
+    return;
+  }
+
+  const popup = L.popup({
+    maxWidth: 320,
+    closeButton: true,
+    className: 'user-poi-form-popup',
+    autoClose: false,
+    closeOnClick: false
+  })
+  .setLatLng(targetMarker.getLatLng())
+  .setContent(generatePOIFormHTML(targetData, true))
+  .openOn(map);
+
+  userPOIEditingPopup = popup;
+  userPOIEditingPopup._editingPOIId = poiId;
+
+  setTimeout(() => {
+    const titleInput = document.getElementById('poi-title');
+    if (titleInput) titleInput.focus();
+  }, 100);
+}
+
+// Save POI Edit
+function savePOIEdit() {
+  if (!userPOIEditingPopup || !userPOIEditingPopup._editingPOIId) {
+    return;
+  }
+
+  const titleInput = document.getElementById('poi-title');
+  const descriptionInput = document.getElementById('poi-description');
+  const iconInput = document.getElementById('poi-selected-icon');
+
+  if (!titleInput || !iconInput) {
+    return;
+  }
+
+  const title = titleInput.value.trim();
+  const description = descriptionInput ? descriptionInput.value.trim() : '';
+  const icon = iconInput.value;
+
+  // Validation
+  if (!title) {
+    titleInput.classList.add('error');
+    const errorDiv = document.getElementById('poi-title-error');
+    if (errorDiv) {
+      errorDiv.textContent = 'Le titre est obligatoire';
+      errorDiv.style.display = 'block';
+    }
+    return;
+  }
+
+  // Find and update marker
+  const poiId = userPOIEditingPopup._editingPOIId;
+  let updated = false;
+
+  userPOILayerGroup.eachLayer(layer => {
+    if (layer.poiData && layer.poiData.id === poiId) {
+      // Update POI data
+      layer.poiData.title = title;
+      layer.poiData.description = description;
+      layer.poiData.icon = icon;
+      layer.poiData.updatedAt = Date.now();
+
+      // Update marker icon
+      const iconData = USER_POI_ICONS[icon] || USER_POI_ICONS.generic;
+      const newIcon = L.divIcon({
+        className: 'user-poi-marker',
+        html: `<span style="font-size: 16px;">${iconData.emoji}</span>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16]
+      });
+      layer.setIcon(newIcon);
+
+      // Update tooltip
+      layer.setTooltipContent(title);
+
+      // Update popup
+      layer.bindPopup(() => generatePOIPopupHTML(layer.poiData), {
+        maxWidth: 300,
+        className: 'user-poi-popup'
+      });
+
+      // Update border color
+      const markerElement = layer.getElement();
+      if (markerElement) {
+        markerElement.style.borderColor = iconData.color;
+      }
+
+      updated = true;
+    }
+  });
+
+  if (updated) {
+    // Close popup
+    map.closePopup(userPOIEditingPopup);
+    userPOIEditingPopup = null;
+
+    // Save and update UI
+    saveUserPOIsToLocalStorage();
+    renderUserPOISidebar();
+    showMessage('POI modifié avec succès', 'success');
+  } else {
+    showMessage('Erreur lors de la modification du POI', 'error');
+  }
+}
+
+// Delete User POI
+function deleteUserPOI(poiId, skipConfirmation = false) {
+  if (!skipConfirmation) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce POI ?')) {
+      return;
+    }
+  }
+
+  let deleted = false;
+
+  userPOILayerGroup.eachLayer(layer => {
+    if (layer.poiData && layer.poiData.id === poiId) {
+      userPOILayerGroup.removeLayer(layer);
+      deleted = true;
+    }
+  });
+
+  if (deleted) {
+    map.closePopup();
+    saveUserPOIsToLocalStorage();
+    renderUserPOISidebar();
+    showMessage('POI supprimé avec succès', 'success');
+  } else {
+    showMessage('POI introuvable', 'error');
+  }
+}
+
+// Save OSM POI as User POI
+function saveOSMPOIAsUserPOI(lat, lon, name, categoryLabel, osmType, osmId) {
+  // Check proximity to existing markers
+  const proximityCheck = checkProximity(lat, lon);
+  if (proximityCheck.overlapping) {
+    showMessage(`Un POI existe déjà à ${Math.round(proximityCheck.distance)}m de cet emplacement`, 'warning');
+    return;
+  }
+
+  // Check POI limit
+  const currentCount = getUserPOICount();
+  if (currentCount >= USER_POI_HARD_LIMIT) {
+    showMessage(`Limite de ${USER_POI_HARD_LIMIT} POI atteinte. Supprimez des POI existants pour en ajouter de nouveaux.`, 'error');
+    return;
+  }
+
+  if (currentCount >= USER_POI_SOFT_LIMIT && currentCount < USER_POI_HARD_LIMIT) {
+    showMessage(`Attention: Vous approchez de la limite (${currentCount}/${USER_POI_HARD_LIMIT} POI)`, 'warning');
+  }
+
+  // Map category to appropriate icon (best effort matching)
+  let iconKey = 'generic'; // default
+  const lowerCategory = categoryLabel.toLowerCase();
+
+  // Direct matching with OSM categories
+  if (lowerCategory.includes('camping') && !lowerCategory.includes('bivouac')) {
+    iconKey = 'camp_site';
+  } else if (lowerCategory.includes('bivouac')) {
+    iconKey = 'backcountry';
+  } else if (lowerCategory.includes('refuge alpin')) {
+    iconKey = 'alpine_hut';
+  } else if (lowerCategory.includes('refuge')) {
+    iconKey = 'wilderness_hut';
+  } else if (lowerCategory.includes('eau') || lowerCategory.includes('water') || lowerCategory.includes('drinking')) {
+    iconKey = 'drinking_water';
+  } else if (lowerCategory.includes('restaurant')) {
+    iconKey = 'restaurant';
+  } else if (lowerCategory.includes('café') || lowerCategory.includes('cafe')) {
+    iconKey = 'cafe';
+  } else if (lowerCategory.includes('supermarché') || lowerCategory.includes('supermarket')) {
+    iconKey = 'supermarket';
+  } else if (lowerCategory.includes('épicerie') || lowerCategory.includes('convenience')) {
+    iconKey = 'convenience';
+  } else if (lowerCategory.includes('réparation') || lowerCategory.includes('repair')) {
+    iconKey = 'bicycle_repair';
+  } else if (lowerCategory.includes('vélo') || lowerCategory.includes('bicycle')) {
+    iconKey = 'bicycle_shop';
+  } else if (lowerCategory.includes('toilettes') || lowerCategory.includes('toilets')) {
+    iconKey = 'toilets';
+  } else if (lowerCategory.includes('douches') || lowerCategory.includes('shower')) {
+    iconKey = 'shower';
+  } else if (lowerCategory.includes('hôtel') || lowerCategory.includes('hotel')) {
+    iconKey = 'hotel';
+  } else if (lowerCategory.includes('auberge') || lowerCategory.includes('hostel')) {
+    iconKey = 'hostel';
+  } else if (lowerCategory.includes('pharmacie') || lowerCategory.includes('pharmacy')) {
+    iconKey = 'pharmacy';
+  } else if (lowerCategory.includes('hôpital') || lowerCategory.includes('hospital')) {
+    iconKey = 'hospital';
+  } else if (lowerCategory.includes('gare') && (lowerCategory.includes('ferroviaire') || lowerCategory.includes('railway'))) {
+    iconKey = 'railway_station';
+  } else if (lowerCategory.includes('gare') && lowerCategory.includes('routière')) {
+    iconKey = 'bus_station';
+  }
+
+  // Create title with category prefix
+  const titleWithCategory = `${categoryLabel} - ${name}`;
+
+  // Create POI data
+  const poiData = {
+    id: `poi-${Date.now()}`,
+    lat: parseFloat(lat.toFixed(6)),
+    lng: parseFloat(lon.toFixed(6)),
+    title: titleWithCategory,
+    description: `Importé depuis OpenStreetMap`,
+    icon: iconKey,
+    source: 'osm',
+    osmId: `${osmType}/${osmId}`,
+    osmMetadata: {
+      category: categoryLabel,
+      osmType: osmType
+    },
+    createdAt: Date.now(),
+    updatedAt: Date.now()
+  };
+
+  // Create marker
+  createUserPOIMarker(poiData);
+
+  // Close any open popup
+  map.closePopup();
+
+  // Save to localStorage
+  saveUserPOIsToLocalStorage();
+
+  // Update sidebar
+  renderUserPOISidebar();
+
+  showMessage(`POI "${name}" enregistré avec succès`, 'success');
+}
+
+// Export User POIs to GPX
+function exportUserPOIsToGPX() {
+  const pois = [];
+  userPOILayerGroup.eachLayer(layer => {
+    if (layer.poiData) {
+      pois.push(layer.poiData);
+    }
+  });
+
+  if (pois.length === 0) {
+    showMessage('Aucun POI à exporter', 'warning');
+    return;
+  }
+
+  // Create GPX XML
+  let gpxContent = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Cycling Companion" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <metadata>
+    <name>Mes POI</name>
+    <desc>POI personnalisés exportés depuis Cycling Companion</desc>
+    <time>${new Date().toISOString()}</time>
+  </metadata>
+`;
+
+  pois.forEach(poi => {
+    const iconData = USER_POI_ICONS[poi.icon] || USER_POI_ICONS.generic;
+    const escapedTitle = escapeXml(poi.title);
+    const escapedDesc = poi.description ? escapeXml(poi.description) : '';
+
+    gpxContent += `  <wpt lat="${poi.lat}" lon="${poi.lng}">
+    <name>${escapedTitle}</name>`;
+
+    if (poi.description) {
+      gpxContent += `
+    <desc>${escapedDesc}</desc>`;
+    }
+
+    gpxContent += `
+    <type>${escapeXml(iconData.label)}</type>
+    <extensions>
+      <icon>${escapeXml(poi.icon)}</icon>
+      <source>${escapeXml(poi.source)}</source>`;
+
+    if (poi.osmId) {
+      gpxContent += `
+      <osmId>${escapeXml(poi.osmId)}</osmId>`;
+    }
+
+    gpxContent += `
+      <createdAt>${new Date(poi.createdAt).toISOString()}</createdAt>
+      <updatedAt>${new Date(poi.updatedAt).toISOString()}</updatedAt>
+    </extensions>
+  </wpt>
+`;
+  });
+
+  gpxContent += '</gpx>';
+
+  // Download file
+  const blob = new Blob([gpxContent], { type: 'application/gpx+xml' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `mes-poi-${new Date().toISOString().split('T')[0]}.gpx`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showMessage(`${pois.length} POI exporté(s) en GPX`, 'success');
+}
+
+// Export User POIs to GeoJSON
+function exportUserPOIsToGeoJSON() {
+  const pois = [];
+  userPOILayerGroup.eachLayer(layer => {
+    if (layer.poiData) {
+      pois.push(layer.poiData);
+    }
+  });
+
+  if (pois.length === 0) {
+    showMessage('Aucun POI à exporter', 'warning');
+    return;
+  }
+
+  // Create GeoJSON FeatureCollection
+  const geojson = {
+    type: 'FeatureCollection',
+    features: pois.map(poi => {
+      const iconData = USER_POI_ICONS[poi.icon] || USER_POI_ICONS.generic;
+      return {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [poi.lng, poi.lat]
+        },
+        properties: {
+          name: poi.title,
+          description: poi.description,
+          icon: poi.icon,
+          iconLabel: iconData.label,
+          iconEmoji: iconData.emoji,
+          source: poi.source,
+          osmId: poi.osmId,
+          osmMetadata: poi.osmMetadata,
+          createdAt: new Date(poi.createdAt).toISOString(),
+          updatedAt: new Date(poi.updatedAt).toISOString()
+        }
+      };
+    })
+  };
+
+  // Download file
+  const blob = new Blob([JSON.stringify(geojson, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `mes-poi-${new Date().toISOString().split('T')[0]}.geojson`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showMessage(`${pois.length} POI exporté(s) en GeoJSON`, 'success');
+}
+
+// Helper function to escape XML special characters
+function escapeXml(unsafe) {
+  if (!unsafe) return '';
+  return String(unsafe)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+// Clear All User POIs
+function clearAllUserPOIs() {
+  const count = getUserPOICount();
+
+  if (count === 0) {
+    showMessage('Aucun POI à effacer', 'info');
+    return;
+  }
+
+  if (!confirm(`Êtes-vous sûr de vouloir supprimer tous les ${count} POI ?\n\nCette action est irréversible.`)) {
+    return;
+  }
+
+  // Clear all markers
+  userPOILayerGroup.clearLayers();
+
+  // Clear localStorage
+  localStorage.removeItem(USER_POI_STORAGE_KEY);
+
+  // Update sidebar
+  renderUserPOISidebar();
+
+  showMessage(`${count} POI supprimé(s)`, 'success');
+}
+
+// Import User POIs from GPX
+function importUserPOIsFromGPX(file) {
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(e.target.result, 'text/xml');
+
+      // Check for parsing errors
+      const parserError = xmlDoc.querySelector('parsererror');
+      if (parserError) {
+        showMessage('Erreur: Fichier GPX invalide', 'error');
+        return;
+      }
+
+      // Extract waypoints
+      const waypoints = xmlDoc.querySelectorAll('wpt');
+      if (waypoints.length === 0) {
+        showMessage('Aucun waypoint trouvé dans ce fichier GPX', 'warning');
+        return;
+      }
+
+      let importedCount = 0;
+      let skippedCount = 0;
+
+      waypoints.forEach(wpt => {
+        const lat = parseFloat(wpt.getAttribute('lat'));
+        const lon = parseFloat(wpt.getAttribute('lon'));
+
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+          skippedCount++;
+          return;
+        }
+
+        // Check if would exceed hard limit
+        if (getUserPOICount() >= USER_POI_HARD_LIMIT) {
+          skippedCount++;
+          return;
+        }
+
+        // Check proximity to existing POI
+        const proximityCheck = checkProximity(lat, lon);
+        if (proximityCheck.overlapping) {
+          skippedCount++;
+          return;
+        }
+
+        // Extract waypoint data
+        const nameEl = wpt.querySelector('name');
+        const descEl = wpt.querySelector('desc');
+        const typeEl = wpt.querySelector('type');
+
+        // Try to extract custom extensions
+        const extensionsEl = wpt.querySelector('extensions');
+        let iconKey = 'generic';
+        let source = 'manual';
+        let osmId = null;
+        let osmMetadata = null;
+
+        if (extensionsEl) {
+          const iconEl = extensionsEl.querySelector('icon');
+          if (iconEl && USER_POI_ICONS[iconEl.textContent]) {
+            iconKey = iconEl.textContent;
+          }
+
+          const sourceEl = extensionsEl.querySelector('source');
+          if (sourceEl) {
+            source = sourceEl.textContent;
+          }
+
+          const osmIdEl = extensionsEl.querySelector('osmId');
+          if (osmIdEl) {
+            osmId = osmIdEl.textContent;
+          }
+        }
+
+        // If no icon found in extensions, try to match from type or name
+        if (iconKey === 'generic' && typeEl) {
+          const typeText = typeEl.textContent.toLowerCase();
+          // Try to match with our icon labels
+          for (const [key, iconData] of Object.entries(USER_POI_ICONS)) {
+            if (typeText.includes(iconData.label.toLowerCase())) {
+              iconKey = key;
+              break;
+            }
+          }
+        }
+
+        // Create POI data
+        const poiData = {
+          id: `poi-${Date.now()}-${importedCount}`,
+          lat: parseFloat(lat.toFixed(6)),
+          lng: parseFloat(lon.toFixed(6)),
+          title: nameEl ? nameEl.textContent.trim() : `POI importé ${importedCount + 1}`,
+          description: descEl ? descEl.textContent.trim() : '',
+          icon: iconKey,
+          source: source,
+          osmId: osmId,
+          osmMetadata: osmMetadata,
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        };
+
+        // Create marker
+        createUserPOIMarker(poiData);
+        importedCount++;
+      });
+
+      // Save to localStorage
+      if (importedCount > 0) {
+        saveUserPOIsToLocalStorage();
+        renderUserPOISidebar();
+
+        let message = `${importedCount} POI importé(s)`;
+        if (skippedCount > 0) {
+          message += ` (${skippedCount} ignoré(s): doublons ou limite atteinte)`;
+        }
+        showMessage(message, 'success');
+      } else {
+        showMessage('Aucun POI n\'a pu être importé', 'warning');
+      }
+
+    } catch (error) {
+      console.error('Erreur import GPX:', error);
+      showMessage('Erreur lors de l\'import du fichier GPX', 'error');
+    }
+  };
+
+  reader.onerror = function() {
+    showMessage('Erreur lors de la lecture du fichier', 'error');
+  };
+
+  reader.readAsText(file);
+}
+
+// Map Click Handler for POI Creation
+map.on('click', function(e) {
+  if (isAddPOIModeActive) {
+    openPOICreationForm(e.latlng);
+  }
+});
+
+// Initialize: Attach event listeners
+document.addEventListener('DOMContentLoaded', function() {
+  const toggleBtn = document.getElementById('add-poi-toggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', toggleAddPOIMode);
+  }
+
+  const exportBtn = document.getElementById('export-user-pois');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', function() {
+      // Show format selection
+      if (confirm('Exporter en GPX ?\n\nOK = GPX (compatible GPS)\nAnnuler = GeoJSON (données complètes)')) {
+        exportUserPOIsToGPX();
+      } else {
+        exportUserPOIsToGeoJSON();
+      }
+    });
+  }
+
+  const clearBtn = document.getElementById('clear-user-pois');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', clearAllUserPOIs);
+  }
+
+  // POI Import zone - Click handler
+  const poiImportZone = document.getElementById('user-poi-import-zone');
+  if (poiImportZone) {
+    poiImportZone.addEventListener('click', function() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.gpx';
+      input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          importUserPOIsFromGPX(file);
+        }
+      };
+      input.click();
+    });
+
+    // Drag & drop handlers
+    poiImportZone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      poiImportZone.style.background = 'rgba(0, 102, 255, 0.1)';
+      poiImportZone.style.borderColor = 'var(--color-primary)';
+    });
+
+    poiImportZone.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      poiImportZone.style.background = '';
+      poiImportZone.style.borderColor = '';
+    });
+
+    poiImportZone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      poiImportZone.style.background = '';
+      poiImportZone.style.borderColor = '';
+
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        const file = files[0];
+        if (file.name.endsWith('.gpx')) {
+          importUserPOIsFromGPX(file);
+        } else {
+          showMessage('Seuls les fichiers .gpx sont acceptés', 'error');
+        }
+      }
+    });
+
+    // Keyboard accessibility
+    poiImportZone.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        poiImportZone.click();
+      }
+    });
+  }
+
+  // Load POIs from localStorage
+  loadUserPOIsFromLocalStorage();
+});
+
+// Also try to initialize immediately if DOM is already loaded
+if (document.readyState !== 'loading') {
+  const toggleBtn = document.getElementById('add-poi-toggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', toggleAddPOIMode);
+  }
+
+  const exportBtn = document.getElementById('export-user-pois');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', function() {
+      if (confirm('Exporter en GPX ?\n\nOK = GPX (compatible GPS)\nAnnuler = GeoJSON (données complètes)')) {
+        exportUserPOIsToGPX();
+      } else {
+        exportUserPOIsToGeoJSON();
+      }
+    });
+  }
+
+  const clearBtn = document.getElementById('clear-user-pois');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', clearAllUserPOIs);
+  }
+
+  // POI Import zone - Click handler
+  const poiImportZone = document.getElementById('user-poi-import-zone');
+  if (poiImportZone) {
+    poiImportZone.addEventListener('click', function() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.gpx';
+      input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          importUserPOIsFromGPX(file);
+        }
+      };
+      input.click();
+    });
+
+    poiImportZone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      poiImportZone.style.background = 'rgba(0, 102, 255, 0.1)';
+      poiImportZone.style.borderColor = 'var(--color-primary)';
+    });
+
+    poiImportZone.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      poiImportZone.style.background = '';
+      poiImportZone.style.borderColor = '';
+    });
+
+    poiImportZone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      poiImportZone.style.background = '';
+      poiImportZone.style.borderColor = '';
+
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        const file = files[0];
+        if (file.name.endsWith('.gpx')) {
+          importUserPOIsFromGPX(file);
+        } else {
+          showMessage('Seuls les fichiers .gpx sont acceptés', 'error');
+        }
+      }
+    });
+
+    poiImportZone.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        poiImportZone.click();
+      }
+    });
+  }
+
+  loadUserPOIsFromLocalStorage();
+}
+
 </script>
 
 <!-- ==================== FOOTER SEO (masqué visuellement) ==================== -->
