@@ -1954,6 +1954,35 @@
 #roadbook-section .section-title { color: var(--color-roadbook); }
 #trace-info-section .section-title { color: #FF9800; }
 
+/* Pastille de statut pour la géolocalisation */
+.status-badge {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-left: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.status-badge.off {
+  background-color: #9E9E9E;
+}
+
+.status-badge.on {
+  background-color: #4CAF50;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+  animation: pulse-badge 2s infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
 .btn {
   border-radius: var(--radius-md);
   font-weight: 600;
@@ -4331,7 +4360,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 <section class="panel-section geolocation-section collapsible-section" id="geolocation-section">
 <button aria-controls="geolocation-content" aria-expanded="false" class="section-header-toggle" type="button">
 <span class="section-header-icon">📍</span>
-<h3 class="section-title">Ma position</h3>
+<h3 class="section-title">Ma position <span class="status-badge off" id="geolocation-status-badge"></span></h3>
 <span class="section-header-chevron">▼</span>
 </button>
 <div class="section-collapsible-content" id="geolocation-content">
@@ -9661,6 +9690,7 @@ function initGeolocation() {
   geolocationManager.infoContainer = document.getElementById('geolocation-info');
   geolocationManager.errorContainer = document.getElementById('geolocation-error');
   geolocationManager.centerButton = document.getElementById('center-on-position');
+  geolocationManager.statusBadge = document.getElementById('geolocation-status-badge');
 
   if (!navigator.geolocation) {
     showGeolocationError('Votre navigateur ne supporte pas la géolocalisation.');
@@ -9682,6 +9712,10 @@ function enableGeolocation() {
   geolocationManager.enabled = true;
   if (geolocationManager.infoContainer) geolocationManager.infoContainer.style.display = 'block';
   if (geolocationManager.errorContainer) geolocationManager.errorContainer.style.display = 'none';
+  if (geolocationManager.statusBadge) {
+    geolocationManager.statusBadge.classList.remove('off');
+    geolocationManager.statusBadge.classList.add('on');
+  }
   updateGeolocationStatus('Recherche de position...', 'searching');
   getCurrentPosition();
   startGeolocationRefresh();
@@ -9694,6 +9728,10 @@ function disableGeolocation() {
   removeGeolocationMarker();
   if (geolocationManager.infoContainer) geolocationManager.infoContainer.style.display = 'none';
   if (geolocationManager.errorContainer) geolocationManager.errorContainer.style.display = 'none';
+  if (geolocationManager.statusBadge) {
+    geolocationManager.statusBadge.classList.remove('on');
+    geolocationManager.statusBadge.classList.add('off');
+  }
   saveGeolocationPreference(false);
 }
 
