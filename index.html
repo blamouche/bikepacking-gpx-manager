@@ -5427,7 +5427,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
         <section class="panel-section layer-section collapsible-section expanded" id="layers-section">
           <button class="section-header-toggle" type="button" aria-expanded="true" aria-controls="layers-content">
             <span class="section-header-icon">🗂️</span>
-            <h3 class="section-title">Calques et affichage</h3>
+            <h3 class="section-title">Calques et affichage <span class="badge" id="active-layers-badge">0</span></h3>
             <span class="section-header-chevron">▼</span>
           </button>
           <div class="section-collapsible-content" id="layers-content">
@@ -5787,6 +5787,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       saveLayerPreferences();
       isApplyingPreset = false;
       updatePresetSelection();
+      updateActiveLayersBadge();
       loadPOIForCurrentView(true);
     }
 
@@ -5797,6 +5798,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       });
       saveLayerPreferences();
       updatePresetSelection();
+      updateActiveLayersBadge();
       loadPOIForCurrentView(true);
     }
 
@@ -5811,9 +5813,18 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       if (!skipPresetSync) {
         updatePresetSelection();
       }
+      updateActiveLayersBadge();
       if (triggerLoad) {
         clearAllPOILayers();
         hideLayersIndicators();
+      }
+    }
+
+    function updateActiveLayersBadge() {
+      const badge = document.getElementById('active-layers-badge');
+      if (badge) {
+        const count = poiManager.activeCategories.size;
+        badge.textContent = count;
       }
     }
 
@@ -5856,6 +5867,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
       }
       updateCategoryCountUI(categoryId, poiManager.counts.get(categoryId) || 0);
       updatePoiZoomIndicator();
+      updateActiveLayersBadge();
       if (triggerLoad) {
         cancelPendingPOILoad();
         loadPOIForCurrentView(true);
@@ -6444,6 +6456,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
         }
       });
       updatePresetSelection();
+      updateActiveLayersBadge();
       poiManager.enabled = true;
       map.on('moveend', handlePOIViewportChange);
       map.on('zoomend', handlePOIViewportChange);
