@@ -4425,7 +4425,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 <section class="panel-section gpx-section collapsible-section" id="gpx-section">
 <button aria-controls="gpx-content" aria-expanded="false" class="section-header-toggle" type="button">
 <span class="section-header-icon">📍</span>
-<h3 class="section-title">Trace GPX</h3>
+<h3 class="section-title">Trace GPX <span class="badge" id="gpx-trace-badge" style="display: none;">1</span></h3>
 <span class="section-header-chevron">▼</span>
 </button>
 <div class="section-collapsible-content" id="gpx-content">
@@ -6933,6 +6933,12 @@ let elevationMouseLeaveHandler = null;
       }
       if (gpxLoadedState) {
         gpxLoadedState.classList.toggle('hidden', !hasTrace);
+      }
+
+      // Update GPX trace badge
+      const gpxTraceBadge = document.getElementById('gpx-trace-badge');
+      if (gpxTraceBadge) {
+        gpxTraceBadge.style.display = hasTrace ? 'inline-flex' : 'none';
       }
       if (!hasTrace) {
         if (gpxTraceFilename) {
