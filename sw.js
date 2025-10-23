@@ -1,7 +1,7 @@
 // Service Worker pour Cycling Companion
-// Version 1.0.0
+// Version 2.0.0
 
-const CACHE_NAME = 'cycling-companion-v1.0.0';
+const CACHE_NAME = 'cycling-companion-v2.0.0';
 const BASE_PATH = '';
 
 // Ressources essentielles à mettre en cache
