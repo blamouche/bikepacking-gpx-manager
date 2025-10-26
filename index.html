@@ -143,7 +143,7 @@
       },
       "inLanguage": "fr-FR",
       "browserRequirements": "Requires JavaScript. Requires HTML5.",
-      "softwareVersion": "2.0",
+      "softwareVersion": "2.1",
       "datePublished": "2025-01-15",
       "dateModified": "2025-01-15",
       "license": "https://opensource.org/licenses/MIT"
@@ -1773,6 +1773,159 @@
   }
 }
 */
+
+/* ==================== SAVE REMINDER MODAL ==================== */
+
+.save-reminder-modal {
+  border: none;
+  border-radius: 12px;
+  padding: 0;
+  max-width: 500px;
+  width: 90vw;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  background: white;
+  color: #333;
+}
+
+.save-reminder-modal::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.save-reminder-modal .modal-content {
+  padding: 24px;
+  position: relative;
+}
+
+.save-reminder-modal .modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: #666;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.save-reminder-modal .modal-close:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.save-reminder-modal .modal-close:focus {
+  outline: 2px solid #0066FF;
+  outline-offset: 2px;
+}
+
+.save-reminder-modal .modal-title {
+  margin: 0 0 12px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #0066FF;
+}
+
+.save-reminder-modal .modal-description {
+  margin: 0 0 24px 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #666;
+}
+
+.save-reminder-modal .modal-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.save-reminder-modal .btn {
+  flex: 1;
+  min-width: 140px;
+  min-height: 48px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s, transform 0.1s, opacity 0.2s;
+  touch-action: manipulation; /* Remove 300ms tap delay on iOS */
+}
+
+.save-reminder-modal .btn-primary {
+  background: #0066FF;
+  color: white;
+}
+
+.save-reminder-modal .btn-primary:hover:not(:disabled) {
+  background: #0052CC;
+  transform: translateY(-1px);
+}
+
+.save-reminder-modal .btn-secondary {
+  background: #6B7280;
+  color: white;
+}
+
+.save-reminder-modal .btn-secondary:hover:not(:disabled) {
+  background: #4B5563;
+  transform: translateY(-1px);
+}
+
+.save-reminder-modal .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.save-reminder-modal .btn:focus {
+  outline: 2px solid #0066FF;
+  outline-offset: 2px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 767px) {
+  .save-reminder-modal {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 100%;
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    margin: 0;
+  }
+
+  .save-reminder-modal .modal-actions {
+    flex-direction: column;
+  }
+
+  .save-reminder-modal .btn {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+/* Animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.save-reminder-modal[open] {
+  animation: slideUp 0.3s ease-out;
+}
 
 </style>
 <style>
@@ -4560,7 +4713,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 <span class="panel-footer-separator" aria-hidden="true">•</span>
 <span role="listitem"><a href="https://paypal.me/blamouche" rel="noopener" target="_blank">Offre moi une bière 🍺</a></span>
 </div>
-<span class="panel-version">Version 2.0</span>
+<span class="panel-version">Version 2.1</span>
 </footer>
 </aside>
 <main class="map-container">
@@ -7926,6 +8079,12 @@ let elevationMouseLeaveHandler = null;
         marker.setPopupContent(createWaypointPopupHtml(marker.waypointName));
         marker.openPopup();
         updateWaypointsList();
+
+        // Track personal data for save reminder
+        if (typeof updatePersonalData === 'function') {
+          updatePersonalData('hasWaypoints', true);
+        }
+
         try { if (typeof refreshElevationProfiles === 'function') refreshElevationProfiles(80); } catch (e) {}
       };
 
@@ -8013,6 +8172,12 @@ function createWaypointMarker(latlng, name = '') {
   if (typeof saveTraceToLocalStorage === 'function') {
     setTimeout(() => saveTraceToLocalStorage(), 50);
   }
+
+  // Track personal data for save reminder
+  if (typeof updatePersonalData === 'function') {
+    updatePersonalData('hasWaypoints', true);
+  }
+
   return marker;
 }
 
@@ -9005,7 +9170,12 @@ function createWaypointMarker(latlng, name = '') {
             successMessage += '<br><small>Cette trace ne contient pas de données d\'élévation.</small>';
           }
           showMessage(successMessage, false, true);
-          
+
+          // Track personal data for save reminder
+          if (typeof updatePersonalData === 'function') {
+            updatePersonalData('hasGPX', true);
+          }
+
           // Sauvegarder la trace après chargement réussi
           setTimeout(() => {
             if (typeof saveTraceToLocalStorage === 'function') {
@@ -11334,6 +11504,11 @@ function createPOIFromForm() {
   // Save to localStorage
   saveUserPOIsToLocalStorage();
 
+  // Track personal data for save reminder
+  if (typeof updatePersonalData === 'function') {
+    updatePersonalData('hasPOIs', true);
+  }
+
   // Update sidebar
   renderUserPOISidebar();
 
@@ -11735,6 +11910,12 @@ function savePOIEdit() {
 
     // Save and update UI
     saveUserPOIsToLocalStorage();
+
+    // Track personal data for save reminder
+    if (typeof updatePersonalData === 'function') {
+      updatePersonalData('hasPOIs', true);
+    }
+
     renderUserPOISidebar();
     showMessage('POI modifié avec succès', 'success');
   } else {
@@ -11863,6 +12044,11 @@ function saveOSMPOIAsUserPOI(lat, lon, name, categoryLabel, osmType, osmId) {
 
   // Save to localStorage
   saveUserPOIsToLocalStorage();
+
+  // Track personal data for save reminder
+  if (typeof updatePersonalData === 'function') {
+    updatePersonalData('hasPOIs', true);
+  }
 
   // Update sidebar
   renderUserPOISidebar();
@@ -12146,6 +12332,12 @@ function importUserPOIsFromGPX(file) {
       // Save to localStorage
       if (importedCount > 0) {
         saveUserPOIsToLocalStorage();
+
+        // Track personal data for save reminder
+        if (typeof updatePersonalData === 'function') {
+          updatePersonalData('hasPOIs', true);
+        }
+
         renderUserPOISidebar();
 
         let message = `${importedCount} POI importé(s)`;
@@ -12345,6 +12537,433 @@ if (document.readyState !== 'loading') {
 
 </script>
 
+<!-- ==================== SAVE REMINDER MODAL FEATURE ==================== -->
+<script>
+// ==================== PERSONAL DATA STATE MANAGEMENT ====================
+
+const STORAGE_KEY_PERSONAL_DATA = 'cyclingCompanion_personalData';
+
+function getPersonalDataState() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY_PERSONAL_DATA);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.warn('Failed to parse personal data state:', error);
+  }
+
+  // Default state
+  return {
+    hasGPX: false,
+    hasWaypoints: false,
+    hasPOIs: false,
+    lastModified: Date.now()
+  };
+}
+
+function setPersonalDataState(state) {
+  try {
+    state.lastModified = Date.now();
+    localStorage.setItem(STORAGE_KEY_PERSONAL_DATA, JSON.stringify(state));
+  } catch (error) {
+    console.error('Failed to save personal data state:', error);
+  }
+}
+
+function updatePersonalData(dataType, value) {
+  const state = getPersonalDataState();
+  state[dataType] = value;
+  setPersonalDataState(state);
+
+  // Start timer if personal data exists
+  if (state.hasGPX || state.hasWaypoints || state.hasPOIs) {
+    startSaveReminderTimer();
+  } else {
+    clearSaveReminderTimer();
+  }
+}
+
+function clearPersonalDataFlags(type) {
+  const state = getPersonalDataState();
+
+  if (type === 'track') {
+    state.hasGPX = false;
+    state.hasWaypoints = false;
+  } else if (type === 'poi') {
+    state.hasPOIs = false;
+  }
+
+  setPersonalDataState(state);
+}
+
+// ==================== PERSONAL DATA INITIALIZATION ====================
+
+function initializePersonalDataState() {
+  // Synchronize personalData state with actual data in localStorage
+  const state = getPersonalDataState();
+  let needsUpdate = false;
+
+  // Check if GPX/waypoints data exists
+  try {
+    const gpxData = localStorage.getItem('gpx_saved_trace');
+    if (gpxData) {
+      const parsed = JSON.parse(gpxData);
+      // Check if there's a GPX trace
+      if (parsed && (parsed.gpxXml || parsed.coordinates)) {
+        if (!state.hasGPX) {
+          state.hasGPX = true;
+          needsUpdate = true;
+        }
+      }
+      // Check if there are waypoints
+      if (parsed && parsed.waypoints && parsed.waypoints.length > 0) {
+        if (!state.hasWaypoints) {
+          state.hasWaypoints = true;
+          needsUpdate = true;
+        }
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to check GPX data:', error);
+  }
+
+  // Check if POI data exists
+  try {
+    const poiData = localStorage.getItem('gpx_user_pois');
+    if (poiData) {
+      const parsed = JSON.parse(poiData);
+      if (parsed && Array.isArray(parsed) && parsed.length > 0) {
+        if (!state.hasPOIs) {
+          state.hasPOIs = true;
+          needsUpdate = true;
+        }
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to check POI data:', error);
+  }
+
+  // Update state if needed and start timer
+  if (needsUpdate) {
+    setPersonalDataState(state);
+    console.log('Personal data state synchronized:', state);
+  }
+
+  // Start timer if personal data exists
+  if (state.hasGPX || state.hasWaypoints || state.hasPOIs) {
+    startSaveReminderTimer();
+  }
+}
+
+// ==================== SAVE REMINDER TIMER ====================
+
+let saveReminderTimer = null;
+let lastSaveEventTimestamp = null;
+let modalButtonsClicked = { track: false, poi: false };
+let modalInitialButtons = { track: false, poi: false };
+
+function startSaveReminderTimer() {
+  clearSaveReminderTimer(); // Prevent duplicate timers
+
+  saveReminderTimer = setTimeout(() => {
+    showSaveReminderModal();
+  }, 180000); // 3 minutes
+
+  console.log('Save reminder timer started (3 minutes)');
+}
+
+function clearSaveReminderTimer() {
+  if (saveReminderTimer) {
+    clearTimeout(saveReminderTimer);
+    saveReminderTimer = null;
+    console.log('Save reminder timer cleared');
+  }
+}
+
+function recordSaveEvent() {
+  lastSaveEventTimestamp = Date.now();
+  clearSaveReminderTimer();
+
+  // Restart timer if personal data still exists
+  const state = getPersonalDataState();
+  if (state.hasGPX || state.hasWaypoints || state.hasPOIs) {
+    startSaveReminderTimer();
+  }
+}
+
+// ==================== SAVE REMINDER MODAL CONTROL ====================
+
+function showSaveReminderModal() {
+  const modal = document.getElementById('save-reminder-modal');
+
+  // Prevent duplicate modals
+  if (modal && modal.open) {
+    console.log('Modal already visible, skipping');
+    return;
+  }
+
+  // Verify personal data exists
+  const state = getPersonalDataState();
+  if (!state.hasGPX && !state.hasWaypoints && !state.hasPOIs) {
+    console.log('No personal data to save, skipping modal');
+    return;
+  }
+
+  if (modal) {
+    // Reset clicked state and record which buttons are initially active
+    modalButtonsClicked = { track: false, poi: false };
+    modalInitialButtons = {
+      track: !!(state.hasGPX || state.hasWaypoints),
+      poi: !!state.hasPOIs
+    };
+
+    updateModalButtonStates();
+    modal.showModal();
+
+    // Focus first enabled button for accessibility
+    const firstEnabledButton = modal.querySelector('button:not(:disabled):not(.modal-close)');
+    if (firstEnabledButton) {
+      firstEnabledButton.focus();
+    }
+
+    console.log('Save reminder modal displayed');
+  }
+}
+
+function allInitialButtonsClicked() {
+  // Check if all buttons that were initially active have been clicked
+  if (modalInitialButtons.track && !modalButtonsClicked.track) return false;
+  if (modalInitialButtons.poi && !modalButtonsClicked.poi) return false;
+  return true;
+}
+
+function hideSaveReminderModal() {
+  const modal = document.getElementById('save-reminder-modal');
+  if (modal) {
+    modal.close();
+    recordSaveEvent();
+    console.log('Save reminder modal dismissed');
+  }
+}
+
+function updateModalButtonStates() {
+  const state = getPersonalDataState();
+
+  const trackButton = document.getElementById('download-track-btn');
+  const poiButton = document.getElementById('download-poi-btn');
+
+  if (trackButton) {
+    trackButton.disabled = !(state.hasGPX || state.hasWaypoints);
+  }
+  if (poiButton) {
+    poiButton.disabled = !state.hasPOIs;
+  }
+}
+
+// ==================== GPX DOWNLOAD FUNCTIONS ====================
+
+function generateTimestampFilename(type) {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+
+  const timestamp = `${year}${month}${day}-${hours}${minutes}${seconds}`;
+  return `bikepacking-${type}-${timestamp}.gpx`;
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.style.display = 'none';
+
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  URL.revokeObjectURL(url); // Prevent memory leaks
+}
+
+function downloadTrackGPX() {
+  try {
+    // Use existing exportUpdatedGpx function which handles download directly
+    if (typeof exportUpdatedGpx === 'function') {
+      exportUpdatedGpx({ includeWaypoints: true });
+    } else {
+      // Fallback if function doesn't exist
+      const gpxContent = generateFallbackTrackGPX();
+      const filename = generateTimestampFilename('track');
+      const blob = new Blob([gpxContent], { type: 'application/gpx+xml' });
+      downloadBlob(blob, filename);
+    }
+
+    // Mark button as clicked
+    modalButtonsClicked.track = true;
+
+    // Clear flags and record save event
+    clearPersonalDataFlags('track');
+    recordSaveEvent();
+
+    // Update button states
+    updateModalButtonStates();
+
+    // Close modal only if all initially active buttons have been clicked
+    if (allInitialButtonsClicked()) {
+      hideSaveReminderModal();
+    }
+
+    console.log('Track GPX downloaded');
+  } catch (error) {
+    console.error('Failed to download track GPX:', error);
+    alert('Erreur lors du téléchargement du fichier GPX. Veuillez réessayer.');
+  }
+}
+
+function generateFallbackTrackGPX() {
+  // Fallback if exportUpdatedGpx doesn't support returnString option
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Cycling Companion">
+  <metadata>
+    <name>Cycling Companion - Track Export</name>
+    <time>${new Date().toISOString()}</time>
+  </metadata>
+</gpx>`;
+}
+
+function downloadPOIGPX() {
+  try {
+    // Use existing exportUserPOIsToGPX function which handles download directly
+    if (typeof exportUserPOIsToGPX === 'function') {
+      exportUserPOIsToGPX();
+    } else {
+      // Fallback if function doesn't exist
+      const gpxContent = generatePOIGPXContent();
+      const filename = generateTimestampFilename('poi');
+      const blob = new Blob([gpxContent], { type: 'application/gpx+xml' });
+      downloadBlob(blob, filename);
+    }
+
+    // Mark button as clicked
+    modalButtonsClicked.poi = true;
+
+    clearPersonalDataFlags('poi');
+    recordSaveEvent();
+    updateModalButtonStates();
+
+    // Close modal only if all initially active buttons have been clicked
+    if (allInitialButtonsClicked()) {
+      hideSaveReminderModal();
+    }
+
+    console.log('POI GPX downloaded');
+  } catch (error) {
+    console.error('Failed to download POI GPX:', error);
+    alert('Erreur lors du téléchargement des POI. Veuillez réessayer.');
+  }
+}
+
+function generatePOIGPXContent() {
+  // Fallback: Generate POI GPX from userPOILayerGroup
+  const pois = [];
+
+  if (typeof userPOILayerGroup !== 'undefined' && userPOILayerGroup) {
+    userPOILayerGroup.eachLayer(layer => {
+      if (layer.poiData) {
+        pois.push(layer.poiData);
+      }
+    });
+  }
+
+  let waypointsXML = '';
+  pois.forEach(poi => {
+    const title = (poi.title || 'POI').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const desc = poi.description ? poi.description.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+
+    waypointsXML += `
+  <wpt lat="${poi.lat}" lon="${poi.lng}">
+    <name>${title}</name>`;
+
+    if (desc) {
+      waypointsXML += `
+    <desc>${desc}</desc>`;
+    }
+
+    waypointsXML += `
+  </wpt>`;
+  });
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Cycling Companion">
+  <metadata>
+    <name>Cycling Companion - Custom POIs</name>
+    <time>${new Date().toISOString()}</time>
+  </metadata>${waypointsXML}
+</gpx>`;
+}
+
+// ==================== MODAL EVENT LISTENERS ====================
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize personal data state from localStorage
+  initializePersonalDataState();
+
+  const modal = document.getElementById('save-reminder-modal');
+  if (!modal) return; // Modal HTML not yet added
+
+  const closeButton = document.getElementById('save-modal-close');
+  const trackButton = document.getElementById('download-track-btn');
+  const poiButton = document.getElementById('download-poi-btn');
+
+  // Close button
+  if (closeButton) {
+    closeButton.addEventListener('click', () => {
+      hideSaveReminderModal();
+    });
+  }
+
+  // Backdrop click (close on backdrop click)
+  modal.addEventListener('click', (event) => {
+    const rect = modal.getBoundingClientRect();
+    const isInDialog = (
+      rect.top <= event.clientY &&
+      event.clientY <= rect.top + rect.height &&
+      rect.left <= event.clientX &&
+      event.clientX <= rect.left + rect.width
+    );
+
+    if (!isInDialog) {
+      hideSaveReminderModal();
+    }
+  });
+
+  // Download buttons
+  if (trackButton) {
+    trackButton.addEventListener('click', () => {
+      downloadTrackGPX();
+    });
+  }
+
+  if (poiButton) {
+    poiButton.addEventListener('click', () => {
+      downloadPOIGPX();
+    });
+  }
+
+  // Initialize timer if personal data exists
+  const state = getPersonalDataState();
+  if (state.hasGPX || state.hasWaypoints || state.hasPOIs) {
+    startSaveReminderTimer();
+  }
+});
+
+</script>
+
 <!-- ==================== FOOTER SEO (masqué visuellement) ==================== -->
 <footer id="seo-footer" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
   <h2>À propos de Cycling Companion</h2>
@@ -12517,5 +13136,46 @@ if (document.readyState !== 'loading') {
     console.log('Service Worker non enregistré (contexte non sécurisé).');
   }
 </script>
+
+<!-- ==================== SAVE REMINDER MODAL ==================== -->
+<dialog id="save-reminder-modal" class="save-reminder-modal" aria-labelledby="save-modal-title" aria-describedby="save-modal-desc">
+  <div class="modal-content">
+    <button class="modal-close" aria-label="Fermer sans télécharger" id="save-modal-close">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <h2 id="save-modal-title" class="modal-title">
+      💾 Sauvegardez votre travail
+    </h2>
+
+    <p id="save-modal-desc" class="modal-description">
+      Téléchargez vos données pour éviter toute perte. Vous pourrez continuer à travailler après le téléchargement.
+    </p>
+
+    <div class="modal-actions">
+      <button id="download-track-btn" class="btn btn-primary" aria-label="Télécharger la trace GPX avec waypoints">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        GPX & Waypoints
+      </button>
+
+      <button id="download-poi-btn" class="btn btn-primary" aria-label="Télécharger les points d'intérêt">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        POI
+      </button>
+    </div>
+  </div>
+</dialog>
+
 </body>
 </html>
