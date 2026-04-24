@@ -4501,9 +4501,1507 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 }
 </style>
 
+<!-- ==================== ROADBOOK IDENTITY (new visual identity, 2026) ==================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Archivo:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style id="roadbook-identity">
+  /* ----- Design tokens ----- */
+  :root {
+    --rb-bg: #F2EDE2;
+    --rb-paper: #F8F4EA;
+    --rb-panel: #FCF9F1;
+    --rb-border: #D8CEB8;
+    --rb-border-soft: #E4DCC9;
+    --rb-ink: #1E1B16;
+    --rb-ink-dim: #6B6150;
+    --rb-ink-mute: #9A907C;
+    --rb-accent: #B8482B;
+    --rb-accent-ink: #FCF9F1;
+    --rb-forest: #3F5C3A;
+    --rb-water: #2E6F8E;
+    --rb-food: #C98626;
+    --rb-sleep: #6B4E8C;
+    --rb-repair: #3F5C3A;
+
+    --rb-font-serif: "Fraunces", Georgia, serif;
+    --rb-font-sans: "Archivo", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    --rb-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  html[data-theme="dark"] {
+    --rb-bg: #1A1612;
+    --rb-paper: #221D17;
+    --rb-panel: #2A241C;
+    --rb-border: #453C2E;
+    --rb-border-soft: #3A3226;
+    --rb-ink: #F4EBD4;
+    --rb-ink-dim: #A89B7A;
+    --rb-ink-mute: #6E6148;
+    --rb-accent: #E86A44;
+    --rb-accent-ink: #1A1612;
+    --rb-forest: #7BA86C;
+    --rb-water: #6FB3CF;
+    --rb-food: #E8B05C;
+    --rb-sleep: #B59BD6;
+    --rb-repair: #7BA86C;
+  }
+
+  /* ----- Global reset for roadbook identity ----- */
+  html, body {
+    background: var(--rb-bg) !important;
+    color: var(--rb-ink) !important;
+    font-family: var(--rb-font-sans) !important;
+  }
+  body {
+    overflow: hidden;
+  }
+
+  /* Kill legacy container shadows/radius */
+  .app-container {
+    display: grid !important;
+    grid-template-columns: 340px minmax(0, 1fr) 360px;
+    grid-template-rows: 64px minmax(0, 1fr) 220px 32px;
+    height: 100vh;
+    width: 100%;
+    background: var(--rb-bg);
+    overflow: hidden;
+  }
+
+  /* ----- Topbar ----- */
+  .app-topbar {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    background: var(--rb-paper);
+    border-bottom: 1px solid var(--rb-border);
+    display: flex;
+    align-items: center;
+    padding: 0 22px;
+    gap: 18px;
+    z-index: 400;
+    box-shadow: none;
+  }
+  .app-topbar .rb-wordmark {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+  .app-topbar .rb-wordmark-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+    min-width: 0;
+  }
+  .app-topbar .rb-wordmark-main {
+    font-family: var(--rb-font-serif);
+    font-weight: 700;
+    font-size: 19px;
+    letter-spacing: -0.015em;
+    color: var(--rb-ink);
+    margin: 0;
+  }
+  .app-topbar .rb-wordmark-sub {
+    font-family: var(--rb-font-mono);
+    font-size: 9px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--rb-ink-dim);
+    margin-top: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .app-topbar .rb-brand-badge {
+    display: block;
+    flex-shrink: 0;
+  }
+  .app-topbar .rb-topbar-spacer { flex: 1 1 auto; }
+  .app-topbar .rb-theme-toggle {
+    font-family: var(--rb-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rb-ink-dim);
+    background: transparent;
+    border: 1px solid var(--rb-border);
+    padding: 8px 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .app-topbar .rb-theme-toggle:hover {
+    background: var(--rb-panel);
+    color: var(--rb-ink);
+  }
+
+  /* Hide legacy in-map title bar (replaced by top-level topbar) */
+  .map-wrapper > .map-topbar { display: none !important; }
+
+  /* ----- Sidebar (left column) ----- */
+  .tools-panel {
+    grid-column: 1;
+    grid-row: 2 / 4;
+    width: auto !important;
+    min-width: 0 !important;
+    height: auto !important;
+    background: var(--rb-paper) !important;
+    border-right: 1px solid var(--rb-border) !important;
+    border-left: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    overflow: hidden auto;
+    display: flex !important;
+    flex-direction: column;
+  }
+  .tools-panel .panel-header { display: none !important; }
+  .tools-panel .panel-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 !important;
+    background: transparent;
+  }
+  .tools-panel .panel-footer { display: none !important; }
+
+  /* ----- Right rail ----- */
+  .app-rail {
+    grid-column: 3;
+    grid-row: 2 / 4;
+    background: var(--rb-paper);
+    border-left: 1px solid var(--rb-border);
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ----- Map center ----- */
+  .map-container {
+    grid-column: 2;
+    grid-row: 2;
+    position: relative;
+    background: var(--rb-bg);
+    overflow: hidden;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .map-container .map-main,
+  .map-container .map-wrapper {
+    height: 100% !important;
+    width: 100% !important;
+    position: relative;
+    background: var(--rb-bg) !important;
+  }
+  .map-container #map {
+    height: 100% !important;
+    width: 100% !important;
+    background: var(--rb-bg);
+  }
+  /* Hide the legacy floating basemap picker on the map (duplicate of sidebar) */
+  .map-container > .map-main > .map-style-section,
+  .map-main > .map-style-section { display: none !important; }
+
+  /* ----- Elevation profile (under the map) ----- */
+  .elevation-profile {
+    grid-column: 2;
+    grid-row: 3;
+    position: static !important;
+    background: var(--rb-paper) !important;
+    border: none !important;
+    border-top: 1px solid var(--rb-border) !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 12px 22px 14px !important;
+    width: auto !important;
+    max-width: none !important;
+    height: 220px !important;
+    max-height: 220px !important;
+    display: flex !important;
+    flex-direction: column;
+    overflow: hidden;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  .elevation-profile.collapsed .elevation-content {
+    opacity: 0.3;
+  }
+  .elevation-profile .elevation-header {
+    padding: 0 0 8px 0 !important;
+    border: none !important;
+    background: transparent !important;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+  .elevation-profile .elevation-title {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .elevation-profile .elevation-title .elevation-icon { display: none; }
+  .elevation-profile .elevation-title h3 {
+    margin: 0 !important;
+    font-family: var(--rb-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--rb-ink-dim);
+    font-weight: 500;
+  }
+  .elevation-profile .elevation-title h3::before {
+    content: "▣ ";
+    margin-right: 2px;
+  }
+  .elevation-profile .elevation-stats-quick {
+    display: flex;
+    gap: 18px;
+    margin-left: auto;
+  }
+  .elevation-profile .stat-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .elevation-profile .stat-label {
+    font-family: var(--rb-font-mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--rb-ink-dim);
+  }
+  .elevation-profile .stat-value {
+    font-family: var(--rb-font-serif);
+    font-size: 18px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--rb-ink);
+    letter-spacing: -0.015em;
+  }
+  .elevation-profile .btn-collapse {
+    display: none !important;
+  }
+  .elevation-profile .elevation-content {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+  .elevation-profile canvas#elevation-canvas {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: transparent !important;
+  }
+  .elevation-profile .elevation-tooltip {
+    background: var(--rb-ink) !important;
+    color: var(--rb-paper) !important;
+    font-family: var(--rb-font-mono) !important;
+    font-size: 10px !important;
+    padding: 4px 8px !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+  .elevation-profile .elevation-tooltip .tooltip-label {
+    font-family: var(--rb-font-mono);
+    color: var(--rb-paper);
+    opacity: 0.7;
+    margin-right: 4px;
+  }
+  .elevation-profile .elevation-tooltip .tooltip-value {
+    font-family: var(--rb-font-mono);
+    color: var(--rb-paper);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ----- Footer ----- */
+  .app-footer {
+    grid-column: 1 / -1;
+    grid-row: 4;
+    background: var(--rb-paper);
+    border-top: 1px solid var(--rb-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 0 22px;
+    font-family: var(--rb-font-mono);
+    font-size: 10px;
+    color: var(--rb-ink-dim);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .app-footer a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .app-footer a:hover { color: var(--rb-ink); }
+  .app-footer .rb-footer-sep { color: var(--rb-ink-mute); }
+  .app-footer .rb-footer-version { margin-left: auto; }
+
+  /* ================= Section chrome (sidebar + rail) ================= */
+  .panel-section,
+  .app-rail > section {
+    margin: 0 !important;
+    padding: 18px 20px !important;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px dashed var(--rb-border) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+  .panel-section:last-child,
+  .app-rail > section:last-child {
+    border-bottom: none !important;
+  }
+  .panel-section.hidden,
+  .panel-section[style*="display: none"] {
+    display: none !important;
+  }
+
+  /* Section header with toggle */
+  .section-header-toggle {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 0 12px 0 !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px;
+    cursor: pointer;
+    font-family: var(--rb-font-mono) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.22em !important;
+    text-transform: uppercase !important;
+    color: var(--rb-ink-dim) !important;
+    box-shadow: none !important;
+  }
+  .section-header-toggle:hover { color: var(--rb-ink) !important; }
+  .section-header-icon {
+    display: none !important;
+  }
+  .section-header-toggle .section-title,
+  .section-title {
+    margin: 0 !important;
+    font-family: var(--rb-font-mono) !important;
+    font-size: 10px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.22em !important;
+    text-transform: uppercase !important;
+    color: var(--rb-ink-dim) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px;
+    flex: 1;
+    text-align: left;
+  }
+  .section-header-chevron {
+    font-family: var(--rb-font-mono);
+    font-size: 10px !important;
+    color: var(--rb-ink-mute) !important;
+    transition: transform 0.2s ease;
+    margin-left: auto;
+  }
+  .section-header-toggle[aria-expanded="true"] .section-header-chevron {
+    transform: rotate(180deg);
+  }
+  .section-collapsible-content {
+    padding-top: 4px;
+  }
+  .section-collapsible-content[hidden],
+  .section-collapsible-content.collapsed {
+    display: none !important;
+  }
+
+  /* Custom glyphs for each section label */
+  #geolocation-section .section-title::before { content: "◉ "; color: var(--rb-ink); }
+  #user-poi-section .section-title::before   { content: "✦ "; color: var(--rb-ink); }
+  #gpx-section .section-title::before        { content: "⤳ "; color: var(--rb-ink); }
+  #map-style-section .section-title::before  { content: "▤ "; color: var(--rb-ink); }
+  #layers-section .section-title::before     { content: "❊ "; color: var(--rb-ink); }
+  #waypoints-section .section-title::before  { content: "◆ "; color: var(--rb-ink); }
+  #roadbook-section .section-title::before   { content: "▤ "; color: var(--rb-ink); }
+  #trace-info-section .section-title::before { content: "ⓘ "; color: var(--rb-ink); }
+
+  /* ----- Layers (Calques) panel — dynamically generated ----- */
+  .layer-global-actions {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .layer-global-actions .btn { flex: 1; }
+  .layer-presets {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 14px;
+  }
+  .layer-presets label {
+    font-family: var(--rb-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--rb-ink-dim);
+  }
+  .preset-select {
+    flex: 1;
+    padding: 7px 10px !important;
+    border: 1px solid var(--rb-border) !important;
+    background: var(--rb-panel) !important;
+    font-family: var(--rb-font-sans) !important;
+    font-size: 12px !important;
+    color: var(--rb-ink) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+  .layer-group {
+    border: 1px solid var(--rb-border) !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin-bottom: 6px !important;
+    overflow: hidden;
+  }
+  .layer-group-header {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    width: 100% !important;
+    padding: 9px 12px !important;
+    background: transparent !important;
+    border: none !important;
+    font-family: var(--rb-font-sans) !important;
+    font-size: 12px !important;
+    color: var(--rb-ink) !important;
+    cursor: pointer;
+    text-align: left;
+  }
+  .layer-group-header:hover { background: var(--rb-panel) !important; }
+  .layer-group-label {
+    flex: 1;
+    font-weight: 500;
+    color: var(--rb-ink);
+    font-size: 12px;
+  }
+  .layer-group-icon { font-size: 12px; }
+  .layer-group-count {
+    font-family: var(--rb-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--rb-ink-dim);
+  }
+  .layer-group-chevron {
+    font-family: var(--rb-font-mono);
+    font-size: 9px;
+    color: var(--rb-ink-mute);
+  }
+  .layer-group-content {
+    padding: 0 12px !important;
+  }
+  .layer-group.expanded .layer-group-content {
+    padding: 4px 12px 10px !important;
+  }
+  .layer-toggle {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0 !important;
+    border: none !important;
+    border-top: 1px dotted var(--rb-border) !important;
+    cursor: pointer;
+  }
+  .layer-group-content > .layer-toggle:first-child { border-top: none !important; }
+  .layer-toggle + .layer-toggle { border-top: 1px dotted var(--rb-border) !important; }
+  .layer-toggle .toggle-switch {
+    width: 32px !important;
+    height: 18px !important;
+    background: var(--rb-border) !important;
+    border-radius: 9px !important;
+    flex-shrink: 0;
+  }
+  .layer-toggle .toggle-switch::after {
+    width: 14px !important;
+    height: 14px !important;
+    background: var(--rb-paper) !important;
+    top: 2px !important;
+    left: 2px !important;
+    box-shadow: 0 1px 2px rgba(30, 27, 22, 0.2);
+  }
+  .layer-toggle .toggle-input:checked + .toggle-switch {
+    background: var(--rb-accent) !important;
+  }
+  .layer-toggle .toggle-input:checked + .toggle-switch::after {
+    transform: translateX(14px);
+  }
+  .layer-toggle .toggle-text {
+    font-family: var(--rb-font-sans) !important;
+    font-size: 12px !important;
+    color: var(--rb-ink) !important;
+  }
+  .layer-toggle .toggle-icon { font-size: 12px; opacity: 0.7; }
+  .layer-toggle .toggle-count {
+    font-family: var(--rb-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--rb-ink-dim);
+  }
+  .layer-loading,
+  .layer-error,
+  .layer-info {
+    font-family: var(--rb-font-mono) !important;
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+    border-radius: 0 !important;
+    border: 1px dashed var(--rb-border) !important;
+    background: transparent !important;
+    color: var(--rb-ink-dim) !important;
+  }
+  .layer-error { color: var(--rb-accent) !important; border-color: var(--rb-accent) !important; }
+
+  /* Badges / counters in section headers */
+  .panel-section .badge,
+  .panel-section .poi-counter,
+  .panel-section .status-badge,
+  .app-rail .badge,
+  .app-rail .poi-counter {
+    background: transparent !important;
+    color: var(--rb-ink) !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    font-family: var(--rb-font-mono) !important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    min-width: 0 !important;
+    letter-spacing: 0.04em !important;
+  }
+  .status-badge.off::before { content: "○"; }
+  .status-badge.on::before { content: "●"; color: var(--rb-accent); }
+  .status-badge.off, .status-badge.on { font-size: 11px !important; }
+
+  /* ================= Buttons ================= */
+  .btn,
+  .btn-secondary,
+  .btn-primary,
+  button#add-poi-toggle,
+  button#add-poi-manual-hint,
+  button#center-on-position,
+  button#clear-waypoints,
+  .gpx-action-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    width: 100% !important;
+    padding: 9px 12px !important;
+    border: 1px solid var(--rb-border) !important;
+    background: transparent !important;
+    color: var(--rb-ink) !important;
+    font-family: var(--rb-font-sans) !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .btn:hover,
+  .btn-secondary:hover,
+  .btn-primary:hover,
+  button#add-poi-toggle:hover,
+  button#add-poi-manual-hint:hover,
+  button#center-on-position:hover,
+  button#clear-waypoints:hover,
+  .gpx-action-btn:hover {
+    background: var(--rb-panel) !important;
+    box-shadow: none !important;
+  }
+  .btn-primary,
+  .gpx-action-btn--export {
+    background: var(--rb-accent) !important;
+    color: var(--rb-accent-ink) !important;
+    border-color: var(--rb-accent) !important;
+  }
+  .btn-primary:hover,
+  .gpx-action-btn--export:hover {
+    background: var(--rb-accent) !important;
+    opacity: 0.9;
+    color: var(--rb-accent-ink) !important;
+  }
+  .gpx-action-btn--danger,
+  #clear-user-pois,
+  #clear-waypoints {
+    color: var(--rb-accent) !important;
+    border-color: var(--rb-border) !important;
+  }
+  .btn-small {
+    padding: 7px 10px !important;
+    font-size: 12px !important;
+  }
+  .btn-icon-small {
+    width: 28px;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 !important;
+    border: 1px solid var(--rb-border) !important;
+    background: transparent !important;
+    color: var(--rb-ink-dim) !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center !important;
+    font-size: 12px !important;
+    border-radius: 0 !important;
+    cursor: pointer;
+  }
+  .btn-icon-small:hover { background: var(--rb-panel) !important; color: var(--rb-ink) !important; }
+
+  /* Chevron/arrow suffix on full-width buttons */
+  .btn:not(.btn-icon-small):not(.gpx-action-btn)::after,
+  button#add-poi-toggle::after,
+  button#add-poi-manual-hint::after,
+  button#center-on-position::after {
+    content: "→";
+    color: currentColor;
+    opacity: 0.5;
+    font-family: var(--rb-font-mono);
+    font-weight: 400;
+    margin-left: auto;
+  }
+
+  /* Button rows */
+  .gpx-actions {
+    display: grid !important;
+    grid-template-columns: 1fr;
+    gap: 6px !important;
+    margin-top: 10px;
+  }
+  #user-poi-actions {
+    display: grid !important;
+    grid-template-columns: 1fr;
+    gap: 6px !important;
+    margin-top: 8px !important;
+  }
+
+  /* ================= Drop zone ================= */
+  .gpx-import-zone {
+    display: block !important;
+    border: 1px dashed var(--rb-border) !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    padding: 18px 14px !important;
+    text-align: center !important;
+    color: var(--rb-ink-dim) !important;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+    box-shadow: none !important;
+  }
+  .gpx-import-zone:hover,
+  .gpx-import-zone.dragover {
+    border-color: var(--rb-accent) !important;
+    border-style: solid !important;
+    color: var(--rb-ink) !important;
+  }
+  .gpx-import-icon {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 6px;
+    opacity: 0.6;
+  }
+  .gpx-import-title {
+    display: block;
+    font-family: var(--rb-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--rb-ink-dim);
+  }
+  .gpx-import-hint {
+    display: block;
+    margin-top: 4px;
+    font-family: var(--rb-font-sans);
+    font-size: 12px;
+    color: var(--rb-ink-mute);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* ================= Geolocation section ================= */
+  .geolocation-toggle.layer-toggle {
+    padding: 0 !important;
+    display: block;
+  }
+  .geolocation-toggle .toggle-input + .toggle-switch { display: none; }
+  .geolocation-toggle .toggle-text {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    width: 100% !important;
+    padding: 9px 12px !important;
+    border: 1px solid var(--rb-border);
+    background: transparent;
+    color: var(--rb-ink);
+    font-family: var(--rb-font-sans);
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .geolocation-toggle .toggle-text::after {
+    content: "→";
+    opacity: 0.5;
+    font-family: var(--rb-font-mono);
+    margin-left: auto;
+  }
+  .geolocation-toggle .toggle-text:hover { background: var(--rb-panel); }
+  .geolocation-toggle .toggle-input:checked ~ .toggle-text {
+    background: var(--rb-accent);
+    color: var(--rb-accent-ink);
+    border-color: var(--rb-accent);
+  }
+  .geolocation-toggle .toggle-icon { display: none; }
+  .geolocation-info {
+    margin-top: 10px;
+    font-family: var(--rb-font-mono);
+    font-size: 11px;
+    color: var(--rb-ink-dim);
+  }
+  .geolocation-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--rb-font-mono);
+    font-size: 11px;
+    color: var(--rb-ink-dim);
+    padding: 4px 0;
+  }
+  .geolocation-status .status-icon { font-size: 11px; }
+  .geolocation-error {
+    margin-top: 8px;
+    padding: 8px 10px;
+    border: 1px solid var(--rb-accent);
+    color: var(--rb-accent);
+    font-family: var(--rb-font-mono);
+    font-size: 11px;
+    background: transparent;
+    border-radius: 0;
+  }
+
+  /* ================= POI list items (Mes POI) ================= */
+  #user-poi-list {
+    display: block !important;
+  }
+  #user-poi-list .user-poi-item,
+  #user-poi-list > div {
+    display: grid !important;
+    grid-template-columns: 14px 1fr auto !important;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0 !important;
+    border: none !important;
+    border-top: 1px dotted var(--rb-border) !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    font-family: var(--rb-font-sans);
+    font-size: 13px;
+    color: var(--rb-ink);
+  }
+  #user-poi-list > div:first-child { border-top: none !important; }
+  #user-poi-list .user-poi-icon,
+  #user-poi-list .user-poi-swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--rb-ink-mute);
+  }
+  #user-poi-list .user-poi-meta {
+    font-family: var(--rb-font-mono);
+    font-size: 11px;
+    color: var(--rb-ink-dim);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ================= Trace GPX section ================= */
+  #gpx-section .trace-summary {
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    margin-bottom: 10px;
+  }
+  #gpx-section .trace-filename {
+    font-family: var(--rb-font-serif);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: var(--rb-ink);
+    margin-bottom: 4px;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+  #gpx-section .trace-stats {
+    font-family: var(--rb-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rb-ink-dim);
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  #gpx-section .trace-stats .icon { display: none; }
+
+  /* ================= Map style picker (sidebar only) ================= */
+  .tools-panel .map-style-options {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 4px !important;
+  }
+  .tools-panel .map-style-option {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px !important;
+    padding: 8px 10px !important;
+    border: 1px solid var(--rb-border) !important;
+    background: transparent !important;
+    color: var(--rb-ink) !important;
+    font-family: var(--rb-font-sans) !important;
+    font-size: 12px !important;
+    border-radius: 0 !important;
+    cursor: pointer;
+    box-shadow: none !important;
+    width: 100%;
+    text-align: left;
+  }
+  .tools-panel .map-style-option:hover {
+    background: var(--rb-panel) !important;
+  }
+  .tools-panel .map-style-option.active,
+  .tools-panel .map-style-option[aria-pressed="true"],
+  .tools-panel .map-style-option[data-active="true"] {
+    background: var(--rb-accent) !important;
+    border-color: var(--rb-accent) !important;
+    color: var(--rb-accent-ink) !important;
+  }
+  .tools-panel .map-style-thumb {
+    display: none !important;
+  }
+  .tools-panel .map-style-label-text {
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+  }
+  .tools-panel .map-style-check,
+  .tools-panel .map-style-badge {
+    display: none !important;
+  }
+  .tools-panel .map-style-option.active .map-style-label-text,
+  .tools-panel .map-style-option[aria-pressed="true"] .map-style-label-text {
+    color: var(--rb-accent-ink) !important;
+  }
+  /* Favorite star suffix for CyclOSM and Hybrid */
+  .tools-panel .map-style-option[data-style="cyclosm"]::after,
+  .tools-panel .map-style-option[data-style="hybrid"]::after {
+    content: "★";
+    font-family: var(--rb-font-mono);
+    font-size: 10px;
+    color: var(--rb-ink-dim);
+    margin-left: auto;
+  }
+  .tools-panel .map-style-option[data-style="cyclosm"].active::after,
+  .tools-panel .map-style-option[data-style="hybrid"].active::after,
+  .tools-panel .map-style-option[data-style="cyclosm"][aria-pressed="true"]::after,
+  .tools-panel .map-style-option[data-style="hybrid"][aria-pressed="true"]::after {
+    color: var(--rb-accent-ink);
+  }
+
+  /* ================= Right rail: Waypoints ================= */
+  .waypoints-list {
+    display: block !important;
+    margin-bottom: 8px;
+  }
+  .waypoint-item {
+    display: grid !important;
+    grid-template-columns: 34px 1fr auto auto !important;
+    align-items: center !important;
+    gap: 10px;
+    padding: 10px 0 !important;
+    border: none !important;
+    border-top: 1px dashed var(--rb-border) !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    font-family: var(--rb-font-sans);
+  }
+  .waypoint-item:first-child { border-top: none !important; }
+  .waypoint-item .waypoint-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--rb-ink);
+    color: var(--rb-ink);
+    display: grid !important;
+    place-items: center;
+    font-family: var(--rb-font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    font-style: normal !important;
+    background: transparent;
+    overflow: hidden;
+    letter-spacing: 0;
+  }
+  .waypoint-item .waypoint-name {
+    font-family: var(--rb-font-serif);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--rb-ink);
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ================= Right rail: Roadbook ================= */
+  .roadbook-list {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0;
+  }
+  .roadbook-step {
+    display: grid !important;
+    grid-template-columns: 34px 1fr !important;
+    gap: 10px;
+    padding: 12px 0 !important;
+    border: none !important;
+    border-top: 1px dashed var(--rb-border) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    align-items: flex-start;
+  }
+  .roadbook-step:first-child { border-top: none !important; }
+  .roadbook-step-marker {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--rb-ink);
+    display: grid !important;
+    place-items: center;
+    background: transparent;
+    position: relative;
+  }
+  .roadbook-step[data-type="start"] .roadbook-step-marker {
+    background: var(--rb-forest);
+    border-color: var(--rb-forest);
+  }
+  .roadbook-step[data-type="end"] .roadbook-step-marker {
+    background: var(--rb-accent);
+    border-color: var(--rb-accent);
+  }
+  .roadbook-step-icon { display: none !important; }
+  .roadbook-step-number {
+    font-family: var(--rb-font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--rb-ink);
+    letter-spacing: 0;
+  }
+  .roadbook-step[data-type="start"] .roadbook-step-number,
+  .roadbook-step[data-type="end"] .roadbook-step-number {
+    color: var(--rb-paper);
+  }
+  .roadbook-step-content {
+    min-width: 0;
+  }
+  .roadbook-step-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .roadbook-step-name {
+    margin: 0 !important;
+    font-family: var(--rb-font-serif);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--rb-ink);
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+  }
+  .roadbook-step-center-btn {
+    flex-shrink: 0;
+    border: none;
+    background: transparent;
+    color: var(--rb-ink-dim);
+    cursor: pointer;
+    font-size: 11px;
+    padding: 2px 4px;
+  }
+  .roadbook-step-center-btn:hover { color: var(--rb-ink); }
+  .roadbook-step-distances {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-family: var(--rb-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--rb-ink-dim);
+    text-transform: uppercase;
+  }
+  .roadbook-distance-item {
+    display: inline-flex;
+    gap: 4px;
+    align-items: baseline;
+  }
+  .roadbook-distance-label {
+    color: var(--rb-ink-mute);
+  }
+  .roadbook-distance-value {
+    color: var(--rb-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .roadbook-empty-text {
+    margin: 0;
+    font-family: var(--rb-font-mono);
+    font-size: 11px;
+    color: var(--rb-ink-dim);
+    letter-spacing: 0.08em;
+  }
+  .roadbook-empty-icon { display: none; }
+
+  /* Section header with an action button (like Roadbook export) */
+  .section-header-with-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .section-header-with-action .section-header-toggle { margin-bottom: 0 !important; }
+  .roadbook-export-btn { flex-shrink: 0; }
+
+  /* ================= Informations (clé/valeur) ================= */
+  #trace-info-section .info-list,
+  .info-list {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .info-list dt {
+    font-family: var(--rb-font-sans);
+    font-size: 13px;
+    color: var(--rb-ink-dim);
+    font-weight: 400;
+    padding: 6px 0 2px 0;
+    margin: 0;
+  }
+  .info-list dd {
+    margin: 0 !important;
+    padding: 0 0 6px 0 !important;
+    border-bottom: 1px dotted var(--rb-border) !important;
+    font-family: var(--rb-font-mono);
+    font-size: 12px;
+    color: var(--rb-ink);
+    font-variant-numeric: tabular-nums;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .info-list dd:last-of-type { border-bottom: none !important; }
+  .info-list .stat-highlight {
+    color: var(--rb-ink);
+    font-weight: 500;
+  }
+  .trace-name-help { opacity: 0.4; font-size: 11px; }
+
+  /* Use a two-column layout by pairing each dt with its dd via grid */
+  .info-list {
+    display: grid !important;
+    grid-template-columns: 1fr auto;
+    column-gap: 10px;
+    row-gap: 0;
+  }
+  .info-list dt {
+    grid-column: 1;
+    border-bottom: 1px dotted var(--rb-border);
+    padding: 8px 0 8px 0;
+    display: flex;
+    align-items: center;
+  }
+  .info-list dd {
+    grid-column: 2;
+    padding: 8px 0 8px 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    text-align: right;
+  }
+  .info-list dt:last-of-type,
+  .info-list dd:last-of-type { border-bottom: none !important; }
+
+  /* ================= Mini elevation profile (inside info section) — hide, we have the big one ================= */
+  .mini-elevation-profile { display: none !important; }
+
+  /* ================= Leaflet marker restyle ================= */
+  /* POI markers from Overpass */
+  .poi-marker {
+    background: transparent !important;
+    border: none !important;
+  }
+  .poi-marker .poi-marker-inner {
+    width: 22px !important;
+    height: 22px !important;
+    border-radius: 50% !important;
+    border: 2px solid var(--rb-paper) !important;
+    box-shadow: 0 2px 6px rgba(30, 27, 22, 0.35) !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+    transition: transform 0.15s ease;
+  }
+  .poi-marker:hover .poi-marker-inner {
+    transform: scale(1.1);
+  }
+  .poi-marker .poi-marker-icon {
+    font-size: 10px !important;
+    line-height: 1 !important;
+    filter: grayscale(0.2) brightness(1.2);
+  }
+
+  /* User-created POIs (pastilles) */
+  .user-poi-marker {
+    background: transparent !important;
+    border: none !important;
+    width: 28px !important;
+    height: 28px !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50% !important;
+    box-shadow: 0 2px 6px rgba(30, 27, 22, 0.3);
+    font-size: 14px !important;
+  }
+  .user-poi-marker::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid var(--rb-paper);
+    pointer-events: none;
+  }
+
+  /* Waypoint markers as numbered accent circles */
+  .waypoint-marker {
+    background: transparent !important;
+    border: none !important;
+  }
+  .waypoint-marker .waypoint-marker-inner {
+    width: 28px !important;
+    height: 28px !important;
+    display: grid !important;
+    place-items: center !important;
+    filter: drop-shadow(0 2px 4px rgba(30, 27, 22, 0.3)) !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  .waypoint-marker .waypoint-marker-pin {
+    width: 28px !important;
+    height: 28px !important;
+    background: var(--rb-accent) !important;
+    border-radius: 50% !important;
+    border: 2px solid var(--rb-paper) !important;
+    box-shadow: 0 2px 6px rgba(30, 27, 22, 0.3) !important;
+    display: grid !important;
+    place-items: center !important;
+    transform: none !important;
+  }
+  .waypoint-marker .waypoint-marker-icon {
+    transform: none !important;
+    font-family: var(--rb-font-mono) !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    color: var(--rb-accent-ink) !important;
+    line-height: 1 !important;
+    letter-spacing: 0 !important;
+  }
+  .waypoint-marker:hover .waypoint-marker-inner {
+    transform: scale(1.1) !important;
+  }
+
+  /* Trace start / end / combined markers */
+  .trace-start-marker,
+  .trace-end-marker,
+  .trace-combined-marker {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  /* ================= Leaflet popups ================= */
+  .leaflet-popup-content-wrapper {
+    background: var(--rb-paper) !important;
+    color: var(--rb-ink) !important;
+    border: 1px solid var(--rb-border) !important;
+    border-radius: 0 !important;
+    box-shadow: 0 4px 12px rgba(30, 27, 22, 0.15) !important;
+    font-family: var(--rb-font-sans) !important;
+  }
+  .leaflet-popup-content {
+    font-size: 13px !important;
+    color: var(--rb-ink) !important;
+    margin: 12px 14px !important;
+  }
+  .leaflet-popup-content strong { color: var(--rb-ink); }
+  .leaflet-popup-content a { color: var(--rb-accent); }
+  .leaflet-popup-tip {
+    background: var(--rb-paper) !important;
+    border: 1px solid var(--rb-border) !important;
+  }
+  .leaflet-popup-close-button {
+    color: var(--rb-ink-dim) !important;
+  }
+  .leaflet-tooltip {
+    background: var(--rb-ink) !important;
+    color: var(--rb-paper) !important;
+    border: none !important;
+    border-radius: 0 !important;
+    font-family: var(--rb-font-mono) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.08em;
+    padding: 4px 8px !important;
+    box-shadow: none !important;
+  }
+  .leaflet-tooltip::before { display: none !important; }
+  .leaflet-control-zoom {
+    border: 1px solid var(--rb-border) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+  .leaflet-control-zoom a {
+    background: var(--rb-paper) !important;
+    color: var(--rb-ink) !important;
+    border: none !important;
+    border-bottom: 1px solid var(--rb-border) !important;
+    font-family: var(--rb-font-mono) !important;
+  }
+  .leaflet-control-zoom a:hover { background: var(--rb-panel) !important; }
+  .leaflet-control-attribution {
+    background: rgba(248, 244, 234, 0.85) !important;
+    color: var(--rb-ink-dim) !important;
+    font-family: var(--rb-font-mono) !important;
+    font-size: 9px !important;
+    letter-spacing: 0.05em;
+    border: 1px solid var(--rb-border) !important;
+    padding: 2px 6px !important;
+  }
+  .leaflet-control-attribution a { color: var(--rb-ink-dim) !important; }
+
+  /* ================= Modals (export modal, save reminder, etc.) ================= */
+  .modal-backdrop {
+    background: rgba(30, 27, 22, 0.55) !important;
+  }
+  .export-modal,
+  .save-reminder-modal,
+  .modal-dialog {
+    background: var(--rb-paper) !important;
+    border: 1px solid var(--rb-border) !important;
+    border-radius: 0 !important;
+    box-shadow: 0 16px 48px rgba(30, 27, 22, 0.3) !important;
+    color: var(--rb-ink) !important;
+    font-family: var(--rb-font-sans) !important;
+  }
+  .export-modal-header,
+  .save-reminder-header {
+    background: var(--rb-paper) !important;
+    border-bottom: 1px dashed var(--rb-border) !important;
+    padding: 14px 18px !important;
+  }
+  .export-modal-header h4,
+  .save-reminder-header h4 {
+    font-family: var(--rb-font-serif) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.015em;
+    color: var(--rb-ink) !important;
+    margin: 0 !important;
+  }
+  .export-modal-content {
+    padding: 18px !important;
+  }
+  .export-modal-content label {
+    font-family: var(--rb-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--rb-ink-dim);
+    display: block;
+    margin-bottom: 8px;
+  }
+  .export-modal-content input[type="text"] {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid var(--rb-border);
+    background: var(--rb-panel);
+    font-family: var(--rb-font-mono);
+    font-size: 13px;
+    color: var(--rb-ink);
+    border-radius: 0;
+    margin-top: 4px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .export-modal-content input[type="text"]:focus {
+    outline: none;
+    border-color: var(--rb-accent);
+  }
+  .export-modal-content .checkbox-label {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    text-transform: none;
+    letter-spacing: 0;
+    font-family: var(--rb-font-sans);
+    font-size: 13px;
+    color: var(--rb-ink);
+  }
+  .export-preview {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--rb-panel);
+    border: 1px dashed var(--rb-border);
+    font-family: var(--rb-font-mono);
+    font-size: 11px;
+    color: var(--rb-ink-dim);
+    letter-spacing: 0.04em;
+    text-transform: none;
+  }
+  .export-modal-actions,
+  .save-reminder-actions {
+    padding: 14px 18px !important;
+    border-top: 1px dashed var(--rb-border) !important;
+    display: flex !important;
+    gap: 8px !important;
+    justify-content: flex-end !important;
+    background: transparent !important;
+  }
+  .export-modal-actions .btn,
+  .save-reminder-actions .btn {
+    width: auto !important;
+  }
+
+  /* ================= Misc overlays (POI refresh, panel menu) ================= */
+  .poi-refresh-button {
+    position: absolute;
+    top: 80px;
+    right: 380px;
+    z-index: 500;
+    padding: 7px 12px !important;
+    background: var(--rb-paper) !important;
+    border: 1px solid var(--rb-border) !important;
+    color: var(--rb-ink) !important;
+    font-family: var(--rb-font-mono) !important;
+    font-size: 10px !important;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    width: auto !important;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+  }
+  .poi-refresh-button:hover { background: var(--rb-panel) !important; }
+  .btn-menu {
+    display: none;
+  }
+
+  /* Messages / alerts */
+  .message {
+    padding: 8px 10px !important;
+    background: var(--rb-panel) !important;
+    border: 1px dashed var(--rb-border) !important;
+    color: var(--rb-ink) !important;
+    font-family: var(--rb-font-mono) !important;
+    font-size: 11px !important;
+    letter-spacing: 0.04em;
+    border-radius: 0 !important;
+    margin-top: 8px;
+  }
+
+  /* Scrollbars */
+  .tools-panel::-webkit-scrollbar,
+  .app-rail::-webkit-scrollbar,
+  .panel-content::-webkit-scrollbar { width: 10px; }
+  .tools-panel::-webkit-scrollbar-track,
+  .app-rail::-webkit-scrollbar-track,
+  .panel-content::-webkit-scrollbar-track { background: transparent; }
+  .tools-panel::-webkit-scrollbar-thumb,
+  .app-rail::-webkit-scrollbar-thumb,
+  .panel-content::-webkit-scrollbar-thumb {
+    background: var(--rb-border);
+    border-radius: 0;
+  }
+
+  /* ================= Responsive : below 1100px, collapse rail under map ================= */
+  @media (max-width: 1100px) {
+    .app-container {
+      grid-template-columns: 300px minmax(0, 1fr);
+      grid-template-rows: 64px minmax(0, 1fr) 220px auto 32px;
+    }
+    .tools-panel   { grid-column: 1; grid-row: 2 / 5; }
+    .map-container { grid-column: 2; grid-row: 2; }
+    .elevation-profile { grid-column: 2; grid-row: 3; }
+    .app-rail      { grid-column: 2; grid-row: 4; border-left: none; border-top: 1px solid var(--rb-border); max-height: 320px; }
+    .app-footer    { grid-row: 5; }
+  }
+  @media (max-width: 720px) {
+    .app-container {
+      grid-template-columns: 1fr;
+      grid-template-rows: 64px minmax(0, 1fr) 220px auto auto 32px;
+    }
+    .tools-panel   { grid-column: 1; grid-row: 4; border-right: none; border-top: 1px solid var(--rb-border); max-height: 320px; }
+    .map-container { grid-column: 1; grid-row: 2; }
+    .elevation-profile { grid-column: 1; grid-row: 3; }
+    .app-rail      { grid-column: 1; grid-row: 5; max-height: 320px; }
+    .app-footer    { grid-row: 6; }
+    .btn-menu { display: none; }
+  }
+</style>
+
 </head>
 <body>
 <div class="app-container">
+<header class="app-topbar" role="banner">
+<a class="rb-wordmark" href="/" aria-label="Cycling Companion — accueil">
+<svg class="rb-brand-badge" viewBox="0 0 100 100" width="44" height="44" aria-hidden="true" focusable="false">
+<circle cx="50" cy="50" r="47" fill="none" stroke="var(--rb-ink)" stroke-width="2"></circle>
+<circle cx="50" cy="50" r="43" fill="none" stroke="var(--rb-ink)" stroke-width="0.6"></circle>
+<path d="M 48 32 A 18 18 0 1 0 48 68" fill="none" stroke="var(--rb-ink)" stroke-width="4" stroke-linecap="round"></path>
+<path d="M 52 32 A 18 18 0 1 1 52 68" fill="none" stroke="var(--rb-accent)" stroke-width="4" stroke-linecap="round"></path>
+<circle cx="50" cy="16" r="1.6" fill="var(--rb-ink)"></circle>
+<circle cx="50" cy="84" r="1.6" fill="var(--rb-ink)"></circle>
+</svg>
+<span class="rb-wordmark-text">
+<span class="rb-wordmark-main">Cycling Companion</span>
+<span class="rb-wordmark-sub">Routes &amp; Cyclisme · v2.1</span>
+</span>
+</a>
+<div class="rb-topbar-spacer"></div>
+<button class="rb-theme-toggle" id="rb-theme-toggle" type="button" aria-label="Basculer le thème clair/sombre">
+<span id="rb-theme-toggle-label">Sombre</span>
+</button>
+</header>
 <aside aria-label="Panneau d'outils" class="tools-panel" id="tools-panel" role="complementary">
 <header class="panel-header">
 <h2 class="panel-title">Outils</h2>
@@ -4634,6 +6132,12 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 </div>
 </section>
 <section class="panel-section" id="layers-section-placeholder"></section>
+<section class="panel-section panel-messages">
+<div aria-live="polite" class="message hidden" id="message" role="status"></div>
+</section>
+</div>
+</aside>
+<aside class="app-rail" id="app-rail" aria-label="Détails du parcours" role="complementary">
 <section class="panel-section collapsible-section" id="waypoints-section" style="display: none;">
 <button aria-controls="waypoints-content" aria-expanded="false" class="section-header-toggle" type="button">
 <span class="section-header-icon">📍</span>
@@ -4701,20 +6205,6 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
         </div>
 </div>
 </section>
-<section class="panel-section panel-messages">
-<div aria-live="polite" class="message hidden" id="message" role="status"></div>
-</section>
-</div>
-<footer class="panel-footer">
-<div class="panel-footer-links" role="list">
-<span role="listitem"><a href="https://lamouche.fr" rel="author noopener" target="_blank">Développé par Benoit Lamouche</a></span>
-<span class="panel-footer-separator" aria-hidden="true">•</span>
-<span role="listitem"><a href="https://www.strava.com/athletes/4347458" rel="noopener" target="_blank">Strava</a></span>
-<span class="panel-footer-separator" aria-hidden="true">•</span>
-<span role="listitem"><a href="https://paypal.me/blamouche" rel="noopener" target="_blank">Offre moi une bière 🍺</a></span>
-</div>
-<span class="panel-version">Version 2.1</span>
-</footer>
 </aside>
 <main class="map-container">
 <div class="map-main">
@@ -4742,12 +6232,7 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 <span class="map-style-badge">⭐</span></span></button>
 </div>
 </div>
-</main></div>
-<button aria-label="Recharger les points d'intérêt" class="poi-refresh-button" id="poi-refresh-button" type="button">
-<span aria-hidden="true">🔄</span>
-          Recharger les POI
-        </button>
-<button aria-expanded="false" aria-label="Ouvrir le panneau" class="btn-menu" id="menu-toggle">☰</button>
+</main>
 <div aria-hidden="true" class="elevation-profile" id="elevation-profile">
 <div class="elevation-header" id="elevation-header">
 <div class="elevation-title" title="Profil altimétrique">
@@ -4793,6 +6278,20 @@ document.addEventListener('DOMContentLoaded', () => { try { attachWaypointPersis
 </div>
 </div>
 </div>
+<footer class="app-footer" role="contentinfo">
+<a href="https://lamouche.fr" rel="author noopener" target="_blank">Développé par Benoit Lamouche</a>
+<span class="rb-footer-sep" aria-hidden="true">·</span>
+<a href="https://www.strava.com/athletes/4347458" rel="noopener" target="_blank">Strava</a>
+<span class="rb-footer-sep" aria-hidden="true">·</span>
+<a href="https://paypal.me/blamouche" rel="noopener" target="_blank">Offre moi une bière 🍺</a>
+<span class="rb-footer-version">Version 2.1</span>
+</footer>
+</div>
+<button aria-label="Recharger les points d'intérêt" class="poi-refresh-button" id="poi-refresh-button" type="button">
+<span aria-hidden="true">🔄</span>
+          Recharger les POI
+        </button>
+<button aria-expanded="false" aria-label="Ouvrir le panneau" class="btn-menu" id="menu-toggle">☰</button>
 <div class="modal-backdrop hidden" id="export-modal-backdrop"></div>
 <div aria-labelledby="export-modal-title" aria-modal="true" class="export-modal hidden" id="export-modal" role="dialog">
 <div class="export-modal-header">
@@ -7560,6 +9059,23 @@ let elevationMouseLeaveHandler = null;
 
       ctx.clearRect(0, 0, width, height);
 
+      // Roadbook identity: pull colors from CSS custom properties so the profile
+      // re-skins itself automatically when the theme flips.
+      const rbStyle = getComputedStyle(document.documentElement);
+      const rbAccent = (rbStyle.getPropertyValue('--rb-accent') || '#B8482B').trim();
+      const rbInk = (rbStyle.getPropertyValue('--rb-ink') || '#1E1B16').trim();
+      const rbInkDim = (rbStyle.getPropertyValue('--rb-ink-dim') || '#6B6150').trim();
+      const rbBorderSoft = (rbStyle.getPropertyValue('--rb-border-soft') || '#E4DCC9').trim();
+      const rbPaper = (rbStyle.getPropertyValue('--rb-paper') || '#F8F4EA').trim();
+      function rbHexToRgba(hex, alpha) {
+        const clean = (hex || '').replace('#', '').trim();
+        if (clean.length !== 6) return `rgba(184, 72, 43, ${alpha})`;
+        const r = parseInt(clean.slice(0, 2), 16);
+        const g = parseInt(clean.slice(2, 4), 16);
+        const b = parseInt(clean.slice(4, 6), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+      }
+
       const margin = { top: 20, right: 20, bottom: 40, left: 60 };
       const chartWidth = Math.max(10, width - margin.left - margin.right);
       const chartHeight = Math.max(10, height - margin.top - margin.bottom);
@@ -7572,8 +9088,9 @@ let elevationMouseLeaveHandler = null;
       const yScale = (elevation) =>
         margin.top + chartHeight - ((elevation - minEle) / (maxEle - minEle)) * chartHeight;
 
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.strokeStyle = rbBorderSoft;
       ctx.lineWidth = 1;
+      ctx.setLineDash([2, 4]);
 
       const elevationStep = Math.max(10, Math.ceil((maxEle - minEle) / 5 / 50) * 50);
       for (let ele = Math.ceil(minEle / elevationStep) * elevationStep; ele <= maxEle; ele += elevationStep) {
@@ -7582,21 +9099,18 @@ let elevationMouseLeaveHandler = null;
         ctx.moveTo(margin.left, y);
         ctx.lineTo(width - margin.right, y);
         ctx.stroke();
-        ctx.fillStyle = '#757575';
-        ctx.font = '11px sans-serif';
+        ctx.fillStyle = rbInkDim;
+        ctx.font = '10px "JetBrains Mono", ui-monospace, monospace';
         ctx.textAlign = 'right';
         ctx.fillText(`${Math.round(ele)} m`, margin.left - 5, y + 4);
       }
 
+      ctx.setLineDash([]);
       const distanceStepRaw = Math.max(100, Math.ceil(maxDistance / 5 / 1000) * 1000);
       for (let dist = 0; dist <= maxDistance; dist += distanceStepRaw) {
         const x = xScale(dist);
-        ctx.beginPath();
-        ctx.moveTo(x, margin.top);
-        ctx.lineTo(x, height - margin.bottom);
-        ctx.stroke();
-        ctx.fillStyle = '#757575';
-        ctx.font = '11px sans-serif';
+        ctx.fillStyle = rbInkDim;
+        ctx.font = '10px "JetBrains Mono", ui-monospace, monospace';
         ctx.textAlign = 'center';
         ctx.fillText(`${(dist / 1000).toFixed(1)} km`, x, height - margin.bottom + 18);
       }
@@ -7616,8 +9130,8 @@ let elevationMouseLeaveHandler = null;
       ctx.closePath();
 
       const gradient = ctx.createLinearGradient(0, margin.top, 0, height - margin.bottom);
-      gradient.addColorStop(0, 'rgba(25, 118, 210, 0.3)');
-      gradient.addColorStop(1, 'rgba(25, 118, 210, 0.05)');
+      gradient.addColorStop(0, rbHexToRgba(rbAccent, 0.28));
+      gradient.addColorStop(1, rbHexToRgba(rbAccent, 0));
       ctx.fillStyle = gradient;
       ctx.fill();
 
@@ -7631,8 +9145,8 @@ let elevationMouseLeaveHandler = null;
           ctx.lineTo(x, y);
         }
       });
-      ctx.strokeStyle = '#1976d2';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = rbAccent;
+      ctx.lineWidth = 2.2;
       ctx.stroke();
 
       // --- Draw waypoints on profile ---
@@ -7661,34 +9175,35 @@ let elevationMouseLeaveHandler = null;
                 const x = xScale(closest.distance);
                 const y = yScale(closest.elevation);
 
-                // vertical tick
+                // vertical tick (dashed, ink at low opacity)
                 ctx.beginPath();
-                ctx.strokeStyle = 'rgba(255,87,34,0.9)';
+                ctx.strokeStyle = rbHexToRgba(rbInk, 0.4);
                 ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
                 ctx.moveTo(x, margin.top);
                 ctx.lineTo(x, height - margin.bottom);
                 ctx.stroke();
+                ctx.setLineDash([]);
 
-                // small circle marker on the profile line
+                // small circle marker on the profile line (accent on paper)
                 ctx.beginPath();
-                ctx.fillStyle = '#FF5722';
-                ctx.strokeStyle = '#fff';
+                ctx.fillStyle = rbAccent;
+                ctx.strokeStyle = rbPaper;
                 ctx.lineWidth = 2;
-                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.arc(x, y, 4.5, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.stroke();
 
-                // label (waypoint name or index)
-                const label = marker.waypointName || `WP ${mi + 1}`;
-                ctx.fillStyle = '#212121';
-                ctx.font = '11px sans-serif';
+                // label (waypoint name or index) — mono caps
+                const numberLabel = (mi + 1 < 10 ? '0' : '') + (mi + 1);
+                const label = numberLabel;
+                ctx.font = '10px "JetBrains Mono", ui-monospace, monospace';
                 ctx.textAlign = 'center';
-                // draw background for readability
                 const textWidth = ctx.measureText(label).width;
-                ctx.fillStyle = 'rgba(255,255,255,0.85)';
-                ctx.fillRect(x - textWidth / 2 - 6, margin.top + 4, textWidth + 12, 18);
-                ctx.fillStyle = '#212121';
-                ctx.fillText(label, x, margin.top + 16);
+                ctx.fillStyle = rbHexToRgba(rbPaper, 0.9);
+                ctx.fillRect(x - textWidth / 2 - 6, margin.top + 2, textWidth + 12, 16);
+                ctx.fillStyle = rbInk;
+                ctx.fillText(label, x, margin.top + 14);
               } catch (e) {
                 // ignore marker-specific errors
               }
@@ -8126,19 +9641,19 @@ function createWaypointMarker(latlng, name = '') {
   const finalName = trimmedName || `Waypoint ${waypointCounter}`;
   waypointCounter += 1;
 
-  // Créer l'icône personnalisée
+  // Créer l'icône personnalisée (cercle numéroté — roadbook identity)
   const icon = L.divIcon({
     className: 'waypoint-marker',
     html: `
       <div class="waypoint-marker-inner">
         <div class="waypoint-marker-pin">
-          <span class="waypoint-marker-icon">📍</span>
+          <span class="waypoint-marker-icon">··</span>
         </div>
       </div>
     `,
-    iconSize: [28, 36],
-    iconAnchor: [14, 36],
-    popupAnchor: [0, -36]
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -14]
   });
 
   const marker = L.marker(latlng, { 
@@ -8257,11 +9772,20 @@ function createWaypointMarker(latlng, name = '') {
 
       waypointsList.innerHTML = '';
 
-      markers.forEach((marker) => {
+      markers.forEach((marker, index) => {
         const item = document.createElement('div');
         item.className = 'waypoint-item';
+        const numberLabel = (index + 1 < 10 ? '0' : '') + (index + 1);
+        // Update the Leaflet marker icon label to match the ordered index
+        try {
+          const el = marker.getElement && marker.getElement();
+          if (el) {
+            const iconSpan = el.querySelector('.waypoint-marker-icon');
+            if (iconSpan) iconSpan.textContent = numberLabel;
+          }
+        } catch (e) {}
         item.innerHTML = `
-          <span class="waypoint-icon" aria-hidden="true">📍</span>
+          <span class="waypoint-icon" aria-hidden="true">${numberLabel}</span>
           <span class="waypoint-name">${escapeHtml(marker.waypointName)}</span>
           <button class="btn-icon-small" data-action="center" title="Centrer">🎯</button>
           <button class="btn-icon-small" data-action="delete" title="Supprimer">🗑️</button>
@@ -13176,6 +14700,40 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   </div>
 </dialog>
+
+<script id="roadbook-theme-toggle">
+(function () {
+  const STORAGE_KEY = 'rb-theme';
+  const root = document.documentElement;
+  const btn = document.getElementById('rb-theme-toggle');
+  const label = document.getElementById('rb-theme-toggle-label');
+
+  function apply(theme) {
+    if (theme === 'dark') {
+      root.setAttribute('data-theme', 'dark');
+      if (label) label.textContent = 'Clair';
+    } else {
+      root.removeAttribute('data-theme');
+      if (label) label.textContent = 'Sombre';
+    }
+  }
+
+  let saved = null;
+  try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+  if (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    saved = 'dark';
+  }
+  apply(saved === 'dark' ? 'dark' : 'light');
+
+  if (btn) {
+    btn.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      apply(next);
+      try { localStorage.setItem(STORAGE_KEY, next); } catch (e) {}
+    });
+  }
+})();
+</script>
 
 </body>
 </html>
